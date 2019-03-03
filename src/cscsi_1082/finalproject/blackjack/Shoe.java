@@ -18,6 +18,15 @@ public class Shoe {
 	private  List<Card> deckShoe = new ArrayList<Card>();
 	
 	/*
+	 * Method to shuffle the deck.
+	 */
+	public void shuffleDeckShoe() {
+		this.clearDeckShoe();	
+		this.createDeckShoe();
+		Collections.shuffle(this.deckShoe);
+	}
+		
+	/*
 	 * Method to populate the deckShoe
 	 */
 	public void createDeckShoe() {
@@ -33,20 +42,35 @@ public class Shoe {
 		}
 	}
 	
-	/*
-	 * Method to shuffle the deck.
-	 */
-	public void shuffleDeckShoe() {
-		this.clearDeckShoe();	
-		this.createDeckShoe();
-		Collections.shuffle(this.deckShoe);
-	}
-	
-	/*
+		/*
 	 * Method to ensure the deckShoe List has no elements in it
 	 */
 	private void clearDeckShoe() {
 		deckShoe.removeAll(deckShoe);
+	}
+	
+	/*
+	 * Method to deal a new card
+	 */
+	public Card dealCard() {
+		if (this.getCard() == null) {			// If getCard returns null then the deckShoe is empty.  Must create a new one
+			this.shuffleDeckShoe();				// TODO: Must put in some notice to user that deck is being reshuffled
+		}
+		return this.getCard();					// Return a card
+	}
+	
+	/*
+	 * Method to get a card from the deckShoe
+	 */
+	private Card getCard() {
+		if (this.deckShoe.isEmpty()) {
+			return null;
+		}
+		else {
+			Card card = this.deckShoe.get(0);		// Get the first card off the deck
+			this.deckShoe.remove(0);				// Remove the card from the ArrayList
+			return card;
+		}
 	}
 
 	@Override
