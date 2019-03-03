@@ -33,8 +33,11 @@ public class Shoe {
 		}
 	}
 	
+	/*
+	 * Method to shuffle the deck.
+	 */
 	public void shuffleDeckShoe() {
-		this.clearDeckShoe();
+		this.clearDeckShoe();	
 		this.createDeckShoe();
 		Collections.shuffle(this.deckShoe);
 	}
