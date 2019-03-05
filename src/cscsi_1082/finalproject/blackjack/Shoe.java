@@ -1,24 +1,45 @@
+/**
+ * Shoe class is responsible for creating the deckShoe.
+ * This class populates and shuffles the deckShoe. It also
+ * provides the ability to get cards from the deckShoe.
+ * 
+ * @author Mike Novotny
+ * @author Ryan Westling
+ * @version 1.0
+ */
+
 package cscsi_1082.finalproject.blackjack;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cscsi_1082.finalproject.blackjack.Card.Rank;
-import cscsi_1082.finalproject.blackjack.Card.Suit;
+import cscsi_1082.finalproject.blackjack.Card.Rank;						// Import the Rank enum from Card Class
+import cscsi_1082.finalproject.blackjack.Card.Suit;						// Import the Suit enum from Card Class
 
 public class Shoe {
 	
-	// A Casino Deck shoe typically holds 8 decks
-	private final int NUMBEROFDECKS = 8;
 	
-	/*
-	 * Blackjack uses and 8 shoe deck.  Create an ArrayList of cards
+	private final int NUMBEROFDECKS = 8;								// A Casino Deck shoe typically holds 8 decks
+	private  List<Card> deckShoe = new ArrayList<Card>();				// Create a ArrayList to hold all the cards
+	
+	/**
+	 * Constructor
+	 * 
+	 * Calls createDeckShoe method to initialize the ArrayList
+	 * 
+	 * @param None
 	 */
-	private  List<Card> deckShoe = new ArrayList<Card>();
-	
-	/*
-	 * Method to shuffle the deck.
+		public Shoe() {
+			createDeckShoe();
+		}
+		
+	/**
+	 * This method initializes the deckShoe.  It ensures the ArrayList is clear
+	 * then it repopulates and finally randomizes the Cards in the ArrayList
+	 * 
+	 * @param None
+	 * @return Nothing
 	 */
 	public void createDeckShoe() {
 		this.clearDeckShoe();	
@@ -26,13 +47,34 @@ public class Shoe {
 		Collections.shuffle(this.deckShoe);
 	}
 		
-	/*
-	 * Method to populate the deckShoe
+	/**
+	 * This method clears the deckShoe ArrayList of all entries.
+	 * This ensures we are starting with a fresh group of cards
+	 * 
+	 * TODO: Future functionality would be to repopulate the deckShoe
+	 * 		 ArrayList when a certain percentage of Card elements are left.
+	 * 		 This method will be crucial to ensure the ArrayList is clear
+	 * 
+	 * @param None
+	 * @return Nothing
+	 */
+	private void clearDeckShoe() {
+		deckShoe.removeAll(deckShoe);
+	}
+	
+	/**
+	 * This method populates the deckShoe with the required number of instances of the
+	 * Card class into the ArrayList.
+	 * 
+	 * It iterate through these actions for the required amount of decks
+	 * For every suit, and for every rank, create a new instance of a Card 
+	 * class and add it to the deckShoe list
+	 * 
+	 * @param None
+	 * @return Nothing
 	 */
 	private void populateDeckShoe() {
-		for (int deck = 1; deck < NUMBEROFDECKS; deck++) {		// Iterate through these actions for the required amount of decks
-			
-			// For every suit, and for every rank, create a new instance of a Card class and add it to the deckShoe list			
+		for (int deck = 1; deck < NUMBEROFDECKS; deck++) {				
 			for (Suit suit : Suit.values()) {	
 				for (Rank rank : Rank.values()) {
 					Card card = new Card(suit, rank);
@@ -42,14 +84,13 @@ public class Shoe {
 		}
 	}
 	
-		/*
-	 * Method to ensure the deckShoe List has no elements in it
+	/**
+	 * This method checks if the deckShoe ArrayList is empty.
+	 * 
+	 * @param None
+	 * @return true if empty
+	 * @return false if not empty
 	 */
-	private void clearDeckShoe() {
-		deckShoe.removeAll(deckShoe);
-	}
-	
-	// Method to check if deckShoe is empty
 	public boolean isEmpty() {
 		if (deckShoe.isEmpty()) {
 			return true;
@@ -57,19 +98,21 @@ public class Shoe {
 		return false;
 	}
 	
-	// method to return the next card
+	/**
+	 * Method to get the first Card element from the list.  This is the
+	 * equivalent to dealing the top card from the deck.  This method
+	 * stores the first Card element in a temp value and then removes
+	 * the first element from the ArrayList to ensure it is not used again.
+	 * 
+	 * @param None
+	 * @return first Card element from ArrayList
+	 */
 	public Card getNextCard() {
-		Card card = deckShoe.get(0);
-		deckShoe.remove(0); // remove card from the deckShoe
+		Card card = deckShoe.get(0);									// Get first element from ArrayList
+		deckShoe.remove(0); 											// remove card from the deckShoe
 		return card;
 	}
 	
-	
-	// Constructor
-	public Shoe() {
-		createDeckShoe();
-	}
-
 	@Override
 	public String toString() {
 		return "Shoe [deckShoe=" + deckShoe + "]";

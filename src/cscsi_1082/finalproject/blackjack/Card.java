@@ -1,9 +1,19 @@
+/**
+ * Card class is responsible for tracking the suit and rank of each Card
+ * 
+ * @author Mike Novotny
+ * @author Ryan Westling
+ * @version 1.0
+ */
+
 package cscsi_1082.finalproject.blackjack;
 
 public class Card {
 	
-	/*
-	 * Enum to define suits of cards
+	/**
+	 * Enum to make human readable suits for the Cards
+	 * 
+	 * @author Mike Novotny
 	 */
 	public enum Suit {
 	    SPADES, 
@@ -12,8 +22,10 @@ public class Card {
 	    CLUBS;  
 	}
 	
-	/*
-	 * Enum to define rank of cards
+	/**
+	 * Enum to make human readable ranks for the Cards
+	 * 
+	 * @author Mike Novotny
 	 */
 	public enum Rank {
 		TWO,
@@ -30,38 +42,41 @@ public class Card {
 		ACE;
 	}
 	
-	/*
-	 * A card should know it's suit and its value
-	 */
 	private Suit suit;
 	private Rank rank;
 	
-	/*
-	 * Getters and Setters
-	 */
-	public Suit getSuit() {
-		return suit;
-	}
-	public void setSuit(Suit suit) {
-		this.suit = suit;
-	}
-	public Rank getRank() {
-		return rank;
-	}
-	public void setRank(Rank rank) {
-		this.rank = rank;
-	}
-	
-	@Override
-	public String toString() {
-		return "Card [suit=" + suit + ", rank=" + rank + "]";
-	}
-
-	/*
-	 * Must give a suit and rank when creating an instance of Card
+	/**
+	 * Constructor.  A suit and rank must be specified to create an instance of this class
+	 * 
+	 * @param suit
+	 * @param rank
 	 */
 	public Card(Suit suit, Rank rank) {
 		this.suit = suit;
 		this.rank = rank;
+	}
+	
+	/**
+	 * Method to get the suit of a Card
+	 * 
+	 * @return Suit of card
+	 */
+	public Suit getSuit() {
+		return suit;
+	}
+	
+	/**
+	 * Method to get the Rank of a Card
+	 * 
+	 * @return Rank of Card
+	 */
+	public Rank getRank() {
+		return rank;
+	}
+
+	
+	@Override
+	public String toString() {
+		return "Card [suit=" + suit + ", rank=" + rank + "]";
 	}
 }
