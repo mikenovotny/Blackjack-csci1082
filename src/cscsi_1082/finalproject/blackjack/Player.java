@@ -29,6 +29,7 @@ public class Player {
 	private int playerMoney;											
 	private playerType type;												// Human or Computer Player
 	private int playerBet;
+	private boolean turnOver;
 	
 	/**
 	 *  Constructor to create an instance of player.  This requires that a
@@ -42,6 +43,7 @@ public class Player {
 		this.type = type;
 		this.playerCards.removeAll(playerCards);
 		this.playerMoney = 500;												// Player starts out with $500
+		this.turnOver = false;
 	}
 	
 	/**
@@ -164,7 +166,5 @@ public class Player {
 			this.setPlayerMoney(this.getPlayerMoney() - amount);
 		}
 	}
-	
-	
-	
+
 }

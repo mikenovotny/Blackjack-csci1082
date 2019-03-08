@@ -1,8 +1,8 @@
 /**
  * Blackjack class is the starting point for the Blackjack game.
  * 
- * This class is responsible for getting players, creating instances
- * of the other classes and starting the game itself.
+ * This class is responsible for getting players and initializing an
+ * instance of the game engine.
  * 
  * @author Mike Novotny
  * @author Ryan Westling
@@ -20,62 +20,53 @@ import cscsi_1082.finalproject.blackjack.Player.playerType;			// Import the play
 public class Blackjack {
 	
 	private List<Player>  playerList = new ArrayList<Player>();		// Declare array to hold player list
-	private Dealer dealer = new Dealer();							// Create instance of Dealer
-	private Shoe deckShoe = new Shoe();								// Create instance of the deckShoe
 	
 	/**
-	 * Constructor - This class cannot be created without a valid number of players
-	 * Creating this class creates an Arraylist of players
-	 * Creating this class creates a Dealer instance
-	 * Creating this class creates a deckShoe
-	 * 
-	 * TODO: Should implement some better exception handling
-	 * TODO: It might be better to take the number of player check
-	 * 		 and move it to the startGame method.
-	 * 
-	 * @param players
-	 * @param compPlayers
-	 * 
+	 * Constructor - calls a private method to start the game
 	 */
-	public Blackjack (int players, int compPlayers) {
+	public Blackjack () {
+		this.newTable();
+	}
+	
+	/**
+	 * Method to start a new blackjack table.  This will get the players
+	 * and populate them in a player list.  It will then start the game.
+	 *  
+	 * @return Nothing
+	 */
+	private void newTable() {
+		// Create scanner to get keyboard input
+		Scanner input = new Scanner(System.in);
+		
+		System.out.print("Enter the number of Human Players: ");
+		int players = input.nextInt();
+		
+		System.out.print("Enter the number of Computer Players: ");
+		int compPlayers = input.nextInt();
+		
 		// User must chose a valid number of players
 		if (players + compPlayers > 7 || players < 1 || players > 7 || compPlayers > 6) {
 			System.out.println("Error, invalid number of players");
 		}
-		else {
-			this.startGame(players, compPlayers);
-		}
-	}
-	
-	/**
-	 * Method to begin the actual game.  This method gets the player names
-	 * and adds them to a player list.  Computer players are created if selected
-	 *  
-	 * @param players
-	 * @param compPlayers
-	 * @return Nothing
-	 */
-	private void startGame(int players, int compPlayers) {
-		// Create scanner to get keyboard input
-		Scanner input = new Scanner(System.in);
-		
-		// Create the players
-		for (int player = 0; player < players; player++) {
-			// Get player names for Human Players
-			System.out.print("Enter Player " + (player + 1) + "'s name: ");
-			String playerName = input.nextLine();
+		else
+		{	// Create the players
+			for (int player = 0; player < players; player++) {
+				// Get player names for Human Players
+				System.out.print("Enter Player " + (player + 1) + "'s name: ");
+				String playerName = input.nextLine();
 			
-			// Create the Human Player
-			Player humanPlayer = new Player(playerName, playerType.HUMAN);					// TODO: Need to add some protection if we fail to make a player
-			playerList.add(humanPlayer);
-		}
+				// Create the Human Player
+				Player humanPlayer = new Player(playerName, playerType.HUMAN);					// TODO: Need to add some protection if we fail to make a player
+				playerList.add(humanPlayer);
+			}
 		
-		// Create the computer players if needed
-		if (compPlayers > 0) {
-			for (int player = 0; player < compPlayers; player++) {
-			String playerName = "Computer " + (player + 1);
-			Player compPlayer = new Player(playerName, playerType.COMPUTER);				// TODO: Need to add some protection if we fail to make a player
-			playerList.add(compPlayer);
+			// Create the computer players if needed
+			if (compPlayers > 0) {
+				for (int player = 0; player < compPlayers; player++) {
+					String playerName = "Computer " + (player + 1);
+					Player compPlayer = new Player(playerName, playerType.COMPUTER);				// TODO: Need to add some protection if we fail to make a player
+					playerList.add(compPlayer);
+				}
 			}
 		}
 		
@@ -83,8 +74,10 @@ public class Blackjack {
 		input.close();
 	
 		// Start the first round
-		this.startRound();
+		this.startTable(playerList);
+				
 	}
+
 	
 	/**
 	 * Method to begin the cycle of rounds
@@ -96,16 +89,15 @@ public class Blackjack {
 	 * @param None
 	 * @return Nothing
 	 */
-	private void startRound() {
-	
-	//while (this.playerList.get(0).getPlayerMoney() > 0 || this.playerList.get(0).getPlayerBet() > 0) {
-		for (int numcards = 0; numcards < 2; numcards++) {
-			playerList.get(0).setPlayerCards(this.dealer.dealCard(this.deckShoe));
+	private void startTable(List<Player> playerList) {
+		// Create the game engine
+		GameEngine gameEngine = new GameEngine(playerList);
+		
+		// Continue until player is out of money or quits
+		while (this.playerList.get(0).getPlayerMoney() > 0 || this.playerList.get(0).getPlayerBet() > 0 || gameEngine.isQuit() == false) {
+			gameEngine.playGame();
 		}
-		System.out.println("The players cards are: ");
-		for (int cardnumber = 0; cardnumber < 2; cardnumber++) {
-			 System.out.println(playerList.get(0).getPlayerCards(cardnumber));
-		}
+		
 	}
 	
 	/**
@@ -113,7 +105,7 @@ public class Blackjack {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Blackjack gameOfBlackjack = new Blackjack(1,0);
+		Blackjack gameOfBlackjack = new Blackjack();
 		
 		}
 	}
