@@ -25,11 +25,12 @@ public class Player {
 	}
 	
 	private String playerName;
-	private List<Card> playerCards = new ArrayList<Card>();					// ArrayList to hold cards in players hand
+	private List<Card> playerCards;											// ArrayList to hold cards in players hand
 	private int playerMoney;											
 	private playerType type;												// Human or Computer Player
 	private int playerBet;
 	private boolean turnOver;
+	private int numHands;
 	
 	/**
 	 *  Constructor to create an instance of player.  This requires that a
@@ -41,9 +42,11 @@ public class Player {
 	public Player(String playerName, playerType type) {
 		this.playerName = playerName;
 		this.type = type;
+		this.playerCards = new ArrayList<Card>();
 		this.playerCards.removeAll(playerCards);
 		this.playerMoney = 500;												// Player starts out with $500
 		this.turnOver = false;
+		this.numHands = 1;
 	}
 	
 	/**

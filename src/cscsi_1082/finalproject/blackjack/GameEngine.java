@@ -1,5 +1,18 @@
+/**
+ * GameEngine class is the main logic engine for the game.
+ * 
+ * This class is responsible for carrying out player actions,
+ * for determining winners, and creating instances of the dealer
+ * and deckShoe.
+ * 
+ * @author Mike Novotny
+ * @author Ryan Westling
+ * @version 1.0
+ */
+
 package cscsi_1082.finalproject.blackjack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameEngine extends Blackjack {
@@ -84,5 +97,59 @@ public class GameEngine extends Blackjack {
 	public boolean stand() {
 		return true;		
 	}
-
+	
+	/**
+	 * Method to allow a player to split their hand.  This creates a new playerCard list,
+	 * copies the 2nd card from the original list to the new one, then removes the 2nd card from
+	 * the original list.  This leaves both lists with an index 0.
+	 * 
+	 * The expectation would be that the function calling this increments a counter for how many hands
+	 * the players has so they can be iterate through later.
+	 * 
+	 * @param playerCards
+	 * @return new list of cards
+	 */
+	public List<Card> split(List<Card> playerCards){
+		List<Card> newHand = new ArrayList<Card>();
+		newHand.add(playerCards.get(1));
+		playerCards.remove(1);
+		return newHand;		
+	}
+	
+	/**
+	 * Method to determine if a player won the hand
+	 * 
+	 * @param player Card list and dealer Card list
+	 * @return true if winner
+	 */
+	public boolean isWinner(List<Card> playerCards, List<Card> dealerCards) {
+		if (
+			//code that means they won
+			) {
+			// This should call the addMoney method in the player Class
+			return true;
+		}
+		else {
+			// This should call the removeMoney method in the Player Class
+			return false;
+		}
+	}
+	
+	/**
+	 * Method to determine if the player has blackjack.  The dealer should call this as well
+	 * 
+	 * @param Card list
+	 * @return true if blackjack has been made
+	 */
+	public boolean isBlackJack(List<Card> Cards) {
+		if (
+				// Code that determines if they have blackjack
+			) {
+			return true;
+		}
+		else {
+			return false;
+		}			
+	}
+	
 }
