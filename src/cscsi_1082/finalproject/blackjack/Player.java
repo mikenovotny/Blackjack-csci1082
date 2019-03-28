@@ -21,7 +21,8 @@ public class Player {
 	 */
 	public enum playerType {
 		HUMAN,
-		COMPUTER;
+		COMPUTER,
+		DEALER;
 	}
 	
 	private String playerName;
@@ -31,6 +32,8 @@ public class Player {
 	private int playerBet;
 	private boolean turnOver;
 	private int numHands;
+	private int handTotal;													// Value to hold the sum of their hand
+	private boolean hasBlackJack;
 	
 	/**
 	 *  Constructor to create an instance of player.  This requires that a
@@ -47,6 +50,8 @@ public class Player {
 		this.playerMoney = 500;												// Player starts out with $500
 		this.turnOver = false;
 		this.numHands = 1;
+		this.handTotal = 0;
+		this.hasBlackJack = false;
 	}
 	
 	/**
@@ -74,8 +79,8 @@ public class Player {
 	 * @param index
 	 * @return Card from player's ArrayList
 	 */
-	public Card getPlayerCards(int index) {
-		return this.playerCards.get(index);
+	public List<Card> getPlayerCards() {
+		return this.playerCards;
 	}
 	
 	/** 
@@ -144,6 +149,62 @@ public class Player {
 		this.playerBet = playerBet;
 	}
 	
+	
+	/**
+	 * Method to determine if the players turn is over
+	 * 
+	 * @return true if turn is over
+	 */
+	public boolean isTurnOver() {
+		return turnOver;
+	}
+
+	/**
+	 * Method to set a players turn to be over
+	 * 
+	 */
+	public void setTurnOver(boolean turnOver) {
+		this.turnOver = turnOver;
+	}
+	
+	/**
+	 * Method to reset all player's turnOver to false for the next round
+	 * 
+	 * @param playerList
+	 */
+	public void resetTurnOver(List<Player> playerList) {
+		for (int player = 0; player < playerList.size(); player++) {
+			playerList.get(player).setTurnOver(false);
+		}
+	}
+
+	public int getNumHands() {
+		return numHands;
+	}
+
+	public void setNumHands(int numHands) {
+		this.numHands = numHands;
+	}
+	
+
+	public int getHandTotal() {
+		return handTotal;
+	}
+
+	public void setHandTotal(int handTotal) {
+		this.handTotal = handTotal;
+	}
+	
+	
+
+	public boolean getHasBlackJack() {
+		return hasBlackJack;
+	}
+
+	public void setHasBlackJack(boolean hasBlackJack) {
+		this.hasBlackJack = hasBlackJack;
+	}
+
 	/**
 	 * Method to add money to a players total, for example, if they win the hand
 	 * 
@@ -168,6 +229,20 @@ public class Player {
 		else {
 			this.setPlayerMoney(this.getPlayerMoney() - amount);
 		}
+	}
+	
+	public void displayCards(List<Player> playerList, int player) {
+		for (int card = 0; card < playerList.get(player).playerCards.size(); card ++) {
+			System.out.println("Card " + (card + 1) + ": " + playerList.get(player).playerCards.get(card));
+		}
+	}
+	
+	public boolean canSplit (List<Player> playerList, int player) {
+			if (playerList.get(player).playerCards.get(0).getRank() == playerList.get(player).playerCards.get(1).getRank()) {
+				return true;
+			} else {
+				return false;
+			}		
 	}
 
 }

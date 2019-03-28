@@ -36,6 +36,7 @@ public class Card {
 		SEVEN,
 		EIGHT,
 		NINE,
+		TEN,
 		JACK,
 		QUEEN,
 		KING,
@@ -77,6 +78,7 @@ public class Card {
 	
 	@Override
 	public String toString() {
-		return "Card [suit=" + suit + ", rank=" + rank + "]";
+		String cardInfo = rank + " of " + suit;
+		return cardInfo;
 	}
 }
