@@ -235,6 +235,10 @@ public class GameEngine {
 				
 		}
 	}
+		
+		// TODO: Players have completed their moves.  Now the Dealer needs to do his thing
+		// TODO: Once the dealer has gotten all this cards, we need to determine winners and payout/collect
+		// TODO: THen we need to start a new round if the player has the money to.
 		System.exit(0);
 
 		
@@ -463,17 +467,22 @@ public class GameEngine {
 					break;
 			}
 			
-			// Handle Aces.  If they have Aces, check if an Ace being 11 would bust them.  If so, make it a one
-			if (hasAce == true) {
-				for (int ace = 0; ace < numberOfAces; ace++) {
-					if (sumOfCards + playerCard.getCardRankValue(Rank.ACE) > MAXTOTAL) {
+			
+		}
+		/*
+		 * Handle Aces outside of loop so they are factored in after all other cards have been summed
+		 * If they have Aces, check if an Ace being 11 would bust them.  If so, make it a one
+		 */
+		if (hasAce == true) {
+			for (int ace = 0; ace < numberOfAces; ace++) {
+					if (sumOfCards + Rank.ACE.getRankValue() > MAXTOTAL) {
 						sumOfCards += 1;														// Hard code Ace to be a one here
 					} else {
-						sumOfCards += playerCard.getCardRankValue(Rank.ACE);
-					}
+						sumOfCards += Rank.ACE.getRankValue();
 				}
 			}
 		}
+		
 		this.playerList.get(player).setHandTotal(sumOfCards);
 	}
 	
@@ -500,13 +509,18 @@ public class GameEngine {
 		Scanner input = new Scanner(System.in);
 		
 		// Loop through each player and get the bets
-		for (int player = 0; player < this.playerList.size(); player++) {
-			switch (playerList.get(player).getType()) {
+		for (int player = 1; player < this.playerList.size(); player++) {
+			switch (this.playerList.get(player).getType()) {
 				case HUMAN:
 					System.out.print("Please enter your bet amount: $");
 					double bet = input.nextDouble();
-					playerList.get(player).setPlayerBet(bet);
-					playerList.get(player).removeMoney(playerList.get(player).getPlayerBet());
+					this.playerList.get(player).setPlayerBet(bet);
+					if (!playerList.get(player).removeMoney(this.playerList.get(player).getPlayerBet())) {
+						System.out.println("Insufficient money to bet this amount ($" + this.playerList.get(player).getPlayerBet() + ")!\n"+
+										   "You have: $" + this.playerList.get(player).getPlayerMoney());
+						player--;						// Decrement player so it asks the same player for a bet
+						continue;
+					}
 					// Dump buffer
 					if (input.hasNextLine()) {
 						input.nextLine();
@@ -514,12 +528,12 @@ public class GameEngine {
 					break;
 
 				case COMPUTER:
-					playerList.get(player).setPlayerBet(50);									// use a default bet for the computer
-					playerList.get(player).removeMoney(playerList.get(player).getPlayerBet());
+					this.playerList.get(player).setPlayerBet(50);									// use a default bet for the computer
+					this.playerList.get(player).removeMoney(this.playerList.get(player).getPlayerBet());
 					break;
 					
 				case DEALER:
-					playerList.get(player).setPlayerBet(0);										// The dealer doesn't bet
+					this.playerList.get(player).setPlayerBet(0);										// The dealer doesn't bet
 					break;
 						
 				default:

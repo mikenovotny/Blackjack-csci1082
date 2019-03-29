@@ -222,12 +222,13 @@ public class Player {
 	 * 
 	 * @param amount of money to remove from players total
 	 */
-	public void removeMoney(double amount) {
+	public boolean removeMoney(double amount) {
 		if (this.getPlayerMoney() - amount < 0) {									
-			this.setPlayerMoney(0);
+			return false;
 		}
 		else {
 			this.setPlayerMoney(this.getPlayerMoney() - amount);
+			return true;
 		}
 	}
 	
