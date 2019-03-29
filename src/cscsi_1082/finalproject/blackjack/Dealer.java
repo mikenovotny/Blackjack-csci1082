@@ -8,6 +8,8 @@
 
 package cscsi_1082.finalproject.blackjack;
 
+import java.util.List;
+
 public class Dealer extends Player{
 	
 	
@@ -21,9 +23,7 @@ public class Dealer extends Player{
 	 */
 	public Dealer(String playerName, playerType type) {
 		super(playerName, type);
-
 	}
-
 
 	/**
 	 * This method deals a card to Player or the dealer.  This method first
@@ -39,4 +39,14 @@ public class Dealer extends Player{
 		}
 		return deckShoe.getNextCard();
 	}	
+	
+	public void displaySingleCard(List<Player> playerList, int dealerIndex) {
+		System.out.println("Dealer is showing a " + playerList.get(dealerIndex).getPlayerCards().get(0).getRank() + " of " + playerList.get(dealerIndex).getPlayerCards().get(0).getSuit());
+		
+	}
+	
+	public Card getDealersUpCard(List<Player> playerList, int dealerIndex) {
+		return playerList.get(dealerIndex).getPlayerCards().get(0);
+	}
+	
 }

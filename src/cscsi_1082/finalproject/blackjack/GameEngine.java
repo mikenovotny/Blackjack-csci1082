@@ -15,7 +15,11 @@ package cscsi_1082.finalproject.blackjack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import cscsi_1082.finalproject.blackjack.Rank;
+import cscsi_1082.finalproject.blackjack.Suit;
 import cscsi_1082.finalproject.blackjack.Player.playerType;			// Import the playerType enum from Player Class
+import cscsi_1082.finalproject.blackjack.Option;					// Import the Option enum
 
 public class GameEngine {
 	
@@ -26,6 +30,7 @@ public class GameEngine {
 	private boolean roundOver;
 	private final int MAXTOTAL = 21;
 	private final int DEALERPLAYER = 0;
+	private final double BLACKJACK_PAYOUT = 1.5;					// Blackjack pays out at 3 to 2
 	
 	/**
 	 * Constructor for the game Engine.  This will create the dealer and deckShoe
@@ -178,17 +183,26 @@ public class GameEngine {
 	 * Lots of stuff needs to go here
 	 */
 	private void playGame() {	
-		System.out.println("I am in the playGame method");
-		
 		// Get the player bets
 		this.getBets();
 		
-
+		// Message to give indication of what's happening
 		System.out.println("Dealing Cards...");
 		
 		// Deal the cards to the players
 		this.dealCards();
 		System.out.println("Cards Delt");
+		
+		// Check if any player has blackjack.  They get paid first
+		for (int player = 1; player < this.playerList.size(); player++) {
+			if (this.isBlackJack(player)) {
+				playerList.get(player).displayCards(this.playerList, player);
+				System.out.println("Player: " + this.playerList.get(player).getPlayerName() + " has BlackJack! Pays out at 3 to 2");
+				this.playerList.get(player).setHasBlackJack(true);
+				this.playerList.get(player).addMoney(this.playerList.get(player).getPlayerBet() * BLACKJACK_PAYOUT);
+				this.playerList.get(player).setTurnOver(true);
+			}
+		}
 		
 		// Check if the Dealer has blackjack
 		if (this.isBlackJack(DEALERPLAYER)) {
@@ -200,13 +214,15 @@ public class GameEngine {
 		// Loop through each player and give their options
 		for (int player = 1; player < this.playerList.size(); player++) {
 			while (!playerList.get(player).isTurnOver()) {
+				dealer.displaySingleCard(playerList, DEALERPLAYER);
+				
 				playerList.get(player).displayCards(this.playerList, player);
 				
 				// Check if they have busted
 				if (this.checkIfBusted(player)) {
 					System.out.println("OH NO! You've busted!\nYour Total is: " + this.playerList.get(player).getHandTotal());
 					playerList.get(player).setTurnOver(true);
-					break;
+					continue;
 				} else {
 					System.out.println("Your Total is: " + this.playerList.get(player).getHandTotal());
 				}
@@ -235,9 +251,6 @@ public class GameEngine {
 		// Variable to track how many cards have been dealt
 		int cardsDelt = 0;
 		
-		// TODO: Trouble shooting output
-		System.out.println("size of playerlist * 2: " + (playerList.size() * 2) + "\nValue of cardsDelt: " + cardsDelt);
-		
 		// Keep going until every has 2 cards
 		while (cardsDelt < (playerList.size() * 2)) {
 			
@@ -252,15 +265,9 @@ public class GameEngine {
 					// Only reset player index to 0 if this is the first pass through dealing cards
 					if (cardsDelt == playerList.size()) {
 						player = 0;
-						
-						// TODO: Troubleshooting output
-						System.out.println("Dealing Card to Dealer: " + player  + "\nPlayer Name is: " + this.playerList.get(player).getPlayerName() + "\nNumber of cardsDelt: " + cardsDelt);
 					} else {
 						// TODO: Need to look at this closer, I set it to this high number because it was looping too much.
 						player = 999999;
-						// TODO: Troubleshooting output
-						System.out.println("Dealing Card to Dealer: " + player  + "\nPlayer Name is: " + this.playerList.get(DEALERPLAYER).getPlayerName() + "\nNumber of cardsDelt: " + cardsDelt);
-
 					}
 				}else {
 				/*
@@ -268,11 +275,13 @@ public class GameEngine {
 				 */
 				playerList.get(player).setPlayerCards(dealer.dealCard(this.deckShoe));
 				cardsDelt++;
-				// TODO: Troubleshooting output
-				System.out.println("Dealing Card to player: " + player + "\nPlayer Name is: " + this.playerList.get(player).getPlayerName() + "\nNumber of cardsDelt: " + cardsDelt);
-
 				}
 			}
+		}
+		
+		// Set all players initial total
+		for (int player = 0; player < playerList.size(); player++) {
+			this.getSumOfCards(player);
 		}
 	}
 	
@@ -321,11 +330,6 @@ public class GameEngine {
 	}
 	
 	public void roundOver() {
-		// total everyone's hand if it hasn't been yet.  This could happen if the Dealer had blackjack from the start
-		for (int player = 0; player < this.playerList.size(); player++) {
-			this.getSumOfCards(player);
-		}
-		
 		// See if any player won
 		for (int player = 1; player < this.playerList.size(); player++) {
 			this.isWinner(player);
@@ -495,11 +499,10 @@ public class GameEngine {
 		
 		// Loop through each player and get the bets
 		for (int player = 0; player < this.playerList.size(); player++) {
-			System.out.println("The playerType is: " + playerList.get(player).getType());
 			switch (playerList.get(player).getType()) {
 				case HUMAN:
 					System.out.print("Please enter your bet amount: $");
-					int bet = input.nextInt();
+					double bet = input.nextDouble();
 					playerList.get(player).setPlayerBet(bet);
 					playerList.get(player).removeMoney(playerList.get(player).getPlayerBet());
 					// Dump buffer
@@ -537,23 +540,22 @@ public class GameEngine {
 		
 		// variable to store the chosen option
 		int option = 0;
-		System.out.println("The playerType is: " + playerList.get(player).getType());
 		switch (playerList.get(player).getType()) {
 			case HUMAN:			
-				System.out.print("Available options:\n\t" +
-								 "1: Hit\n\t" + 
-								 "2: Stand\n\t" + 
-						 		 "3: Double Down\n\t");
+				System.out.print("Available options:" +
+								 "\n\t1: " + Option.HIT + 
+								 "\n\t2: " + Option.STAND + 
+						 		 "\n\t3: " + Option.DOUBLE_DOWN);
 				// Check if the player can split
 				if (playerList.get(player).canSplit(playerList, player)) {
-					System.out.print("4: Split\n\t");
+					System.out.print("\n\t4: " + Option.SPLIT);
 				}
-				System.out.print("9: Quit\n");
+				System.out.print("\n\t9: " + Option.QUIT + "\n");
 				System.out.println("What would you like to do? ");
 				option = input.nextInt();
 				break;
 			case COMPUTER:
-				//TODO: put logic here for what computer should do
+				option = this.computerDecision(player);
 				break;
 			
 			case DEALER:
@@ -574,18 +576,27 @@ public class GameEngine {
 	 * @param player
 	 */
 	private void processOption(int option, int player) {
-		switch (option) {
-			case 1:
-				this.playerList.get(player).setPlayerCards(this.hit());
+		/*
+		 *  The following statement will determine enum value that is represented by the int
+		 *  that the customer chose in the previous step.  It is sort of like casting the int value
+		 *  into the enum type.		
+		 */
+		Option playerOption = Option.values()[option];
+		
+		// Switch on the enum options.
+		switch (playerOption) {
+			case HIT:
+				this.playerList.get(player).setPlayerCards(this.hit());					// Add a new card to players Hand
+				this.getSumOfCards(player);												// Update the players hand total		
 				break;
-			case 2:
+			case STAND:
 				this.stand(player);
 				break;
-			case 3:
+			case DOUBLE_DOWN:
 				//this.doubleDown();
 				System.out.println("Need to implement double down method");
 				break;
-			case 4:
+			case SPLIT:
 				// Check if the player can split
 				if (playerList.get(player).canSplit(playerList, player)) {
 					System.out.println("This is an available action");
@@ -594,12 +605,85 @@ public class GameEngine {
 					return;
 				}
 				break;
-			case 9:
+			case QUIT:
 				this.setQuit();
 				break;
 			default:
 				System.out.println("Something went wrong.  I was processing options in playGame method!");
 				System.exit(0);
 		}
+	}
+	
+	private int computerDecision(int player) {
+		// Get the dealer's upCard
+		Card dealerUpCard = dealer.getDealersUpCard(playerList, DEALERPLAYER);
+				
+		// Determine if computer has any aces
+		int numberOfAces = 0;
+		for (int card = 0; card < playerList.get(player).getPlayerCards().size(); card ++) {
+			if (playerList.get(player).getPlayerCards().get(card).getRank() == Rank.ACE) {
+				numberOfAces++;
+			}
+		}
+		
+		// TODO: Code for when to split.
+		
+		// Always split aces
+		if (numberOfAces == 2 && playerList.get(player).getPlayerCards().size() == 2) {
+			return Option.SPLIT.getOptionValue();
+		}
+		
+		/*
+		 *  Determine Soft total option.  A soft total means there is an ace in the hand.  This only matters when 
+		 */
+		else if (numberOfAces > 0) {
+			
+			// If Computer has 19 or better, Stand
+			if (playerList.get(player).getHandTotal() >= 19) {
+				return Option.STAND.getOptionValue();
+			}
+			
+			// If Computer has 17 and Dealer is showing 9 or better, hit, else Stand
+			else if (dealerUpCard.getRank().getRankValue() <= Rank.EIGHT.getRankValue() && playerList.get(player).getHandTotal() == 17) {
+				return Option.STAND.getOptionValue();
+			}
+			
+			// HIt everything else
+			else {
+				return Option.HIT.getOptionValue();
+			}
+		}
+		
+		/*
+		 * Determine Hard total options.  No Ace in hand
+		 */
+		else if (numberOfAces == 0) {
+			
+			// Stand on everything greater than or equal to 17
+			if (playerList.get(player).getHandTotal() >= 17) {
+				return Option.STAND.getOptionValue();
+			}
+			
+			// Stand on any total >= 13 if the dealer is showing a six or below
+			else if (playerList.get(player).getHandTotal() >= 13 && dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
+				return Option.STAND.getOptionValue();
+			}
+			
+			// Hit on any total >= 12 and < 17 if the dealer is showing a 7 or above
+			else if (playerList.get(player).getHandTotal() >= 12 && playerList.get(player).getHandTotal() < 17 &&
+					 dealerUpCard.getRank().getRankValue() > Rank.SIX.getRankValue()) {
+				return Option.HIT.getOptionValue();
+			}
+			
+			// if hand total == 12 and dealer is showing a 4, 5, or 6 then stand
+			else if (playerList.get(player).getHandTotal() == 12 && dealerUpCard.getRank().getRankValue() >= Rank.FOUR.getRankValue() &&
+					 dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
+				return Option.STAND.getOptionValue();
+			}
+			
+			
+			}
+		// Hit anything else
+		return Option.HIT.getOptionValue();
 	}
 }

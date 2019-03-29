@@ -8,40 +8,10 @@
 
 package cscsi_1082.finalproject.blackjack;
 
+import cscsi_1082.finalproject.blackjack.Rank;
+import cscsi_1082.finalproject.blackjack.Suit;
+
 public class Card {
-	
-	/**
-	 * Enum to make human readable suits for the Cards
-	 * 
-	 * @author Mike Novotny
-	 */
-	public enum Suit {
-	    SPADES, 
-	    HEARTS, 
-	    DIAMONDS,
-	    CLUBS;  
-	}
-	
-	/**
-	 * Enum to make human readable ranks for the Cards
-	 * 
-	 * @author Mike Novotny
-	 */
-	public enum Rank {
-		TWO,
-		THREE,
-		FOUR,
-		FIVE,
-		SIX,
-		SEVEN,
-		EIGHT,
-		NINE,
-		TEN,
-		JACK,
-		QUEEN,
-		KING,
-		ACE;
-	}
 	
 	private Suit suit;
 	private Rank rank;

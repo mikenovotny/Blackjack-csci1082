@@ -27,9 +27,9 @@ public class Player {
 	
 	private String playerName;
 	private List<Card> playerCards;											// ArrayList to hold cards in players hand
-	private int playerMoney;											
+	private double playerMoney;											
 	private playerType type;												// Human or Computer Player
-	private int playerBet;
+	private double playerBet;
 	private boolean turnOver;
 	private int numHands;
 	private int handTotal;													// Value to hold the sum of their hand
@@ -97,7 +97,7 @@ public class Player {
 	 * 
 	 * @return money player has remaining
 	 */
-	public int getPlayerMoney() {
+	public double getPlayerMoney() {
 		return playerMoney;
 	}
 	
@@ -108,7 +108,7 @@ public class Player {
 	 * 
 	 * @param playerMoney
 	 */
-	public void setPlayerMoney(int playerMoney) {
+	public void setPlayerMoney(double playerMoney) {
 		this.playerMoney = playerMoney;
 	}
 	
@@ -136,7 +136,7 @@ public class Player {
 	 * 
 	 * @return amount player has bet
 	 */
-	public int getPlayerBet() {
+	public double getPlayerBet() {
 		return playerBet;
 	}
 	
@@ -145,7 +145,7 @@ public class Player {
 	 * 
 	 * @param playerBet
 	 */
-	public void setPlayerBet(int playerBet) {
+	public void setPlayerBet(double playerBet) {
 		this.playerBet = playerBet;
 	}
 	
@@ -210,7 +210,7 @@ public class Player {
 	 * 
 	 * @param amount of money to add to players total
 	 */
-	public void addMoney(int amount) {
+	public void addMoney(double amount) {
 		this.setPlayerMoney(this.getPlayerMoney() + amount);
 	}
 	
@@ -222,7 +222,7 @@ public class Player {
 	 * 
 	 * @param amount of money to remove from players total
 	 */
-	public void removeMoney(int amount) {
+	public void removeMoney(double amount) {
 		if (this.getPlayerMoney() - amount < 0) {									
 			this.setPlayerMoney(0);
 		}

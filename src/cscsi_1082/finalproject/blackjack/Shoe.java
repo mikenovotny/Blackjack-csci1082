@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cscsi_1082.finalproject.blackjack.Card.Rank;						// Import the Rank enum from Card Class
-import cscsi_1082.finalproject.blackjack.Card.Suit;						// Import the Suit enum from Card Class
+import cscsi_1082.finalproject.blackjack.Rank;					// Import the Rank enum
+import cscsi_1082.finalproject.blackjack.Suit;					// Import the Suit enum
 
 public class Shoe {
 	
