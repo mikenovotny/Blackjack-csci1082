@@ -44,6 +44,16 @@ public class Card {
 	public Rank getRank() {
 		return rank;
 	}
+	
+	/**
+	 * Method to get the integer value of a Rank
+	 * 
+	 * @param rank
+	 * @return integer value equivalent of card rank
+	 */
+	public int getCardRankValue(Rank rank) {
+		return rank.getRankValue();
+	}
 
 	
 	@Override

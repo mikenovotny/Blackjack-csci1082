@@ -423,34 +423,34 @@ public class GameEngine {
 			// Give a real value to each rank
 			switch (playerCard.getRank()) {
 				case TWO:
-					sumOfCards += 2;
+					sumOfCards += playerCard.getCardRankValue(Rank.TWO);
 					break;
 				case THREE:
-					sumOfCards += 3;
+					sumOfCards += playerCard.getCardRankValue(Rank.THREE);
 					break;
 				case FOUR:
-					sumOfCards += 4;
+					sumOfCards += playerCard.getCardRankValue(Rank.FOUR);
 					break;
 				case FIVE:
-					sumOfCards += 5;
+					sumOfCards += playerCard.getCardRankValue(Rank.FIVE);
 					break;
 				case SIX:
-					sumOfCards += 6;
+					sumOfCards += playerCard.getCardRankValue(Rank.SIX);
 					break;
 				case SEVEN:
-					sumOfCards += 7;
+					sumOfCards += playerCard.getCardRankValue(Rank.SEVEN);
 					break;
 				case EIGHT:
-					sumOfCards += 8;
+					sumOfCards += playerCard.getCardRankValue(Rank.EIGHT);
 					break;
 				case NINE:
-					sumOfCards += 9;
+					sumOfCards += playerCard.getCardRankValue(Rank.NINE);
 					break;
 				case TEN:
 				case JACK:
 				case QUEEN:
 				case KING:
-					sumOfCards += 10;
+					sumOfCards += playerCard.getCardRankValue(Rank.TEN);
 					break;
 				
 				/*
@@ -465,9 +465,11 @@ public class GameEngine {
 			
 			// Handle Aces.  If they have Aces, check if an Ace being 11 would bust them.  If so, make it a one
 			if (hasAce == true) {
-				if (sumOfCards + 11 > MAXTOTAL) {
-					for (int ace = 0; ace < numberOfAces; ace++) {
-							sumOfCards += 1;
+				for (int ace = 0; ace < numberOfAces; ace++) {
+					if (sumOfCards + playerCard.getCardRankValue(Rank.ACE) > MAXTOTAL) {
+						sumOfCards += 1;														// Hard code Ace to be a one here
+					} else {
+						sumOfCards += playerCard.getCardRankValue(Rank.ACE);
 					}
 				}
 			}
@@ -578,11 +580,12 @@ public class GameEngine {
 	private void processOption(int option, int player) {
 		/*
 		 *  The following statement will determine enum value that is represented by the int
-		 *  that the customer chose in the previous step.  It is sort of like casting the int value
-		 *  into the enum type.		
+		 *  that the customer chose in the previous step.  enum.values() returns an array of the 
+		 *  items declared in the enum in the order they were declared.  Since an array is zero indexed,
+		 *  We want the n - 1 option.
 		 */
-		Option playerOption = Option.values()[option];
-		
+		Option playerOption = Option.values()[option - 1];
+		System.out.println("Player: " + this.playerList.get(player).getPlayerName() + " Chose to " + playerOption);
 		// Switch on the enum options.
 		switch (playerOption) {
 			case HIT:
