@@ -5,7 +5,7 @@ public enum Option {
 	STAND			(2),
 	DOUBLE_DOWN		(3),
 	SPLIT			(4),
-	QUIT			(9);
+	QUIT			(5);
 	
 	private final int optionValue;
 	

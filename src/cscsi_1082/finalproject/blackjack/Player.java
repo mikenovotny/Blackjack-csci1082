@@ -214,6 +214,14 @@ public class Player {
 		this.setPlayerMoney(this.getPlayerMoney() + amount);
 	}
 	
+	public boolean checkFunds(double amount) {
+		if (this.getPlayerMoney() - amount < 0) {									
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	/**
 	 * Method to remove money from a players total.  This method has a check
 	 * if the amount being removed would put the player negative.  This check
@@ -222,14 +230,8 @@ public class Player {
 	 * 
 	 * @param amount of money to remove from players total
 	 */
-	public boolean removeMoney(double amount) {
-		if (this.getPlayerMoney() - amount < 0) {									
-			return false;
-		}
-		else {
+	public void removeMoney(double amount) {
 			this.setPlayerMoney(this.getPlayerMoney() - amount);
-			return true;
-		}
 	}
 	
 	public void displayCards(List<Player> playerList, int player) {
@@ -245,5 +247,14 @@ public class Player {
 				return false;
 			}		
 	}
+
+	@Override
+	public String toString() {
+		return "Player [playerName=" + playerName + ", playerCards=" + playerCards + ", playerMoney=" + playerMoney
+				+ ", type=" + type + ", playerBet=" + playerBet + ", turnOver=" + turnOver + ", numHands=" + numHands
+				+ ", handTotal=" + handTotal + ", hasBlackJack=" + hasBlackJack + "]";
+	}
+	
+	
 
 }
