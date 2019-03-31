@@ -18,8 +18,7 @@ import cscsi_1082.finalproject.blackjack.Rank;					// Import the Rank enum
 import cscsi_1082.finalproject.blackjack.Suit;					// Import the Suit enum
 
 public class Shoe {
-	
-	
+		
 	private final int NUMBEROFDECKS = 8;								// A Casino Deck shoe typically holds 8 decks
 	private  List<Card> deckShoe = new ArrayList<Card>();				// Create a ArrayList to hold all the cards
 	

@@ -11,25 +11,22 @@ package cscsi_1082.finalproject.blackjack;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import cscsi_1082.finalproject.blackjack.PlayerType;
 
 public class Dealer extends Player{
-	
-	
-	//private String playerName = "Dealer";									
-//	private List<Card> dealerCards = new ArrayList<Card>();					// List to hold cards in Dealers hand
 	
 	/**
 	 * Constructor for the dealer.  
 	 * @param playerName
 	 * @param type
 	 */
-	public Dealer(String playerName, playerType type) {
+	public Dealer(String playerName, PlayerType type) {
 		super(playerName, type);
 	}
 
 	/**
 	 * This method deals a card to Player or the dealer.  This method first
-	 * checks if the deckShoe is empty.  If True, it repopulates the deckShoe.
+	 * checks if the deckShoe is empty.  If True, it re-populates the deckShoe.
 	 * Then it returns the first card from the deckShoe ArrayList. 
 	 * 
 	 * @param deckShoe
@@ -42,15 +39,35 @@ public class Dealer extends Player{
 		return deckShoe.getNextCard();
 	}	
 	
-	public void displaySingleCard(List<Player> playerList, int dealerIndex) {
+	/**
+	 * Method to display the dealer's Up card to the players.
+	 * This method is somewhat redundant to getDealersUpCard but is done this way so it's easier to 
+	 * just call this method versus having to make extra code to display it after getting it each time.
+	 * 
+	 * @param playerList
+	 * @param dealerIndex
+	 */
+	public void displayDealersUpCard(List<Player> playerList, int dealerIndex) {
 		System.out.println("Dealer is showing a " + playerList.get(dealerIndex).getPlayerCards().get(0).getRank() + " of " + playerList.get(dealerIndex).getPlayerCards().get(0).getSuit());
-		
 	}
 	
+	/**
+	 * Method to get the dealer's Up card.  This is used in the computer's Decision making Logic
+	 * 
+	 * @param playerList
+	 * @param dealerIndex
+	 * @return first Card in dealer's hand
+	 */
 	public Card getDealersUpCard(List<Player> playerList, int dealerIndex) {
 		return playerList.get(dealerIndex).getPlayerCards().get(0);
 	}
 	
+	/**
+	 * Method to pay out a winner
+	 * 
+	 * @param playerList
+	 * @param player
+	 */
 	public void payPlayer(List<Player> playerList, int player) {
 		if (playerList.get(player).getHasBlackJack()) {
 			playerList.get(player).addMoney((playerList.get(player).getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
@@ -60,13 +77,20 @@ public class Dealer extends Player{
 		}
 	}
 	
+	/**
+	 * Overloaded method to pay out a player if they pushed
+	 * 
+	 * @param playerList
+	 * @param player
+	 * @param pushed
+	 */
 	public void payPlayer(List<Player> playerList, int player, boolean pushed) {
 		playerList.get(player).addMoney(playerList.get(player).getPlayerBet());
 	}
 	
 	/** 
-	 * Method to get the bet amount from a player.  Human players will be asked.  Computer players will
-	 * bet a set amount.  Dealer doesn't bet.
+	 * Method to get the bet amount from a player.  Human players will be asked.  
+	 * Computer players bet a random amount.  Dealer doesn't bet.
 	 */
 	public void getBets(List<Player> playerList) {
 		// Create scanner to get keyboard input
@@ -103,7 +127,7 @@ public class Dealer extends Player{
 				case COMPUTER:
 					// Generate a random bet for the computer between 10 and 30
 					Random randomBet = new Random();
-					int computerBet = randomBet.nextInt((30-10)+1) + 10;
+					int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
 					
 					System.out.println("The computers random bet is: " + computerBet);
 					playerList.get(player).setPlayerBet(computerBet);									// use a default bet for the computer
@@ -127,6 +151,14 @@ public class Dealer extends Player{
 		}
 	}
 	
+	/**
+	 * Method to remove the amount the players bet from their total.
+	 * This is done right after betting so it is not available to them for other actions
+	 * such as doubling down.
+	 * 
+	 * @param playerList
+	 * @param player
+	 */
 	public void takeBet(List<Player> playerList, int player) {
 		playerList.get(player).removeMoney(playerList.get(player).getPlayerBet());
 	}

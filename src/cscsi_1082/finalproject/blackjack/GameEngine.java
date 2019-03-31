@@ -14,11 +14,10 @@ package cscsi_1082.finalproject.blackjack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
-import cscsi_1082.finalproject.blackjack.Rank;
-import cscsi_1082.finalproject.blackjack.Player.playerType;			// Import the playerType enum from Player Class
+import cscsi_1082.finalproject.blackjack.Rank;						// Import the Rank enum
+import cscsi_1082.finalproject.blackjack.PlayerType;				// Import the playerType enum
 import cscsi_1082.finalproject.blackjack.Option;					// Import the Option enum
 
 public class GameEngine {
@@ -31,6 +30,8 @@ public class GameEngine {
 	public static final int MAXTOTAL = 21;
 	public static final int DEALERPLAYER = 0;
 	public static final double BLACKJACK_PAYOUT = 2.5;					// Blackjack pays out at 3 to 2.  This is set at 2.5 as we've already removed the original bet from the players money
+	public static final int COMPUTER_MAX_BET = 30;
+	public static final int COMPUTER_MIN_BET = 10;
 	
 	/**
 	 * Constructor for the game Engine.  This will create the dealer and deckShoe
@@ -39,7 +40,7 @@ public class GameEngine {
 	 * @param playerList
 	 */
 	public GameEngine() {
-		dealer = new Dealer("Dealer", playerType.DEALER);
+		dealer = new Dealer("Dealer", PlayerType.DEALER);
 		deckShoe = new Shoe();
 		this.quit = false;
 		this.playerList = new ArrayList<Player>();
@@ -143,14 +144,14 @@ public class GameEngine {
 		String playerName = input.nextLine();
 		
 		// Create the Human Player
-		Player humanPlayer = new Player(playerName, playerType.HUMAN);					// TODO: Need to add some protection if we fail to make a player
+		Player humanPlayer = new Player(playerName, PlayerType.HUMAN);
 		gameEngine.playerList.add(humanPlayer);
 		
 		// Create the computer players if needed
 		if (compPlayers > 0) {
 			for (int player = 0; player < compPlayers; player++) {
 				String compPlayerName = "Computer " + (player + 1);
-				Player compPlayer = new Player(compPlayerName, playerType.COMPUTER);				// TODO: Need to add some protection if we fail to make a player
+				Player compPlayer = new Player(compPlayerName, PlayerType.COMPUTER);
 				gameEngine.playerList.add(compPlayer);
 			}
 		}
@@ -191,7 +192,8 @@ public class GameEngine {
 	/**
 	 * Method to begin the rounds
 	 * 
-	 * Lots of stuff needs to go here
+	 * This is the main game flow logic engine.  This makes all the major calls to other methods
+	 * to control how the game works
 	 */
 	private void playGame() {	
 		// Get the player bets
@@ -231,7 +233,7 @@ public class GameEngine {
 				System.out.println();
 				
 				// Display dealer's Up card
-				this.dealer.displaySingleCard(this.playerList, DEALERPLAYER);
+				this.dealer.displayDealersUpCard(this.playerList, DEALERPLAYER);
 				System.out.println();
 				
 				this.playerList.get(player).displayCards(this.playerList, player);
@@ -367,8 +369,14 @@ public class GameEngine {
 		return newHand;		
 	}
 	
+	/**
+	 * Method to handle the actions after all players have had their turn.
+	 * This method checks for winners, which will in turn pay out the winners
+	 * 
+	 * It will also reset all the necessary variables to get ready for the next round of play
+	 */
 	public void roundOver() {
-		// See if any player won and then reset his stats for the next round
+		// See if any player won and then reset the variables for the next round
 		for (int player = 1; player < this.playerList.size(); player++) {
 			this.checkForWinners(player);
 			System.out.println(this.playerList.get(player).toString());
@@ -385,6 +393,7 @@ public class GameEngine {
 			System.out.println();
 		}
 		this.setRoundOver(false); 
+		
 		// Start a new round
 		this.startTable();
 	}
@@ -638,6 +647,14 @@ public class GameEngine {
 		}
 	}
 	
+	/**
+	 * Method that controls the main computer player decision making process.  It looks at the 
+	 * dealer's up card and determines what the best step it should do is.  The computer will 
+	 * always follow the standard hit/stand chart logic.
+	 * 
+	 * @param player
+	 * @return option the computer should do
+	 */
 	private int computerDecision(int player) {
 		// Get the dealer's upCard
 		Card dealerUpCard = dealer.getDealersUpCard(playerList, DEALERPLAYER);
@@ -751,6 +768,5 @@ public class GameEngine {
 			
 		// Hit anything else
 		return Option.HIT.getOptionValue();
-		
 	}
 }

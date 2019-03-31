@@ -11,14 +11,10 @@
 
 package cscsi_1082.finalproject.blackjack;
 
-
-
 public class Blackjack {
 	
-	
-	
 	/**
-	 * Constructor - calls a private method to start the game
+	 * Constructor
 	 */
 	public Blackjack () {
 		GameEngine.newTable();
@@ -31,6 +27,5 @@ public class Blackjack {
 	 */
 	public static void main(String[] args) {
 		Blackjack gameOfBlackjack = new Blackjack();
-		
 		}
 	}

@@ -55,7 +55,9 @@ public class Card {
 		return rank.getRankValue();
 	}
 
-	
+	/**
+	 * toString method for this Class
+	 */
 	@Override
 	public String toString() {
 		String cardInfo = rank + " of " + suit;

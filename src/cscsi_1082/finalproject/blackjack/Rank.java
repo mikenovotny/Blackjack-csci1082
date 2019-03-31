@@ -1,3 +1,11 @@
+/**
+ * Rank Enum.  This enum give friendly names to card Ranks.
+ * 
+ * @author Mike Novotny
+ * @author Ryan Westling
+ * @version 1.0
+ */
+
 package cscsi_1082.finalproject.blackjack;
 
 public enum Rank {
@@ -13,14 +21,24 @@ public enum Rank {
 	JACK		(10),
 	QUEEN		(10),
 	KING		(10),
-	ACE			(11);
+	ACE			(11);								// Aces will default to being an 11 for ease of relational comparisons.  The game logic will set to 1 if needed
 
-	private final int rankValue;
+	private final int rankValue;					// Instance variable that stores the integer value of each card
 	
+	/**
+	 * Constructor for enum
+	 * 
+	 * @param rankValue
+	 */
 	Rank(int rankValue) {
 		this.rankValue = rankValue;
 	}
-
+	
+	/**
+	 * Method to get the integer value associated with the enum
+	 * 
+	 * @return integer equivalent of rank
+	 */
 	public final int getRankValue() {
 		return rankValue;
 	}
