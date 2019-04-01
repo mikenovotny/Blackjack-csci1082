@@ -18,7 +18,8 @@ import java.util.Scanner;
 
 import cscsi_1082.finalproject.blackjack.Rank;						// Import the Rank enum
 import cscsi_1082.finalproject.blackjack.PlayerType;				// Import the playerType enum
-import cscsi_1082.finalproject.blackjack.Option;					// Import the Option enum
+import cscsi_1082.finalproject.blackjack.PlayOption;				// Import the PlayOption enum
+import cscsi_1082.finalproject.blackjack.StartingOption;			// Import the StartingOption enum
 
 public class GameEngine {
 	
@@ -101,7 +102,6 @@ public class GameEngine {
 	 */
 	public void setQuit() {
 		this.quit = true;
-		this.startTable();
 	}
 	
 	/**
@@ -174,19 +174,21 @@ public class GameEngine {
 	 * @return Nothing
 	 */
 	private void startTable() {
-		// Continue until player is out of money or quits
-		while (this.playerList.get(1).getPlayerMoney() >  0 || this.playerList.get(1).getPlayerBet() > 0 && this.isQuit() == false) {
-			playGame();
+		// Player has no money and no active bet.  Quit
+		if (this.playerList.get(1).getPlayerMoney() <= 0) {
+			System.out.println("You are Broke!  Come again when you have more money!");
+			System.exit(0);		
 		}
 		
-		if(this.isQuit() == true) {
+		// Let player play or quit
+		this.getStartOption();
+		
+		if (this.isQuit() == true) {
 			System.out.println("Thanks for Playing!");
 			System.exit(0);
-		} else {
-			System.out.println("You are Broke!  Come again when you have more money!");
-			System.exit(0);
 		}
 		
+		playGame();
 	}
 	
 	/**
@@ -248,10 +250,10 @@ public class GameEngine {
 				}
 				
 				// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-				int option = this.getOption(player);
+				int option = this.getPlayOption(player);
 
 				// Perform actions player wanted
-				this.processOption(option, player);
+				this.processPlayOption(option, player);
 				
 			}
 		}
@@ -271,10 +273,10 @@ public class GameEngine {
 			}
 			
 			// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-			int option = this.getOption(DEALERPLAYER);
+			int option = this.getPlayOption(DEALERPLAYER);
 
 			// Perform actions player wanted
-			this.processOption(option, DEALERPLAYER);
+			this.processPlayOption(option, DEALERPLAYER);
 		}
 		
 		// Everyone's turn is over.  End the round
@@ -557,7 +559,49 @@ public class GameEngine {
 		}
 	}
 	
-	
+	/**
+	 * Method to get the starting option for the human players.  This gives the player
+	 * the option to bet or quit the game.  Other starting options could be added.
+	 */
+	public void getStartOption() {
+		// Create scanner to get keyboard input
+		Scanner input = new Scanner(System.in);
+		
+		// Initialize option variable for use outside of loops
+		int option = 0;
+		
+		do {
+			// variable to store the chosen option
+			System.out.print("Available options:" +
+							"\n\t1: " + StartingOption.BET + 
+							"\n\t2: " + StartingOption.QUIT +
+							"\nWhat would you like to do? ");
+			option = input.nextInt();
+			input.nextLine();													// Dump buffer
+			if (option < 1 || option > 2) {
+				System.out.println("Invalid Option");
+			}
+		} while (option < 1 || option > 2);
+			
+		/*
+		 *  The following statement will determine enum value that is represented by the int
+		 *  that the customer chose in the previous step.  enum.values() returns an array of the 
+		 *  items declared in the enum in the order they were declared.  Since an array is zero indexed,
+		 *  We want the n - 1 option.
+		 */
+		StartingOption startOption = StartingOption.values()[option - 1];
+		switch(startOption) {
+			// No action needed if player wants to bet
+			case BET:
+				break;
+			case QUIT:		
+				this.setQuit();
+				break;
+			default:
+				System.out.println("Something went wrong in the getStartOption function");
+				System.exit(0);
+		}
+	}
 	
 	/**
 	 * Method to find out what the player wants to do next.  Human players will be asked
@@ -566,38 +610,43 @@ public class GameEngine {
 	 * @param player
 	 * @return option player chose
 	 */
-	private int getOption(int player) {
+	private int getPlayOption(int player) {
 		// Create scanner to get keyboard input
 		Scanner input = new Scanner(System.in);
 		
 		// variable to store the chosen option
 		int option = 0;
+		
 		switch (playerList.get(player).getType()) {
-			case HUMAN:			
-				System.out.print("Available options:" +
-								 "\n\t1: " + Option.HIT + 
-								 "\n\t2: " + Option.STAND + 
-						 		 "\n\t3: " + Option.DOUBLE_DOWN);
-				// Check if the player can split
-				if (playerList.get(player).canSplit(playerList, player)) {
-					System.out.print("\n\t4: " + Option.SPLIT);
-				}
-				System.out.print("\n\t5: " + Option.QUIT + "\n");
-				System.out.print("What would you like to do? ");
-				option = input.nextInt();
+			case HUMAN:		
+				// Input validation loop
+				do {
+					System.out.print("Available options:" +
+									"\n\t1: " + PlayOption.HIT + 
+									"\n\t2: " + PlayOption.STAND + 
+									"\n\t3: " + PlayOption.DOUBLE_DOWN);
+					// Check if the player can split
+					if (playerList.get(player).canSplit(playerList, player)) {
+						System.out.print("\n\t4: " + PlayOption.SPLIT);
+					}
+					System.out.print("\nWhat would you like to do? ");
+					option = input.nextInt();
+					input.nextLine();											// Dump Buffer
+				} while (option < 1 || option > 4);
+				
+				// Input validated.  Exit loop
 				break;
 			case COMPUTER:
 				option = this.computerDecision(player);
 				break;
-			
 			case DEALER:
 				option = this.dealerDecision();
 				break;
-			
 			default:
 				System.out.println("Something went wrong.  I'm trying to get what actions a player should take in the playGame method");
 				System.exit(0);
 		}
+
 		return option;
 	}
 	
@@ -607,14 +656,14 @@ public class GameEngine {
 	 * @param option
 	 * @param player
 	 */
-	private void processOption(int option, int player) {
+	private void processPlayOption(int option, int player) {
 		/*
 		 *  The following statement will determine enum value that is represented by the int
 		 *  that the customer chose in the previous step.  enum.values() returns an array of the 
 		 *  items declared in the enum in the order they were declared.  Since an array is zero indexed,
 		 *  We want the n - 1 option.
 		 */
-		Option playerOption = Option.values()[option - 1];
+		PlayOption playerOption = PlayOption.values()[option - 1];
 		System.out.println("Player: " + this.playerList.get(player).getPlayerName() + " Chose to " + playerOption);
 		// Switch on the enum options.
 		switch (playerOption) {
@@ -638,11 +687,8 @@ public class GameEngine {
 					return;
 				}
 				break;
-			case QUIT:
-				this.setQuit();
-				break;
 			default:
-				System.out.println("Something went wrong.  I was processing options in playGame method!");
+				System.out.println("Something went wrong in the processPlayOption Method!");
 				System.exit(0);
 		}
 	}
@@ -671,7 +717,7 @@ public class GameEngine {
 		
 		// Always split aces
 		if (numberOfAces == 2 && playerList.get(player).getPlayerCards().size() == 2) {
-			return Option.SPLIT.getOptionValue();
+			return PlayOption.SPLIT.getPlayOptionValue();
 		}
 		
 		/*
@@ -681,17 +727,17 @@ public class GameEngine {
 			
 			// If Computer has 19 or better, Stand
 			if (playerList.get(player).getHandTotal() >= 19) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// If Computer has 17 and Dealer is showing 9 or better, hit, else Stand
 			else if (dealerUpCard.getRank().getRankValue() <= Rank.EIGHT.getRankValue() && playerList.get(player).getHandTotal() == 17) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// HIt everything else
 			else {
-				return Option.HIT.getOptionValue();
+				return PlayOption.HIT.getPlayOptionValue();
 			}
 		}
 		
@@ -702,30 +748,30 @@ public class GameEngine {
 			
 			// Stand on everything greater than or equal to 17
 			if (playerList.get(player).getHandTotal() >= 17) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// Stand on any total >= 13 if the dealer is showing a six or below
 			else if (playerList.get(player).getHandTotal() >= 13 && dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// Hit on any total >= 12 and < 17 if the dealer is showing a 7 or above
 			else if (playerList.get(player).getHandTotal() >= 12 && playerList.get(player).getHandTotal() < 17 &&
 					 dealerUpCard.getRank().getRankValue() > Rank.SIX.getRankValue()) {
-				return Option.HIT.getOptionValue();
+				return PlayOption.HIT.getPlayOptionValue();
 			}
 			
 			// if hand total == 12 and dealer is showing a 4, 5, or 6 then stand
 			else if (playerList.get(player).getHandTotal() == 12 && dealerUpCard.getRank().getRankValue() >= Rank.FOUR.getRankValue() &&
 					 dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			
 			}
 		// Hit anything else
-		return Option.HIT.getOptionValue();
+		return PlayOption.HIT.getPlayOptionValue();
 	}
 	/**
 	 * Method to drive the logic behind the dealer's actions with his hand
@@ -751,7 +797,7 @@ public class GameEngine {
 			
 			// If Dealer has 18 or better, Stand
 			if (playerList.get(DEALERPLAYER).getHandTotal() >= 18) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 		}
 		
@@ -762,11 +808,11 @@ public class GameEngine {
 			
 			// Stand on everything greater than or equal to 17
 			if (playerList.get(DEALERPLAYER).getHandTotal() >= 17) {
-				return Option.STAND.getOptionValue();
+				return PlayOption.STAND.getPlayOptionValue();
 			}
 		} 
 			
 		// Hit anything else
-		return Option.HIT.getOptionValue();
+		return PlayOption.HIT.getPlayOptionValue();
 	}
 }

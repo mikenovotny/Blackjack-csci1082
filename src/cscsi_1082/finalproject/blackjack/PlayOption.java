@@ -8,22 +8,21 @@
 
 package cscsi_1082.finalproject.blackjack;
 
-public enum Option {
+public enum PlayOption {
 	HIT				(1),
 	STAND			(2),
 	DOUBLE_DOWN		(3),
-	SPLIT			(4),
-	QUIT			(5);
+	SPLIT			(4);
 	
-	private final int optionValue;				// Instance variable that stores the integer value
+	private final int playOptionValue;				// Instance variable that stores the integer value
 	
 	/**
 	 * Constructor for the enum
 	 * 
 	 * @param optionValue
 	 */
-	Option(int optionValue) {
-		this.optionValue = optionValue;
+	PlayOption(int optionValue) {
+		this.playOptionValue = optionValue;
 	}
 	
 	/**
@@ -31,7 +30,7 @@ public enum Option {
 	 * 
 	 * @return integer value
 	 */
-	public final int getOptionValue() {
-		return optionValue;
+	public final int getPlayOptionValue() {
+		return playOptionValue;
 	}
 }

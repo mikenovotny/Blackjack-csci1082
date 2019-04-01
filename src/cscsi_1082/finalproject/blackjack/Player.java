@@ -265,6 +265,7 @@ public class Player {
 	 * @param player
 	 */
 	public void displayCards(List<Player> playerList, int player) {
+		System.out.println(playerList.get(player).getPlayerName() + "'s Hand:");
 		for (int card = 0; card < playerList.get(player).playerCards.size(); card ++) {
 			System.out.println("Card " + (card + 1) + ": " + playerList.get(player).playerCards.get(card));
 		}
