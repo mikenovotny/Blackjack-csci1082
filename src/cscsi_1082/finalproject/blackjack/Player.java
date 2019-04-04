@@ -273,18 +273,31 @@ public class Player {
 	
 	/**
 	 * Method to determine if the player should be provided the option to split this cards into 
-	 * two hands.  
+	 * two hands.  This method is currently only allowing a single split.  10-K all count as the same
+	 * and can be split
 	 * 
 	 * @param playerList
 	 * @param player
 	 * @return true if both cards are the same rank else false
 	 */
 	public boolean canSplit (List<Player> playerList, int player) {
-			if (playerList.get(player).playerCards.get(0).getRank() == playerList.get(player).playerCards.get(1).getRank()) {
+			if (playerList.get(player).getPlayerCards().size() == 2 && playerList.get(player).playerCards.get(0).getRank().getRankValue() == playerList.get(player).playerCards.get(1).getRank().getRankValue()) {
 				return true;
 			} else {
 				return false;
 			}		
+	}
+	
+	/**
+	 * Method to reset a player's attributes for the start of the next round
+	 */
+	
+	public void resetPlayer(List<Player> playerList, int player) {
+		playerList.get(player).getPlayerCards().removeAll(playerList.get(player).getPlayerCards());				// Clear any cards from thier hand
+		playerList.get(player).setPlayerBet(0); 																// Reset bet to 0
+		playerList.get(player).setTurnOver(false);																// Reset turn over flag
+		playerList.get(player).setHandTotal(0);																	// Set hand Total to zero
+		playerList.get(player).setHasBlackJack(false);															// Set blackjack flag to false
 	}
 
 	/**

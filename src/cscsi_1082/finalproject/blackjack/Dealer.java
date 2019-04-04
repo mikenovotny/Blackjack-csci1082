@@ -121,7 +121,7 @@ public class Dealer extends Player{
 					} while (playerList.get(player).getPlayerBet() <= 0);
 					
 					// Remove the bet from the players total
-					takeBet(playerList, player);
+					this.takeBet(playerList, player);
 					break;
 
 				case COMPUTER:

@@ -164,11 +164,11 @@ public class GameEngine {
 
 	
 	/**
-	 * Method to begin the cycle of rounds
+	 * Method to begin the cycle of rounds.  This method first checks the players has chosen
+	 * to quit or is out of money.  If false, then it gives the player the option to quit or play.
+	 * If they want to play it starts the BlackJack round.
 	 * 
-	 * TODO: This needs a lot of expansion.  Right now it's in a test phase
-	 * 		 This method should have some looping mechanism to keep cycling
-	 * 		 through the playerList and providing the options to the player
+	 * Each round comes back to this method. 
 	 * 
 	 * @param None
 	 * @return Nothing
@@ -347,10 +347,38 @@ public class GameEngine {
 	}
 	
 	/**
-	 * Method to be called when the player can double down.
+	 * Method to allow a player to double down.  A player is only allowed a single card
+	 * in exchange for being able to double their bet.
+	 * 
+	 * @param player
 	 */
-	public void doubleDown() {
-		// TODO Fill in code for doubling
+	public void doubleDown(int player) {
+		/*
+		 * Remove the money from the players total first.  Doubling down is the original bet * 2
+		 * the original bet is already removed from the users total so just remove it again.
+		 */
+		this.dealer.takeBet(playerList, player);
+		
+		// Update the bet amount to reflect the new total
+		this.playerList.get(player).setPlayerBet(this.playerList.get(player).getPlayerBet() * 2);
+		
+
+		// Give the user one more card
+		this.playerList.get(player).setPlayerCards(this.hit());					// Add a new card to players Hand
+		this.getSumOfCards(player);												// Update the players hand total	
+		
+		// Display the updated cards
+		this.playerList.get(player).displayCards(this.playerList, player);
+		
+		// Check if they have busted
+		if (this.checkIfBusted(player)) {
+			System.out.println("\nOH NO " + this.playerList.get(player).getPlayerName() + "! You've busted!\nYour Total is: " + this.playerList.get(player).getHandTotal());
+		} else {
+			System.out.println("\n" + this.playerList.get(player).getPlayerName() + "'s Total is: " + this.playerList.get(player).getHandTotal());
+		}
+		
+		// Turn is over
+		this.playerList.get(player).setTurnOver(true);		
 	}
 	
 	/**
@@ -360,6 +388,8 @@ public class GameEngine {
 	 * 
 	 * The expectation would be that the function calling this increments a counter for how many hands
 	 * the players has so they can be iterate through later.
+	 * 
+	 * TODO: Splitting is going to take some thought.  It will take quite an overhaul to support splitting hands
 	 * 
 	 * @param playerCards
 	 * @return new list of cards
@@ -381,18 +411,11 @@ public class GameEngine {
 		// See if any player won and then reset the variables for the next round
 		for (int player = 1; player < this.playerList.size(); player++) {
 			this.checkForWinners(player);
-			System.out.println(this.playerList.get(player).toString());
 		}
-		System.out.println(this.playerList.get(DEALERPLAYER).toString());
+		
+		// Reset the players for the next round
 		for (int player = 0; player < this.playerList.size(); player++) {
-			this.playerList.get(player).getPlayerCards().removeAll(this.playerList.get(player).getPlayerCards());		// Clear any cards from thier hand
-			this.playerList.get(player).setPlayerBet(0); 																// Reset bet to 0
-			this.playerList.get(player).setTurnOver(false);																// Reset turn over flag
-			this.playerList.get(player).setHandTotal(0);																// Set hand Total to zero
-			this.playerList.get(player).setHasBlackJack(false);															// Set blackjack flag to false
-			System.out.println();
-			System.out.println(this.playerList.get(player).toString());	
-			System.out.println();
+			this.playerList.get(player).resetPlayer(playerList, player);
 		}
 		this.setRoundOver(false); 
 		
@@ -424,7 +447,6 @@ public class GameEngine {
 		
 		// Player won 
 		else if (this.playerList.get(player).getHandTotal() <= MAXTOTAL && this.playerList.get(player).getHandTotal() > this.playerList.get(DEALERPLAYER).getHandTotal()) {
-			this.playerList.get(player).addMoney(playerList.get(player).getPlayerBet());
 			// Pay the player
 			this.dealer.payPlayer(playerList, player);
 			System.out.println(this.playerList.get(player).getPlayerName() + " WON! You got $" + this.playerList.get(player).getPlayerBet() + 
@@ -434,7 +456,6 @@ public class GameEngine {
 		
 		// Player pushed
 		else if(this.playerList.get(player).getHandTotal() <= MAXTOTAL && this.playerList.get(player).getHandTotal() == this.playerList.get(DEALERPLAYER).getHandTotal()) {
-			// TODO Get some way to track that they pushed and didn't straight up lose
 			boolean pushed = true;
 			this.dealer.payPlayer(playerList, player, pushed);
 			System.out.println(this.playerList.get(player).getPlayerName() + " Pushed!" + "\nYour total money is $" + this.playerList.get(player).getPlayerMoney());
@@ -624,14 +645,26 @@ public class GameEngine {
 					System.out.print("Available options:" +
 									"\n\t1: " + PlayOption.HIT + 
 									"\n\t2: " + PlayOption.STAND + 
-									"\n\t3: " + PlayOption.DOUBLE_DOWN);
-					// Check if the player can split
-					if (playerList.get(player).canSplit(playerList, player)) {
-						System.out.print("\n\t4: " + PlayOption.SPLIT);
-					}
-					System.out.print("\nWhat would you like to do? ");
+									"\n\t3: " + PlayOption.DOUBLE_DOWN +
+									"\n\t4: " + PlayOption.SPLIT + 
+									"\nWhat would you like to do? ");
 					option = input.nextInt();
 					input.nextLine();											// Dump Buffer
+					
+					// Check if the player has enough funds to double down.
+					if (option == 3 && !this.playerList.get(player).checkFunds(this.playerList.get(player).getPlayerBet() * 2)) {
+						System.out.println("Sorry, You do not have enough money to double down.");
+						// Reset option to zero so we stay in the loop
+						option = 0;	
+					}
+
+					// Check if the player can split
+					if (option == 4 && !this.playerList.get(player).canSplit(this.playerList, player)) {
+						System.out.println("Sorry, You cannot split this hand.  Cards must be a pair.");
+						// Reset option to zero so we stay in the loop
+						option = 0;												
+					}
+					
 				} while (option < 1 || option > 4);
 				
 				// Input validated.  Exit loop
@@ -675,17 +708,11 @@ public class GameEngine {
 				this.stand(player);
 				break;
 			case DOUBLE_DOWN:
-				//this.doubleDown();
-				System.out.println("Need to implement double down method");
+				this.doubleDown(player);
 				break;
 			case SPLIT:
-				// Check if the player can split
-				if (this.playerList.get(player).canSplit(this.playerList, player)) {
-					System.out.println("This is an available action");
-				} else {
-					System.out.println("INVALID OPTION");
-					return;
-				}
+				// TODO: Call some function to process the split.
+				
 				break;
 			default:
 				System.out.println("Something went wrong in the processPlayOption Method!");
