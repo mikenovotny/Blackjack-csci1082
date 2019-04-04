@@ -20,8 +20,8 @@ public class Dealer extends Player{
 	 * @param playerName
 	 * @param type
 	 */
-	public Dealer(String playerName, PlayerType type) {
-		super(playerName, type);
+	public Dealer(String playerName, PlayerType type, int seat) {
+		super(playerName, type, seat);
 	}
 
 	/**
@@ -47,8 +47,8 @@ public class Dealer extends Player{
 	 * @param playerList
 	 * @param dealerIndex
 	 */
-	public void displayDealersUpCard(List<Player> playerList, int dealerIndex) {
-		System.out.println("Dealer is showing a " + playerList.get(dealerIndex).getPlayerCards().get(0).getRank() + " of " + playerList.get(dealerIndex).getPlayerCards().get(0).getSuit());
+	public void displayDealersUpCard(Player dealer) {
+		System.out.println("Dealer is showing a " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getRank() + " of " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getSuit());
 	}
 	
 	/**
@@ -58,8 +58,8 @@ public class Dealer extends Player{
 	 * @param dealerIndex
 	 * @return first Card in dealer's hand
 	 */
-	public Card getDealersUpCard(List<Player> playerList, int dealerIndex) {
-		return playerList.get(dealerIndex).getPlayerCards().get(0);
+	public Card getDealersUpCard(Player dealer) {
+		return dealer.getPlayerHands().get(0).getPlayerHand().get(0);
 	}
 	
 	/**
@@ -68,12 +68,12 @@ public class Dealer extends Player{
 	 * @param playerList
 	 * @param player
 	 */
-	public void payPlayer(List<Player> playerList, int player) {
-		if (playerList.get(player).getHasBlackJack()) {
-			playerList.get(player).addMoney((playerList.get(player).getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
+	public void payPlayer(Player currentPlayer) {
+		if (currentPlayer.getHasBlackJack()) {
+			currentPlayer.addMoney(currentPlayer, (currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
 		}else {
 			
-		playerList.get(player).addMoney(playerList.get(player).getPlayerBet() * 2);
+		currentPlayer.addMoney(currentPlayer, currentPlayer.getPlayerBet() * 2);
 		}
 	}
 	
@@ -84,62 +84,59 @@ public class Dealer extends Player{
 	 * @param player
 	 * @param pushed
 	 */
-	public void payPlayer(List<Player> playerList, int player, boolean pushed) {
-		playerList.get(player).addMoney(playerList.get(player).getPlayerBet());
+	public void payPlayer(Player currentPlayer, boolean pushed) {
+		currentPlayer.addMoney(currentPlayer, currentPlayer.getPlayerBet());
 	}
 	
 	/** 
 	 * Method to get the bet amount from a player.  Human players will be asked.  
 	 * Computer players bet a random amount.  Dealer doesn't bet.
 	 */
-	public void getBets(List<Player> playerList) {
+	public void getBets(Player currentPlayer) {
 		// Create scanner to get keyboard input
 		Scanner input = new Scanner(System.in);
 		
-		// Loop through each player and get the bets
-		for (int player = 1; player < playerList.size(); player++) {
-			switch (playerList.get(player).getType()) {
-				case HUMAN:
-					do {
-						System.out.print("Please enter your bet amount: $");
-						double bet = input.nextDouble();
+		switch (currentPlayer.getType()) {
+			case HUMAN:
+				do {
+					System.out.print(currentPlayer.getPlayerName() + " enter your bet amount: $");
+					double bet = input.nextDouble();
+					
+					if (currentPlayer.checkFunds(currentPlayer, bet)) {
+						System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
+											"You have: $" + currentPlayer.getPlayerMoney());
 						
-						if (!playerList.get(player).checkFunds(bet)) {
-							System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
-												"You have: $" + playerList.get(player).getPlayerMoney());
-							
-							// Set player bet to zero to ensure we stay in the loop
-							playerList.get(player).setPlayerBet(0);
-						} else {
-						playerList.get(player).setPlayerBet(bet);
-						}
-						
-						// Dump buffer
-						if (input.hasNextLine()) {
-							input.nextLine();
-						}
-					} while (playerList.get(player).getPlayerBet() <= 0);
-					
-					// Remove the bet from the players total
-					this.takeBet(playerList, player);
-					break;
-
-				case COMPUTER:
-					// Generate a random bet for the computer between 10 and 30
-					Random randomBet = new Random();
-					int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
-					
-					System.out.println("The computers random bet is: " + computerBet);
-					playerList.get(player).setPlayerBet(computerBet);									// use a default bet for the computer
-					
-					// Computer doesn't have enough money.  Set his bet to the remainder of his money
-					if (!playerList.get(player).checkFunds(playerList.get(player).getPlayerBet())) {
-						playerList.get(player).setPlayerBet(playerList.get(player).getPlayerMoney());
+						// Set player bet to zero to ensure we stay in the loop
+						currentPlayer.setPlayerBet(0);
+					} else {
+					currentPlayer.setPlayerBet(bet);
 					}
-					// Remove the bet from the players total
-					takeBet(playerList, player);
-					break;
+					
+					// Dump buffer
+					if (input.hasNextLine()) {
+						input.nextLine();
+					}
+				} while (currentPlayer.getPlayerBet() <= 0);
 				
+				// Remove the bet from the players total
+				this.takeBet(currentPlayer);
+				break;
+			case COMPUTER:
+				// Generate a random bet for the computer between 10 and 30
+				Random randomBet = new Random();
+				int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
+				
+				System.out.println("The computers random bet is: " + computerBet);
+				currentPlayer.setPlayerBet(computerBet);									// use a default bet for the computer
+				
+				// Computer doesn't have enough money.  Set his bet to the remainder of his money
+				if (currentPlayer.checkFunds(currentPlayer, currentPlayer.getPlayerBet())) {
+					currentPlayer.setPlayerBet(currentPlayer.getPlayerMoney());
+				}
+				// Remove the bet from the players total
+				takeBet(currentPlayer);
+				break;
+			
 				// The dealer doesn't bet.  Do nothing.
 				case DEALER:
 					break;
@@ -147,7 +144,6 @@ public class Dealer extends Player{
 				default:
 					System.out.println("Something went wrong!.  I am trying to get the type of player in the playGame function!");
 					System.exit(0);
-			}
 		}
 	}
 	
@@ -159,7 +155,7 @@ public class Dealer extends Player{
 	 * @param playerList
 	 * @param player
 	 */
-	public void takeBet(List<Player> playerList, int player) {
-		playerList.get(player).removeMoney(playerList.get(player).getPlayerBet());
+	public void takeBet(Player currentPlayer) {
+		currentPlayer.removeMoney(currentPlayer.getPlayerBet());
 	}
 }

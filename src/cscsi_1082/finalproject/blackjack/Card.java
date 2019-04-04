@@ -48,11 +48,11 @@ public class Card {
 	/**
 	 * Method to get the integer value of a Rank
 	 * 
-	 * @param rank
+	 * @param Card
 	 * @return integer value equivalent of card rank
 	 */
-	public int getCardRankValue(Rank rank) {
-		return rank.getRankValue();
+	public int getCardRankValue() {
+		return this.getRank().getRankValue();
 	}
 
 	/**

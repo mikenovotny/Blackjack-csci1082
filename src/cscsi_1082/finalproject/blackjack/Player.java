@@ -16,12 +16,12 @@ import cscsi_1082.finalproject.blackjack.PlayerType;
 public class Player {
 	
 	private String playerName;
-	private List<Card> playerCards;											// ArrayList to hold cards in players hand
+	private List<PlayerHands> playerHands;									// ArrayList to hold the hands a player has
 	private double playerMoney;											
 	private PlayerType type;												// Human or Computer Player
+	private int seat;
 	private double playerBet;
 	private boolean turnOver;
-	private int numHands;
 	private int handTotal;													// Value to hold the sum of their hand
 	private boolean hasBlackJack;
 	
@@ -32,14 +32,13 @@ public class Player {
 	 * @param playerName
 	 * @param type
 	 */
-	public Player(String playerName, PlayerType type) {
+	public Player(String playerName, PlayerType type, int seat) {
 		this.playerName = playerName;
 		this.type = type;
-		this.playerCards = new ArrayList<Card>();
-		this.playerCards.removeAll(playerCards);
+		this.playerHands = new ArrayList<PlayerHands>();
+		this.createFirstHand();												// Create default hand object		
 		this.playerMoney = 500;												// Player starts out with $500
 		this.turnOver = false;
-		this.numHands = 1;
 		this.handTotal = 0;
 		this.hasBlackJack = false;
 	}
@@ -50,7 +49,7 @@ public class Player {
 	 * @return playerNmae String
 	 */
 	public String getPlayerName() {
-		return playerName;
+		return this.playerName;
 	}
 	
 	/**
@@ -63,23 +62,21 @@ public class Player {
 	}
 	
 	/**
-	 * Method to get a card from the player's Card ArrayList
-	 * An index is required to get the element
-	 * 
-	 * @param index
-	 * @return Card from player's ArrayList
+	 * Method to return the hands the player has
+	 *
+	 * @return ArrayList holding the players hands
 	 */
-	public List<Card> getPlayerCards() {
-		return this.playerCards;
+	public List<PlayerHands> getPlayerHands() {
+		return this.playerHands;
 	}
 	
-	/** 
-	 * Method to add a card to the player's Card ArrayList
+	/**
+	 * Method to add a new hand to a player
 	 * 
-	 * @param card
+	 * @param hand
 	 */
-	public void setPlayerCards(Card card) {
-		this.playerCards.add(card);
+	public void addPlayerHand(PlayerHands hand) {
+		this.playerHands.add(hand);
 	}
 	
 	/**
@@ -88,7 +85,7 @@ public class Player {
 	 * @return money player has remaining
 	 */
 	public double getPlayerMoney() {
-		return playerMoney;
+		return this.playerMoney;
 	}
 	
 	/** 
@@ -109,7 +106,7 @@ public class Player {
 	 * @return COMPUTER for computer player
 	 */
 	public PlayerType getType() {
-		return type;
+		return this.type;
 	}
 	
 	/**
@@ -127,7 +124,7 @@ public class Player {
 	 * @return amount player has bet
 	 */
 	public double getPlayerBet() {
-		return playerBet;
+		return this.playerBet;
 	}
 	
 	/**
@@ -146,7 +143,7 @@ public class Player {
 	 * @return true if turn is over
 	 */
 	public boolean isTurnOver() {
-		return turnOver;
+		return this.turnOver;
 	}
 
 	/**
@@ -158,42 +155,12 @@ public class Player {
 	}
 	
 	/**
-	 * Method to reset all player's turnOver to false for the next round
-	 * 
-	 * @param playerList
-	 */
-	public void resetTurnOver(List<Player> playerList) {
-		for (int player = 0; player < playerList.size(); player++) {
-			playerList.get(player).setTurnOver(false);
-		}
-	}
-
-	/**
-	 * Method to get the number of Hands a player has.
-	 * This is used when a player splits
-	 *
-	 * @return integer representing number of hands
-	 */
-	public int getNumHands() {
-		return numHands;
-	}
-
-	/**
-	 * Method to set the number of hands a player has
-	 * 
-	 * @param numHands
-	 */
-	public void setNumHands(int numHands) {
-		this.numHands = numHands;
-	}
-	
-	/**
 	 * Method to get the value of a players hand
 	 * 
 	 * @return integer value of the players hand
 	 */
 	public int getHandTotal() {
-		return handTotal;
+		return this.handTotal;
 	}
 
 	/**
@@ -211,7 +178,7 @@ public class Player {
 	 * @return true if player has blackjack else false
 	 */
 	public boolean getHasBlackJack() {
-		return hasBlackJack;
+		return this.hasBlackJack;
 	}
 
 	/**
@@ -228,7 +195,7 @@ public class Player {
 	 * 
 	 * @param amount of money to add to players total
 	 */
-	public void addMoney(double amount) {
+	public void addMoney(Player currentPlayer, double amount) {
 		this.setPlayerMoney(this.getPlayerMoney() + amount);
 	}
 	
@@ -238,12 +205,22 @@ public class Player {
 	 * @param amount
 	 * @return true if they have enough money else false
 	 */
-	public boolean checkFunds(double amount) {
-		if (this.getPlayerMoney() - amount < 0) {									
+	public boolean checkFunds(Player currentPlayer, double amount) {
+		if (currentPlayer.getPlayerMoney() - amount < 0) {									
 			return false;
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * Method to add a default hand object to the player
+	 */
+	public void createFirstHand() {
+		// Create a default hand
+		List<Card> firstHand = new ArrayList<Card>();
+		PlayerHands firstPlayerHand = new PlayerHands(firstHand);
+		this.addPlayerHand(firstPlayerHand);
 	}
 	
 	/**
@@ -259,45 +236,16 @@ public class Player {
 	}
 	
 	/**
-	 * Method to display the players Cards in his hand
-	 * 
-	 * @param playerList
-	 * @param player
-	 */
-	public void displayCards(List<Player> playerList, int player) {
-		System.out.println(playerList.get(player).getPlayerName() + "'s Hand:");
-		for (int card = 0; card < playerList.get(player).playerCards.size(); card ++) {
-			System.out.println("Card " + (card + 1) + ": " + playerList.get(player).playerCards.get(card));
-		}
-	}
-	
-	/**
-	 * Method to determine if the player should be provided the option to split this cards into 
-	 * two hands.  This method is currently only allowing a single split.  10-K all count as the same
-	 * and can be split
-	 * 
-	 * @param playerList
-	 * @param player
-	 * @return true if both cards are the same rank else false
-	 */
-	public boolean canSplit (List<Player> playerList, int player) {
-			if (playerList.get(player).getPlayerCards().size() == 2 && playerList.get(player).playerCards.get(0).getRank().getRankValue() == playerList.get(player).playerCards.get(1).getRank().getRankValue()) {
-				return true;
-			} else {
-				return false;
-			}		
-	}
-	
-	/**
 	 * Method to reset a player's attributes for the start of the next round
 	 */
 	
-	public void resetPlayer(List<Player> playerList, int player) {
-		playerList.get(player).getPlayerCards().removeAll(playerList.get(player).getPlayerCards());				// Clear any cards from thier hand
-		playerList.get(player).setPlayerBet(0); 																// Reset bet to 0
-		playerList.get(player).setTurnOver(false);																// Reset turn over flag
-		playerList.get(player).setHandTotal(0);																	// Set hand Total to zero
-		playerList.get(player).setHasBlackJack(false);															// Set blackjack flag to false
+	public void resetPlayer(Player currentPlayer) {
+		currentPlayer.playerHands.removeAll(currentPlayer.getPlayerHands());
+		currentPlayer.createFirstHand(); 																// Create default hand object
+		currentPlayer.setPlayerBet(0); 																	// Reset bet to 0
+		currentPlayer.setTurnOver(false);																// Reset turn over flag
+		currentPlayer.setHandTotal(0);																	// Set hand Total to zero
+		currentPlayer.setHasBlackJack(false);															// Set blackjack flag to false
 	}
 
 	/**
@@ -305,8 +253,8 @@ public class Player {
 	 */
 	@Override
 	public String toString() {
-		return "Player [playerName=" + playerName + ", playerCards=" + playerCards + ", playerMoney=" + playerMoney
-				+ ", type=" + type + ", playerBet=" + playerBet + ", turnOver=" + turnOver + ", numHands=" + numHands
+		return "Player [playerName=" + playerName + ", playerHands=" + playerHands + ", playerMoney=" + playerMoney
+				+ ", type=" + type + ", playerBet=" + playerBet + ", turnOver=" + turnOver 
 				+ ", handTotal=" + handTotal + ", hasBlackJack=" + hasBlackJack + "]";
 	}
 }
