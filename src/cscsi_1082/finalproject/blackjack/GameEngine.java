@@ -117,7 +117,7 @@ public class GameEngine {
 	}
 	
 	/**
-	 * Method to set THEDEALER Object
+	 * Method to set THEDEALER Object 
 	 * 
 	 * @param index
 	 */

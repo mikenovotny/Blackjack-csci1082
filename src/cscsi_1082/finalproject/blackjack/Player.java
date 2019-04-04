@@ -213,7 +213,7 @@ public class Player {
 	}
 	
 	/**
-	 * Overloaded method to check for funds when Doubling down
+	 * Overloaded method to check for funds when Doubling down 
 	 * 
 	 * @param currentPlayer
 	 * @param option must be DOUBLE_DOWN

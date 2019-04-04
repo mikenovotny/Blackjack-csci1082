@@ -6,7 +6,7 @@
  * @version 1.0
  */
 
-package cscsi_1082.finalproject.blackjack;
+package cscsi_1082.finalproject.blackjack; 
 
 public enum Suit {
     SPADES, 

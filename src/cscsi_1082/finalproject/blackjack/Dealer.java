@@ -40,7 +40,7 @@ public class Dealer extends Player{
 	}	
 	
 	/**
-	 * Method to display the dealer's Up card to the players.
+	 * Method to display the dealer's Up card to the players. 
 	 * This method is somewhat redundant to getDealersUpCard but is done this way so it's easier to 
 	 * just call this method versus having to make extra code to display it after getting it each time.
 	 * 
