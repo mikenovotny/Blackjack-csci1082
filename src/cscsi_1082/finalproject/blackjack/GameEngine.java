@@ -26,11 +26,12 @@ public class GameEngine {
 	private Dealer dealer;
 	private Shoe deckShoe;
 	private boolean quit;
-	private List<Player> playerList;								// Declare array to hold player list
+	private List<Player> playerList;									// Declare array to hold player list
 	private boolean roundOver;
 	private boolean isMutable;
+	private int numHumanPlayers;
+	public static Player THEDEALER;										// Static Constant to the Dealer Player Object
 	public static final int MAXTOTAL = 21;
-	public static int DEALERPLAYER = 0;
 	public static final double BLACKJACK_PAYOUT = 2.5;					// Blackjack pays out at 3 to 2.  This is set at 2.5 as we've already removed the original bet from the players money
 	public static final int COMPUTER_MAX_BET = 30;
 	public static final int COMPUTER_MIN_BET = 10;
@@ -47,6 +48,8 @@ public class GameEngine {
 		this.quit = false;
 		this.playerList = new ArrayList<Player>();
 		this.roundOver = false;
+		this.isMutable = true;
+		this.numHumanPlayers = 0;
 	}
 	
 
@@ -114,15 +117,16 @@ public class GameEngine {
 	}
 	
 	/**
-	 * Method to set the DEALERPLAYER index
+	 * Method to set THEDEALER Object
+	 * 
 	 * @param index
 	 */
-	public void setDealerIndex() {
+	public void setDealerObject() {
 		if (this.isMutable) {
-			GameEngine.DEALERPLAYER = this.playerList.size() - 1;
+			GameEngine.THEDEALER = this.playerList.get(this.playerList.size() - 1);
 			this.setMutable(false);
 		} else {
-			System.out.println("ERROR! DEALERPLAYER is not mutable!");
+			System.out.println("ERROR! THEDEALER is not mutable!");
 		}
 	}
 	
@@ -169,6 +173,7 @@ public class GameEngine {
 					String playerName = input.nextLine();
 					Player humanPlayer = new Player(playerName, PlayerType.HUMAN, newSeat);
 					this.playerList.add(humanPlayer);
+					this.numHumanPlayers++;
 					newSeat++;
 					break;
 				case 'c':
@@ -189,7 +194,7 @@ public class GameEngine {
 		
 		// Create a constant pointer to the dealer:
 		this.setMutable(true);
-		this.setDealerIndex();
+		this.setDealerObject();
 		
 		// Start the first round
 		this.startRound();
@@ -208,21 +213,25 @@ public class GameEngine {
 	 * @return Nothing
 	 */
 	private void startRound() {
+		// Create a temporary list to store players that need to be removed from the main playerList		
+		List<Player> playersToRemove = new ArrayList<Player>();
 		
+		// Loop through the players to see if the game should start
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case COMPUTER:
 					// Computer player has no money, remove them from table
 					if (currentPlayer.getPlayerMoney() <= 0) {
 						System.out.println(currentPlayer.getPlayerName() + " is out of money!  They have left the table.");
-						this.playerList.remove(currentPlayer);
+						playersToRemove.add(currentPlayer);
 					}
 					break;
 				case HUMAN: 
 					// Player has no money.  Quit
 					if (currentPlayer.getPlayerMoney() <= 0) {
 						System.out.println("Sorry " + currentPlayer.getPlayerName() + " !  You are Broke!  Come again when you have more money!");
-						System.exit(0);
+						playersToRemove.add(currentPlayer);
+						this.numHumanPlayers--;
 					} else {
 						// Let player play or quit
 						this.getStartOption(currentPlayer);
@@ -230,7 +239,9 @@ public class GameEngine {
 					
 					if (this.isQuit() == true) {
 						System.out.println("Thanks for Playing!");
-						System.exit(0);
+						System.out.println(currentPlayer.getPlayerName() + " has left the table.");
+						playersToRemove.add(currentPlayer);
+						this.numHumanPlayers--;
 					}
 					break;
 				case DEALER:
@@ -240,7 +251,19 @@ public class GameEngine {
 					System.exit(0);						
 			}
 		}
-		playGame();
+		
+		// Remove players if needed
+		if (playersToRemove.size() > 0) {
+			this.playerList.removeAll(playersToRemove);
+		}
+		
+		// Check if there are no more human players left in the game
+		if (this.numHumanPlayers <= 0) {
+			System.out.println("All human players left or are out of money.  Ending Game");
+			System.exit(0);
+		} else {		
+			playGame();
+		}
 	}
 	
 	/**
@@ -300,7 +323,7 @@ public class GameEngine {
 						System.out.println();
 				
 						// Display dealer's Up card
-						this.dealer.displayDealersUpCard(this.playerList.get(DEALERPLAYER));
+						this.dealer.displayDealersUpCard(THEDEALER);
 						System.out.println();
 				
 						currentPlayer.getPlayerHands().get(0).displayPlayerHand(currentPlayer.getPlayerHands().get(0));
@@ -487,7 +510,7 @@ public class GameEngine {
 				}
 		
 				// Dealer Busted, everyone wins that didn't bust
-				else if (currentPlayer.getHandTotal() <= MAXTOTAL && this.playerList.get(DEALERPLAYER).getHandTotal() > MAXTOTAL) {
+				else if (currentPlayer.getHandTotal() <= MAXTOTAL && THEDEALER.getHandTotal() > MAXTOTAL) {
 					// Pay the player
 					this.dealer.payPlayer(currentPlayer);
 					System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
@@ -495,7 +518,7 @@ public class GameEngine {
 				}		
 		
 				// Player beat Dealer 
-				else if (currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() > this.playerList.get(DEALERPLAYER).getHandTotal()) {
+				else if (currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() > THEDEALER.getHandTotal()) {
 					// Pay the player
 					this.dealer.payPlayer(currentPlayer);
 					System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
@@ -503,7 +526,7 @@ public class GameEngine {
 				} 
 		
 				// Player pushed
-				else if(currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() == this.playerList.get(DEALERPLAYER).getHandTotal()) {
+				else if(currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() == THEDEALER.getHandTotal()) {
 					this.dealer.payPlayer(currentPlayer, true);
 					System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
 				}
@@ -704,7 +727,7 @@ public class GameEngine {
 					input.nextLine();											// Dump Buffer
 					
 					// Check if the player has enough funds to double down.
-					if (option == 3 && !currentPlayer.checkFunds(currentPlayer, currentPlayer.getPlayerBet() * 2)) {
+					if (option == 3 && !currentPlayer.checkFunds(currentPlayer, PlayOption.DOUBLE_DOWN)) {
 						System.out.println("Sorry, You do not have enough money to double down.");
 						// Reset option to zero so we stay in the loop
 						option = 0;	
@@ -782,7 +805,7 @@ public class GameEngine {
 	 */
 	private int computerDecision(Player currentPlayer) {
 		// Get the dealer's upCard
-		Card dealerUpCard = dealer.getDealersUpCard(this.playerList.get(DEALERPLAYER));
+		Card dealerUpCard = dealer.getDealersUpCard(THEDEALER);
 				
 		// Determine if computer has any aces
 		int numberOfAces = 0;

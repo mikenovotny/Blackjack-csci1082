@@ -101,8 +101,9 @@ public class Dealer extends Player{
 				do {
 					System.out.print(currentPlayer.getPlayerName() + " enter your bet amount: $");
 					double bet = input.nextDouble();
+					currentPlayer.setPlayerBet(bet);
 					
-					if (currentPlayer.checkFunds(currentPlayer, bet)) {
+					if (!currentPlayer.checkFunds(currentPlayer)) {
 						System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
 											"You have: $" + currentPlayer.getPlayerMoney());
 						
@@ -130,7 +131,7 @@ public class Dealer extends Player{
 				currentPlayer.setPlayerBet(computerBet);									// use a default bet for the computer
 				
 				// Computer doesn't have enough money.  Set his bet to the remainder of his money
-				if (currentPlayer.checkFunds(currentPlayer, currentPlayer.getPlayerBet())) {
+				if (!currentPlayer.checkFunds(currentPlayer)) {
 					currentPlayer.setPlayerBet(currentPlayer.getPlayerMoney());
 				}
 				// Remove the bet from the players total

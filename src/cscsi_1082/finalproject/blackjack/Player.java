@@ -205,12 +205,32 @@ public class Player {
 	 * @param amount
 	 * @return true if they have enough money else false
 	 */
-	public boolean checkFunds(Player currentPlayer, double amount) {
-		if (currentPlayer.getPlayerMoney() - amount < 0) {									
+	public boolean checkFunds(Player currentPlayer) {
+		if (currentPlayer.getPlayerMoney() - currentPlayer.getPlayerBet() < 0) {									
 			return false;
-		} else {
-			return true;
 		}
+		return true;
+	}
+	
+	/**
+	 * Overloaded method to check for funds when Doubling down
+	 * 
+	 * @param currentPlayer
+	 * @param option must be DOUBLE_DOWN
+	 * @return true if they have enough money to double the bet
+	 */
+	public boolean checkFunds(Player currentPlayer, PlayOption option) {
+		// Only allow this to be called with the option DOUBLE_DOWN
+		if (option != PlayOption.DOUBLE_DOWN) {
+			System.out.println("Invalid Option!  This only supports DOUBLE_DOWN");
+			return false;
+		}
+		
+		// Check if the player has the funds to double his bet
+		if (currentPlayer.getPlayerMoney() - (currentPlayer.getPlayerBet() * 2) < 0 ) {									
+			return false;
+		}
+		return true;
 	}
 	
 	/**
