@@ -2,7 +2,6 @@
  * Rank Enum.  This enum give friendly names to card Ranks.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 

@@ -6,7 +6,6 @@
  * and deckShoe.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -43,7 +42,7 @@ public class GameEngine {
 	 * @param playerList
 	 */
 	public GameEngine() {
-		dealer = new Dealer("Dealer", PlayerType.DEALER, 0);
+		dealer = new Dealer();
 		deckShoe = new Shoe();
 		this.quit = false;
 		this.playerList = new ArrayList<Player>();
@@ -188,7 +187,7 @@ public class GameEngine {
 					break;
 			} 
 		} while (newSeat < 8);
-			
+		
 		// Add the dealer to the playerList.
 		this.playerList.add(this.dealer);	
 		
@@ -387,7 +386,7 @@ public class GameEngine {
 			// Loop through the player list, starting with the human player (element 1) and deal a card
 			for (Player currentPlayer : this.playerList) {
 				// Get the top cards from the deck and add the card to the player's hand
-				currentPlayer.getPlayerHands().get(0).addCard(this.dealer.dealCard(this.deckShoe));
+				currentPlayer.getPlayerHands().get(0).addCard(this.deckShoe.dealCard());
 				
 				// the second card has just been dealt.  Update the players hand total
 				if (cardsPerPlayer > 0) {
@@ -404,7 +403,7 @@ public class GameEngine {
 	 * @return another Card
 	 */
 	public Card hit() {
-		return this.dealer.dealCard(this.deckShoe);
+		return this.deckShoe.dealCard();
 	}
 	
 	/**
@@ -754,7 +753,6 @@ public class GameEngine {
 				System.out.println("Something went wrong.  I'm trying to get what actions a player should take in the playGame method");
 				System.exit(0);
 		}
-
 		return option;
 	}
 	

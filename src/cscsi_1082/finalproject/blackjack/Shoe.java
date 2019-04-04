@@ -4,7 +4,6 @@
  * provides the ability to get cards from the deckShoe.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -97,6 +96,20 @@ public class Shoe {
 		return false;
 	}
 	
+	/**
+	 * This method deals a card to Player or the dealer.  This method first
+	 * checks if the deckShoe is empty.  If True, it re-populates the deckShoe.
+	 * Then it returns the first card from the deckShoe ArrayList. 
+	 * 
+	 * @param deckShoe
+	 * @return a Card
+	 */
+	public Card dealCard() {
+		if (this.isEmpty()) {
+			this.createDeckShoe();
+		}
+		return this.getNextCard();
+	}	
 	/**
 	 * Method to get the first Card element from the list.  This is the
 	 * equivalent to dealing the top card from the deck.  This method

@@ -2,7 +2,6 @@
  * Card class is responsible for tracking the suit and rank of each Card
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 

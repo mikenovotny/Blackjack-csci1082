@@ -3,7 +3,6 @@
  * their bets, and the type of player
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -41,6 +40,7 @@ public class Player {
 		this.turnOver = false;
 		this.handTotal = 0;
 		this.hasBlackJack = false;
+		this.seat = seat;
 	}
 	
 	/**
@@ -188,6 +188,24 @@ public class Player {
 	 */
 	public void setHasBlackJack(boolean hasBlackJack) {
 		this.hasBlackJack = hasBlackJack;
+	}
+
+	/**
+	 * Method to get a players seat index	
+	 * 
+	 * @return seat index
+	 */
+	public int getSeat() {
+		return seat;
+	}
+
+	/**
+	 * Method to set a players seat index
+	 * 
+	 * @param seat
+	 */
+	public void setSeat(int seat) {
+		this.seat = seat;
 	}
 
 	/**

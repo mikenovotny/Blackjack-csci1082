@@ -2,13 +2,11 @@
  * Dealer class extends player class.  Dealer is responsible for dealing cards
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
 package cscsi_1082.finalproject.blackjack;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import cscsi_1082.finalproject.blackjack.PlayerType;
@@ -20,25 +18,10 @@ public class Dealer extends Player{
 	 * @param playerName
 	 * @param type
 	 */
-	public Dealer(String playerName, PlayerType type, int seat) {
-		super(playerName, type, seat);
+	public Dealer() {
+		super("Dealer", PlayerType.DEALER, 0);
 	}
 
-	/**
-	 * This method deals a card to Player or the dealer.  This method first
-	 * checks if the deckShoe is empty.  If True, it re-populates the deckShoe.
-	 * Then it returns the first card from the deckShoe ArrayList. 
-	 * 
-	 * @param deckShoe
-	 * @return a Card
-	 */
-	public Card dealCard(Shoe deckShoe) {
-		if (deckShoe.isEmpty()) {
-			deckShoe.createDeckShoe();
-		}
-		return deckShoe.getNextCard();
-	}	
-	
 	/**
 	 * Method to display the dealer's Up card to the players. 
 	 * This method is somewhat redundant to getDealersUpCard but is done this way so it's easier to 
@@ -48,7 +31,7 @@ public class Dealer extends Player{
 	 * @param dealerIndex
 	 */
 	public void displayDealersUpCard(Player dealer) {
-		System.out.println("Dealer is showing a " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getRank() + " of " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getSuit());
+		System.out.println("Dealer is showing a " + this.getDealersUpCard(dealer));
 	}
 	
 	/**
@@ -58,7 +41,8 @@ public class Dealer extends Player{
 	 * @param dealerIndex
 	 * @return first Card in dealer's hand
 	 */
-	public Card getDealersUpCard(Player dealer) {
+	public Card getDealersUpCard(Player dealer) {	
+		//return this.getPlayerHand().get(0);
 		return dealer.getPlayerHands().get(0).getPlayerHand().get(0);
 	}
 	

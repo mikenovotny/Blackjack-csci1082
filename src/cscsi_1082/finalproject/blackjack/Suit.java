@@ -2,7 +2,6 @@
  * Suit Enum.  This enum give friendly names to card Suits.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
