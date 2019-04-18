@@ -5,9 +5,13 @@ import java.util.List;
 
 public class PlayerHands {
 	
+	
 	private List<Card> hand;											// ArrayList to hold cards in players hand
+	private int handTotal = 0;
+	private boolean handOver = false;
 	private final int FIRSTCARD = 0;
 	private final int SECONDCARD = 1;
+	private static final int MAXTOTAL = 21;
 	
 	/**
 	 * Constructor.  Requires an ArrayList of Cards to be passed in
@@ -37,14 +41,65 @@ public class PlayerHands {
 	}
 	
 	/**
+	 * Method to get the value of a players hand
+	 * 
+	 * @return integer value of the players hand
+	 */
+	public int getHandTotal() {
+		return this.handTotal;
+	}
+
+	/**
+	 * Method to set the value of a players hand
+	 * 
+	 * @param handTotal
+	 */
+	public void setHandTotal(int handTotal) {
+		this.handTotal = handTotal;
+	}
+
+	
+	/**
+	 * Method to get the flag that the hand is over
+	 * 
+	 * @return true if all options on this hand are over
+	 */
+	public boolean isHandOver() {
+		return handOver;
+	}
+	
+/**
+ * Method to set the flag that the hand is over
+ * 
+ * @param handOver
+ */
+	public void setHandOver(boolean handOver) {
+		this.handOver = handOver;
+	}
+
+	/**
 	 * Method to display the cards in a player's hand
 	 * 
 	 * @param PlayerHands
 	 */
-	public void displayPlayerHand(PlayerHands hand) {
-		for (Card card : hand.getPlayerHand()) {
+	public void displayPlayerHand() {
+		for (Card card : this.getPlayerHand()) {
 			System.out.println(card);
 		}
+	}
+	
+	/**
+	 * Method to determine if the player has blackjack.  The player must only have two cards in their hand
+	 * and the sum of those cards must be MAXTOTAL
+	 * 
+	 * @return true if hand is blackjack else false
+	 */
+	public boolean isBlackJack() {
+		if (this.getPlayerHand().size() == 2 && this.getHandTotal() == MAXTOTAL) {
+			return true;
+		} else {
+			return false;
+		}	
 	}
 	
 	/**
@@ -54,8 +109,8 @@ public class PlayerHands {
 	 * @param PlayerHands
 	 * @return true if both cards are the same rank else false
 	 */
-	public boolean canSplit (PlayerHands hand) {
-			if (hand.getPlayerHand().size() == 2 &&  hand.getPlayerHand().get(FIRSTCARD).getCardRankValue() == hand.getPlayerHand().get(SECONDCARD).getCardRankValue()) {
+	public boolean canSplit () {
+			if (this.getPlayerHand().size() == 2 &&  this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) {
 				return true;
 			} else {
 				return false;

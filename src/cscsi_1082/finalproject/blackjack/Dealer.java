@@ -8,7 +8,6 @@
 
 package cscsi_1082.finalproject.blackjack;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import cscsi_1082.finalproject.blackjack.PlayerType;
@@ -68,12 +67,12 @@ public class Dealer extends Player{
 	 * @param playerList
 	 * @param player
 	 */
-	public void payPlayer(Player currentPlayer) {
-		if (currentPlayer.getHasBlackJack()) {
-			currentPlayer.addMoney(currentPlayer, (currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
+	public void payPlayer(Player currentPlayer, PlayerHands hand) {
+		if (hand.isBlackJack()) {
+			currentPlayer.addMoney(currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT);
 		}else {
 			
-		currentPlayer.addMoney(currentPlayer, currentPlayer.getPlayerBet() * 2);
+		currentPlayer.addMoney(currentPlayer.getPlayerBet() * 2);
 		}
 	}
 	
@@ -85,7 +84,7 @@ public class Dealer extends Player{
 	 * @param pushed
 	 */
 	public void payPlayer(Player currentPlayer, boolean pushed) {
-		currentPlayer.addMoney(currentPlayer, currentPlayer.getPlayerBet());
+		currentPlayer.addMoney(currentPlayer.getPlayerBet());
 	}
 	
 	/** 
@@ -102,14 +101,12 @@ public class Dealer extends Player{
 					System.out.print(currentPlayer.getPlayerName() + " enter your bet amount: $");
 					double bet = input.nextDouble();
 					
-					if (currentPlayer.checkFunds(currentPlayer, bet)) {
+					// Make sure they have enough money left to make this bet
+					if (!currentPlayer.checkFunds(bet)) {
 						System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
-											"You have: $" + currentPlayer.getPlayerMoney());
-						
-						// Set player bet to zero to ensure we stay in the loop
-						currentPlayer.setPlayerBet(0);
+											"You have: $" + currentPlayer.getPlayerMoney());			
 					} else {
-					currentPlayer.setPlayerBet(bet);
+						currentPlayer.setPlayerBet(bet);
 					}
 					
 					// Dump buffer
@@ -130,7 +127,7 @@ public class Dealer extends Player{
 				currentPlayer.setPlayerBet(computerBet);									// use a default bet for the computer
 				
 				// Computer doesn't have enough money.  Set his bet to the remainder of his money
-				if (currentPlayer.checkFunds(currentPlayer, currentPlayer.getPlayerBet())) {
+				if (!currentPlayer.checkFunds(computerBet)) {
 					currentPlayer.setPlayerBet(currentPlayer.getPlayerMoney());
 				}
 				// Remove the bet from the players total

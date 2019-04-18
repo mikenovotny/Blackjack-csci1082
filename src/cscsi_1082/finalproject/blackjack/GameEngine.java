@@ -27,10 +27,10 @@ public class GameEngine {
 	private Shoe deckShoe;
 	private boolean quit;
 	private List<Player> playerList;								// Declare array to hold player list
-	private boolean roundOver;
-	private boolean isMutable;
+	//private boolean roundOver;
 	public static final int MAXTOTAL = 21;
-	public static int DEALERPLAYER = 0;
+	public static Player DEALERPLAYER = null;
+	public static PlayerHands DEALERHAND = null;
 	public static final double BLACKJACK_PAYOUT = 2.5;					// Blackjack pays out at 3 to 2.  This is set at 2.5 as we've already removed the original bet from the players money
 	public static final int COMPUTER_MAX_BET = 30;
 	public static final int COMPUTER_MIN_BET = 10;
@@ -46,28 +46,6 @@ public class GameEngine {
 		deckShoe = new Shoe();
 		this.quit = false;
 		this.playerList = new ArrayList<Player>();
-		this.roundOver = false;
-	}
-	
-
-	/**
-	 * Method to determine if the round should be over.  Either the dealer has gotten blackjack right away
-	 * or everyone has completed all their actions.
-	 * 
-	 * @return true if round is over
-	 */
-	public boolean isRoundOver() {
-		return roundOver;
-	}
-
-	/**
-	 * Method to set the roundOver variable.  This should be set if the Dealer got blackjack right away or 
-	 * if everyone's turn is over.
-	 * 
-	 * @param roundOver
-	 */
-	public void setRoundOver(boolean roundOver) {
-		this.roundOver = roundOver;
 	}
 
 	/**
@@ -105,25 +83,11 @@ public class GameEngine {
 	}
 	
 	/**
-	 * Method to prevent changes to the DealerPlayer index.  Set this to true to block changes
-	 * 
-	 * @param mutable
+	 * Method to set the DEALERPLAYER and DEALERHAND objects
 	 */
-	public void setMutable(boolean mutable) {
-		this.isMutable = mutable;
-	}
-	
-	/**
-	 * Method to set the DEALERPLAYER index
-	 * @param index
-	 */
-	public void setDealerIndex() {
-		if (this.isMutable) {
-			GameEngine.DEALERPLAYER = this.playerList.size() - 1;
-			this.setMutable(false);
-		} else {
-			System.out.println("ERROR! DEALERPLAYER is not mutable!");
-		}
+	public void updateDealerObject() {
+		GameEngine.DEALERPLAYER = this.playerList.get(this.playerList.size() - 1);
+		GameEngine.DEALERHAND = DEALERPLAYER.getPlayerHands().get(0);
 	}
 	
 	
@@ -187,10 +151,6 @@ public class GameEngine {
 		// Add the dealer to the playerList.
 		this.playerList.add(this.dealer);	
 		
-		// Create a constant pointer to the dealer:
-		this.setMutable(true);
-		this.setDealerIndex();
-		
 		// Start the first round
 		this.startRound();
 				
@@ -234,6 +194,8 @@ public class GameEngine {
 					}
 					break;
 				case DEALER:
+					// Create a constant pointer to the dealer:
+					this.updateDealerObject();
 					break;
 				default:
 					System.out.println("Error! Can't find player!");
@@ -254,36 +216,34 @@ public class GameEngine {
 		for (Player currentPlayer : this.playerList) {
 			this.dealer.getBets(currentPlayer);
 		}
-		
-		// Message to give indication of what's happening
-		System.out.println("\nDealing Cards...");
-		
+				
 		// Deal the cards to the players
 		this.dealCards();
-		System.out.println("Cards Delt\n");
-		
+			
 		// Check if any player has blackjack.  They get paid first
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case HUMAN:
 				case COMPUTER:
-					if (this.isBlackJack(currentPlayer)) {
+					
+					// Players just have one hand for now so check the first hand
+					if (currentPlayer.getPlayerHands().get(0).isBlackJack()) {
 						System.out.println("**********************************************************");
-						currentPlayer.getPlayerHands().get(0).displayPlayerHand(currentPlayer.getPlayerHands().get(0));
+						currentPlayer.getPlayerHands().get(0).displayPlayerHand();
 						System.out.println("Player: " + currentPlayer.getPlayerName() + " has BlackJack! Pays out at 3 to 2!" + 
 										   "\nYou Won $" + (currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
-						this.dealer.payPlayer(currentPlayer);
+						this.dealer.payPlayer(currentPlayer, currentPlayer.getPlayerHands().get(0));
 						System.out.println("**********************************************************");
 						currentPlayer.setTurnOver(true);
 					}
 					break;
 				case DEALER:
 					// Check if the Dealer has blackjack
-					if (this.isBlackJack(currentPlayer)) {
-						System.out.println("\n*****************************************\n" + 
-										   "Dealer has BlackJack! Everyone loses!\n" + 
+					if (DEALERHAND.isBlackJack()) {
+						System.out.println("\n*****************************************\n"); 
+						DEALERHAND.displayPlayerHand();
+						System.out.println("Dealer has BlackJack! Everyone loses!\n" + 
 									   	   "*****************************************\n");
-						this.setRoundOver(true);
 						this.roundOver();
 					}
 					break;				
@@ -296,51 +256,54 @@ public class GameEngine {
 			switch (currentPlayer.getType()) {
 				case HUMAN:
 				case COMPUTER:
-					while (!currentPlayer.isTurnOver()) {
-						System.out.println();
-				
-						// Display dealer's Up card
-						this.dealer.displayDealersUpCard(this.playerList.get(DEALERPLAYER));
-						System.out.println();
-				
-						currentPlayer.getPlayerHands().get(0).displayPlayerHand(currentPlayer.getPlayerHands().get(0));
-				
-						// Check if they have busted
-						if (this.checkIfBusted(currentPlayer)) {
-								System.out.println("\nOH NO " + currentPlayer.getPlayerName() + "! You've busted!\nYour Total is: " + currentPlayer.getHandTotal());
-								currentPlayer.setTurnOver(true);
-								break;
-						} else {
-							System.out.println("\n" + currentPlayer.getPlayerName() + "'s Total is: " + currentPlayer.getHandTotal());
+					// Loop through each hand the player has
+					for (PlayerHands hand : currentPlayer.getPlayerHands()) {
+						
+						// Keep asking what the player wants to do until the hand is over
+						while (!hand.isHandOver()) {
+							
+							// Display dealer's Up card
+							this.dealer.displayDealersUpCard(DEALERPLAYER);
+							System.out.println();
+			
+							hand.displayPlayerHand();
+			
+							// Check if they have busted
+							if (this.checkIfBusted(hand)) {
+									System.out.println("\nOH NO " + currentPlayer.getPlayerName() + "! You've busted!\nYour Total is: " + hand.getHandTotal());
+									hand.setHandOver(true);
+									continue;
+							} 
+							
+							// Display Hand Total
+							System.out.println("\n" + currentPlayer.getPlayerName() + "'s Total is: " + hand.getHandTotal());
+			
+							// Ask the player what they want to do.  If a computer player or dealer it will auto decide
+							this.getPlayOption(currentPlayer, hand);
 						}
-				
-						// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-						int option = this.getPlayOption(currentPlayer);
-
-						// Perform actions player wanted
-						this.processPlayOption(option, currentPlayer);
-				
 					}
+					break;
+
 				case DEALER:
-					while (!currentPlayer.isTurnOver()) {
+					while (!DEALERHAND.isHandOver()) {
+						
 						// Display all of the Dealer's cards
-						currentPlayer.getPlayerHands().get(0).displayPlayerHand(currentPlayer.getPlayerHands().get(0));
+						DEALERHAND.displayPlayerHand();
 						
 						// Check if they have busted
-						if (this.checkIfBusted(currentPlayer)) {
-							System.out.println("The Dealer Busted!!!\nDealer's Total is: " + currentPlayer.getHandTotal());
-							currentPlayer.setTurnOver(true);
+						if (this.checkIfBusted(DEALERHAND)) {
+							System.out.println("The Dealer Busted!!!\nDealer's Total is: " + DEALERHAND.getHandTotal());
+							DEALERHAND.setHandOver(true);
 							continue;
-						} else {
-							System.out.println("Dealer's Total is: " + currentPlayer.getHandTotal());
-						}
+						} 
 						
+						// Display hand total
+						System.out.println("Dealer's Total is: " + DEALERHAND.getHandTotal());
+					
 						// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-						int option = this.getPlayOption(currentPlayer);
-
-						// Perform actions player wanted
-						this.processPlayOption(option, currentPlayer);
-				}
+						this.getPlayOption(currentPlayer, DEALERHAND);
+					}
+					break;
 			}
 		}
 				
@@ -355,6 +318,9 @@ public class GameEngine {
 	 * @return nothing
 	 */
 	private void dealCards() {
+		// Message to give indication of what's happening
+		System.out.println("\nDealing Cards...");
+		
 		// Variable to track how many cards have been dealt
 		int cardsPerPlayer = 0;
 			
@@ -363,16 +329,19 @@ public class GameEngine {
 			
 			// Loop through the player list, starting with the human player (element 1) and deal a card
 			for (Player currentPlayer : this.playerList) {
+				
 				// Get the top cards from the deck and add the card to the player's hand
 				currentPlayer.getPlayerHands().get(0).addCard(this.dealer.dealCard(this.deckShoe));
 				
 				// the second card has just been dealt.  Update the players hand total
 				if (cardsPerPlayer > 0) {
-					this.getSumOfCards(currentPlayer);
+					getSumOfCards(currentPlayer.getPlayerHands().get(0));
 				}
 			}
 			cardsPerPlayer++;
 		}
+		
+		System.out.println("Cards Delt\n");
 	}
 	
 	/**
@@ -385,22 +354,12 @@ public class GameEngine {
 	}
 	
 	/**
-	 * This method should be called to set the turnOver boolean on the player to true
-	 * to indicate that their turn is now over
-	 * 
-	 * @return true that player has decided to end their turn
-	 */
-	public void stand(Player currentPlayer) {
-		currentPlayer.setTurnOver(true);		
-	}
-	
-	/**
 	 * Method to allow a player to double down.  A player is only allowed a single card
 	 * in exchange for being able to double their bet.
 	 * 
 	 * @param player
 	 */
-	public void doubleDown(Player currentPlayer) {
+	public void doubleDown(Player currentPlayer, PlayerHands hand) {
 		/*
 		 * Remove the money from the players total first.  Doubling down is the original bet * 2
 		 * the original bet is already removed from the users total so just remove it again.
@@ -410,23 +369,22 @@ public class GameEngine {
 		// Update the bet amount to reflect the new total
 		currentPlayer.setPlayerBet(currentPlayer.getPlayerBet() * 2);
 		
-
 		// Give the user one more card
-		currentPlayer.getPlayerHands().get(0).addCard(this.hit());					// Add a new card to players Hand
-		this.getSumOfCards(currentPlayer);											// Update the players hand total	
+		hand.addCard(this.hit());													// Add a new card to players Hand
+		this.getSumOfCards(hand);													// Update the players hand total	
 		
 		// Display the updated cards
-		currentPlayer.getPlayerHands().get(0).displayPlayerHand(currentPlayer.getPlayerHands().get(0));
+		hand.displayPlayerHand();
 		
 		// Check if they have busted
-		if (this.checkIfBusted(currentPlayer)) {
-			System.out.println("\nOH NO " + currentPlayer.getPlayerName() + "! You've busted!\nYour Total is: " + currentPlayer.getHandTotal());
+		if (this.checkIfBusted(hand)) {
+			System.out.println("\nOH NO " + currentPlayer.getPlayerName() + "! You've busted!\nYour Total is: " + hand.getHandTotal());
 		} else {
-			System.out.println("\n" + currentPlayer.getPlayerName() + "'s Total is: " + currentPlayer.getHandTotal());
+			System.out.println("\n" + currentPlayer.getPlayerName() + "'s Total is: " + hand.getHandTotal());
 		}
 		
 		// Turn is over
-		currentPlayer.setTurnOver(true);		
+		hand.setHandOver(true);		
 	}
 	
 	/**
@@ -461,11 +419,8 @@ public class GameEngine {
 			this.checkForWinners(currentPlayer);
 
 			// Reset the players for the next round
-			currentPlayer.resetPlayer(currentPlayer);
+			currentPlayer.resetPlayer();
 		}
-		
-		// Reset the roundOver flag
-		this.setRoundOver(false); 
 		
 		// Start a new round
 		this.startRound();
@@ -481,59 +436,47 @@ public class GameEngine {
 		switch (currentPlayer.getType()) {
 			case HUMAN:
 			case COMPUTER:
+				
+				// Loop through each hand and determine if they win
+				for (PlayerHands hand : currentPlayer.getPlayerHands()) {
 				// exclude them if they got blackjack  We will pay out blackjack another way.  Blackjack always pays out
-				if (currentPlayer.getHasBlackJack()) {
-					return;
+					if (hand.isBlackJack()) {
+						return;
+					}
+		
+					// Dealer Busted, everyone wins that didn't bust
+					else if (hand.getHandTotal() <= MAXTOTAL && DEALERHAND.getHandTotal() > MAXTOTAL) {
+						// Pay the player
+						this.dealer.payPlayer(currentPlayer, hand);
+						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
+										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
+					}		
+		
+					// Player beat Dealer 
+					else if (hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() > DEALERHAND.getHandTotal()) {
+						// Pay the player
+						this.dealer.payPlayer(currentPlayer, hand);
+						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
+									       "\nYour total money is $" + currentPlayer.getPlayerMoney());
+					} 
+		
+					// Player pushed
+					else if(hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() == DEALERHAND.getHandTotal()) {
+						this.dealer.payPlayer(currentPlayer, true);
+						System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
+					}
+		
+					// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
+					else {
+						System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + currentPlayer.getPlayerBet() + 
+										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
+					}
+					break;
 				}
-		
-				// Dealer Busted, everyone wins that didn't bust
-				else if (currentPlayer.getHandTotal() <= MAXTOTAL && this.playerList.get(DEALERPLAYER).getHandTotal() > MAXTOTAL) {
-					// Pay the player
-					this.dealer.payPlayer(currentPlayer);
-					System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
-					   "\nYour total money is $" + currentPlayer.getPlayerMoney());
-				}		
-		
-				// Player beat Dealer 
-				else if (currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() > this.playerList.get(DEALERPLAYER).getHandTotal()) {
-					// Pay the player
-					this.dealer.payPlayer(currentPlayer);
-					System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
-							   "\nYour total money is $" + currentPlayer.getPlayerMoney());
-				} 
-		
-				// Player pushed
-				else if(currentPlayer.getHandTotal() <= MAXTOTAL && currentPlayer.getHandTotal() == this.playerList.get(DEALERPLAYER).getHandTotal()) {
-					this.dealer.payPlayer(currentPlayer, true);
-					System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
-				}
-		
-				// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
-				else {
-					System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + currentPlayer.getPlayerBet() + 
-							   "\nYour total money is $" + currentPlayer.getPlayerMoney());
-				}
-				break;
 			case DEALER:
 				// Dealer can't get paid, just break the loop
 				break;
 		}
-	}
-	
-	/**
-	 * Method to determine if the player has blackjack.  The player must only have two cards in their hand
-	 * and the sum of those cards must be MAXTOTAL
-	 * 
-	 * @param Card list
-	 * @return true if blackjack has been made
-	 */
-	public boolean isBlackJack(Player currentPlayer) {
-		if (currentPlayer.getPlayerHands().get(0).getPlayerHand().size() == 2 && currentPlayer.getHandTotal() == MAXTOTAL) {
-			currentPlayer.setHasBlackJack(true);
-			return true;
-		} else {
-			return false;
-		}	
 	}
 	
 	/**
@@ -542,17 +485,14 @@ public class GameEngine {
 	 * @param player
 	 * @return sum of the cards in the players hand
 	 */
-	public void getSumOfCards(Player currentPlayer) {
+	public void getSumOfCards(PlayerHands hand) {
 		
 		int sumOfCards = 0;									// Accumulator to add sum
 		boolean hasAce = false;								// Flag that the player has Aces in their hand
 		int numberOfAces = 0;								// Accumulator to track how many aces they have in their hand
 		
-		// Loop through the players cards
-		for (int card = 0; card < currentPlayer.getPlayerHands().get(0).getPlayerHand().size(); card++) {
-			
-			// Store each card in a temporary Card instance
-			Card playerCard = currentPlayer.getPlayerHands().get(0).getPlayerHand().get(card);
+		// Loop through the players cards in this hand
+		for (Card playerCard : hand.getPlayerHand()) {
 			
 			// Give a real value to each rank
 			switch (playerCard.getRank()) {
@@ -613,7 +553,7 @@ public class GameEngine {
 			}
 		}
 		
-		currentPlayer.setHandTotal(sumOfCards);
+		hand.setHandTotal(sumOfCards);
 	}
 	
 	/**
@@ -622,8 +562,8 @@ public class GameEngine {
 	 * @param player
 	 * @return true if their hand is over MAXTOTAL
 	 */
-	public boolean checkIfBusted(Player currentPlayer) {
-		if (currentPlayer.getHandTotal() > MAXTOTAL) {
+	public boolean checkIfBusted(PlayerHands hand) {
+		if (hand.getHandTotal() > MAXTOTAL) {
 			return true;
 		} else {
 			return false;
@@ -682,7 +622,7 @@ public class GameEngine {
 	 * @param player
 	 * @return option player chose
 	 */
-	private int getPlayOption(Player currentPlayer) {
+	private void getPlayOption(Player currentPlayer, PlayerHands hand) {
 		// Create scanner to get keyboard input
 		Scanner input = new Scanner(System.in);
 		
@@ -704,14 +644,14 @@ public class GameEngine {
 					input.nextLine();											// Dump Buffer
 					
 					// Check if the player has enough funds to double down.
-					if (option == 3 && !currentPlayer.checkFunds(currentPlayer, currentPlayer.getPlayerBet() * 2)) {
+					if (option == 3 && !currentPlayer.checkFunds(currentPlayer.getPlayerBet() * 2)) {
 						System.out.println("Sorry, You do not have enough money to double down.");
 						// Reset option to zero so we stay in the loop
 						option = 0;	
 					}
 
 					// Check if the player can split
-					if (option == 4 && !currentPlayer.getPlayerHands().get(0).canSplit(currentPlayer.getPlayerHands().get(0))) {
+					if (option == 4 && !hand.canSplit()) {
 						System.out.println("Sorry, You cannot split this hand.  Cards must be a pair.");
 						// Reset option to zero so we stay in the loop
 						option = 0;												
@@ -722,17 +662,18 @@ public class GameEngine {
 				// Input validated.  Exit loop
 				break;
 			case COMPUTER:
-				option = this.computerDecision(currentPlayer);
+				option = this.computerDecision(currentPlayer, hand);
 				break;
 			case DEALER:
-				option = this.dealerDecision(currentPlayer);
+				option = this.dealerDecision();
 				break;
 			default:
 				System.out.println("Something went wrong.  I'm trying to get what actions a player should take in the playGame method");
 				System.exit(0);
 		}
 
-		return option;
+		// Perform actions player wanted
+		this.processPlayOption(option, currentPlayer, hand);;
 	}
 	
 	/**
@@ -741,7 +682,7 @@ public class GameEngine {
 	 * @param option
 	 * @param player
 	 */
-	private void processPlayOption(int option, Player currentPlayer) {
+	private void processPlayOption(int option, Player currentPlayer, PlayerHands hand) {
 		/*
 		 *  The following statement will determine enum value that is represented by the int
 		 *  that the customer chose in the previous step.  enum.values() returns an array of the 
@@ -753,14 +694,14 @@ public class GameEngine {
 		// Switch on the enum options.
 		switch (playerOption) {
 			case HIT:
-				currentPlayer.getPlayerHands().get(0).addCard(this.hit());					// Add a new card to players Hand
-				this.getSumOfCards(currentPlayer);												// Update the players hand total		
+				hand.addCard(this.hit());													// Add a new card to players Hand
+				this.getSumOfCards(hand);													// Update the players hand total		
 				break;
 			case STAND:
-				this.stand(currentPlayer);
+				hand.setHandOver(true);
 				break;
 			case DOUBLE_DOWN:
-				this.doubleDown(currentPlayer);
+				this.doubleDown(currentPlayer, hand);
 				break;
 			case SPLIT:
 				// TODO: Call some function to process the split.
@@ -780,14 +721,15 @@ public class GameEngine {
 	 * @param player
 	 * @return option the computer should do
 	 */
-	private int computerDecision(Player currentPlayer) {
+	private int computerDecision(Player currentPlayer, PlayerHands hand) {
+			
 		// Get the dealer's upCard
-		Card dealerUpCard = dealer.getDealersUpCard(this.playerList.get(DEALERPLAYER));
+		Card dealerUpCard = dealer.getDealersUpCard(DEALERPLAYER);
 				
 		// Determine if computer has any aces
 		int numberOfAces = 0;
-		for (int card = 0; card < currentPlayer.getPlayerHands().get(0).getPlayerHand().size(); card ++) {
-			if (currentPlayer.getPlayerHands().get(0).getPlayerHand().get(card).getRank() == Rank.ACE) {
+		for (Card computerCard : hand.getPlayerHand()) {
+			if (computerCard.getRank() == Rank.ACE) {
 				numberOfAces++;
 			}
 		}
@@ -795,7 +737,7 @@ public class GameEngine {
 		// TODO: Code for when to split.
 		
 		// Always split aces
-		if (numberOfAces == 2 && currentPlayer.getPlayerHands().get(0).getPlayerHand().size() == 2) {
+		if (numberOfAces == 2 && hand.getPlayerHand().size() == 2) {
 			return PlayOption.SPLIT.getPlayOptionValue();
 		}
 		
@@ -805,12 +747,12 @@ public class GameEngine {
 		else if (numberOfAces > 0) {
 			
 			// If Computer has 19 or better, Stand
-			if (currentPlayer.getHandTotal() >= 19) {
+			if (hand.getHandTotal() >= 19) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// If Computer has 17 and Dealer is showing 9 or better, hit, else Stand
-			else if (dealerUpCard.getRank().getRankValue() <= Rank.EIGHT.getRankValue() && currentPlayer.getHandTotal() == 17) {
+			else if (dealerUpCard.getRank().getRankValue() <= Rank.EIGHT.getRankValue() && hand.getHandTotal() == 17) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
@@ -826,23 +768,23 @@ public class GameEngine {
 		else if (numberOfAces == 0) {
 			
 			// Stand on everything greater than or equal to 17
-			if (currentPlayer.getHandTotal() >= 17) {
+			if (hand.getHandTotal() >= 17) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// Stand on any total >= 13 if the dealer is showing a six or below
-			else if (currentPlayer.getHandTotal() >= 13 && dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
+			else if (hand.getHandTotal() >= 13 && dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// Hit on any total >= 12 and < 17 if the dealer is showing a 7 or above
-			else if (currentPlayer.getHandTotal() >= 12 && currentPlayer.getHandTotal() < 17 &&
+			else if (hand.getHandTotal() >= 12 && hand.getHandTotal() < 17 &&
 					 dealerUpCard.getRank().getRankValue() > Rank.SIX.getRankValue()) {
 				return PlayOption.HIT.getPlayOptionValue();
 			}
 			
 			// if hand total == 12 and dealer is showing a 4, 5, or 6 then stand
-			else if (currentPlayer.getHandTotal() == 12 && dealerUpCard.getRank().getRankValue() >= Rank.FOUR.getRankValue() &&
+			else if (hand.getHandTotal() == 12 && dealerUpCard.getRank().getRankValue() >= Rank.FOUR.getRankValue() &&
 					 dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
@@ -852,6 +794,7 @@ public class GameEngine {
 		// Hit anything else
 		return PlayOption.HIT.getPlayOptionValue();
 	}
+	
 	/**
 	 * Method to drive the logic behind the dealer's actions with his hand
 	 * THe Dealer cannot split or double down
@@ -860,11 +803,11 @@ public class GameEngine {
 	 * @param player
 	 * @return option dealer wants to take
 	 */
-	private int dealerDecision(Player currentPlayer) {
+	private int dealerDecision() {
 		// Determine if computer has any aces
 		int numberOfAces = 0;
-		for (int card = 0; card < currentPlayer.getPlayerHands().get(0).getPlayerHand().size(); card ++) {
-			if (currentPlayer.getPlayerHands().get(0).getPlayerHand().get(card).getRank() == Rank.ACE) {
+		for (Card dealerCard : DEALERHAND.getPlayerHand()) {
+			if (dealerCard.getRank() == Rank.ACE) {
 				numberOfAces++;
 			}
 		}
@@ -875,7 +818,7 @@ public class GameEngine {
 		if (numberOfAces > 0) {
 			
 			// If Dealer has 18 or better, Stand
-			if (currentPlayer.getHandTotal() >= 18) {
+			if (DEALERHAND.getHandTotal() >= 18) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 		}
@@ -886,7 +829,7 @@ public class GameEngine {
 		else if (numberOfAces == 0) {
 			
 			// Stand on everything greater than or equal to 17
-			if (currentPlayer.getHandTotal() >= 17) {
+			if (DEALERHAND.getHandTotal() >= 17) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 		} 

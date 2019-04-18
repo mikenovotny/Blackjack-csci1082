@@ -155,47 +155,11 @@ public class Player {
 	}
 	
 	/**
-	 * Method to get the value of a players hand
-	 * 
-	 * @return integer value of the players hand
-	 */
-	public int getHandTotal() {
-		return this.handTotal;
-	}
-
-	/**
-	 * Method to set the value of a players hand
-	 * 
-	 * @param handTotal
-	 */
-	public void setHandTotal(int handTotal) {
-		this.handTotal = handTotal;
-	}
-
-	/**
-	 * Method to get the flag that the player has BlackJack
-	 * 
-	 * @return true if player has blackjack else false
-	 */
-	public boolean getHasBlackJack() {
-		return this.hasBlackJack;
-	}
-
-	/**
-	 * Method to set the flag that a player has BlackJack
-	 * 
-	 * @param hasBlackJack
-	 */
-	public void setHasBlackJack(boolean hasBlackJack) {
-		this.hasBlackJack = hasBlackJack;
-	}
-
-	/**
 	 * Method to add money to a players total, for example, if they win the hand
 	 * 
 	 * @param amount of money to add to players total
 	 */
-	public void addMoney(Player currentPlayer, double amount) {
+	public void addMoney(double amount) {
 		this.setPlayerMoney(this.getPlayerMoney() + amount);
 	}
 	
@@ -205,8 +169,8 @@ public class Player {
 	 * @param amount
 	 * @return true if they have enough money else false
 	 */
-	public boolean checkFunds(Player currentPlayer, double amount) {
-		if (currentPlayer.getPlayerMoney() - amount < 0) {									
+	public boolean checkFunds(double amount) {
+		if (this.getPlayerMoney() - amount < 0) {									
 			return false;
 		} else {
 			return true;
@@ -239,13 +203,11 @@ public class Player {
 	 * Method to reset a player's attributes for the start of the next round
 	 */
 	
-	public void resetPlayer(Player currentPlayer) {
-		currentPlayer.playerHands.removeAll(currentPlayer.getPlayerHands());
-		currentPlayer.createFirstHand(); 																// Create default hand object
-		currentPlayer.setPlayerBet(0); 																	// Reset bet to 0
-		currentPlayer.setTurnOver(false);																// Reset turn over flag
-		currentPlayer.setHandTotal(0);																	// Set hand Total to zero
-		currentPlayer.setHasBlackJack(false);															// Set blackjack flag to false
+	public void resetPlayer() {
+		this.playerHands.removeAll(this.getPlayerHands());
+		this.createFirstHand(); 																// Create default hand object
+		this.setPlayerBet(0); 																	// Reset bet to 0
+		this.setTurnOver(false);																// Reset turn over flag
 	}
 
 	/**
