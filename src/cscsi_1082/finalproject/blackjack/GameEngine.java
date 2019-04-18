@@ -13,6 +13,7 @@ package cscsi_1082.finalproject.blackjack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Scanner;
 
 import cscsi_1082.finalproject.blackjack.Rank;						// Import the Rank enum
@@ -26,7 +27,6 @@ public class GameEngine {
 	private Shoe deckShoe;
 	private boolean quit;
 	private List<Player> playerList;									// Declare array to hold player list
-	//private boolean roundOver;
 	public static final int MAXTOTAL = 21;
 	public static Player DEALERPLAYER = null;
 	public static PlayerHands DEALERHAND = null;
@@ -233,7 +233,7 @@ public class GameEngine {
 										   "\nYou Won $" + (currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
 						this.dealer.payPlayer(currentPlayer, currentPlayer.getPlayerHands().get(0));
 						System.out.println("**********************************************************");
-						currentPlayer.setTurnOver(true);
+						currentPlayer.getPlayerHands().get(0).setHandOver(true);
 					}
 					break;
 				case DEALER:
@@ -255,8 +255,13 @@ public class GameEngine {
 			switch (currentPlayer.getType()) {
 				case HUMAN:
 				case COMPUTER:
+					// Create the ListIterator
+					ListIterator<PlayerHands> hands = currentPlayer.getPlayerHands().listIterator();
 					// Loop through each hand the player has
-					for (PlayerHands hand : currentPlayer.getPlayerHands()) {
+					while (hands.hasNext()) {
+						
+						// Set the hand object
+						PlayerHands hand = hands.next();
 						
 						// Keep asking what the player wants to do until the hand is over
 						while (!hand.isHandOver()) {
@@ -278,7 +283,19 @@ public class GameEngine {
 							System.out.println("\n" + currentPlayer.getPlayerName() + "'s Total is: " + hand.getHandTotal());
 			
 							// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-							this.getPlayOption(currentPlayer, hand);
+							this.getPlayOption(currentPlayer, hand, hands);
+							}
+						
+						/*
+						 *  Check for a hand being added via a split.  Since ListIterator.add inserts the element into the 
+						 *  spot before the object that is called from next() we need to move backwards one to get to that new
+						 *  element.  This sets the hand object to the previous hand in the List.  If that hand has the handOver
+						 *  flag set to true, we know that no new hands were added and we should just break the loop. Else, that
+						 *  hand is a new hand that needs to be processed and we should continue the loop.  
+						 */
+						hand = hands.previous();
+						if (hand.isHandOver()) {
+							break;
 						}
 					}
 					break;
@@ -300,7 +317,7 @@ public class GameEngine {
 						System.out.println("Dealer's Total is: " + DEALERHAND.getHandTotal());
 					
 						// Ask the player what they want to do.  If a computer player or dealer it will auto decide
-						this.getPlayOption(currentPlayer, DEALERHAND);
+						this.getPlayOption(currentPlayer, DEALERHAND, null);
 					}
 					break;
 			}
@@ -384,26 +401,6 @@ public class GameEngine {
 		
 		// Turn is over
 		hand.setHandOver(true);		
-	}
-	
-	/**
-	 * Method to allow a player to split their hand.  This creates a new playerCard list,
-	 * copies the 2nd card from the original list to the new one, then removes the 2nd card from
-	 * the original list.  This leaves both lists with an index 0.
-	 * 
-	 * The expectation would be that the function calling this increments a counter for how many hands
-	 * the players has so they can be iterate through later.
-	 * 
-	 * TODO: Splitting is going to take some thought.  It will take quite an overhaul to support splitting hands
-	 * 
-	 * @param playerCards
-	 * @return new list of cards
-	 */
-	public List<Card> split(List<Card> playerCards){
-		List<Card> newHand = new ArrayList<Card>();
-		newHand.add(playerCards.get(1));
-		playerCards.remove(1);
-		return newHand;		
 	}
 	
 	/**
@@ -621,7 +618,7 @@ public class GameEngine {
 	 * @param player
 	 * @return option player chose
 	 */
-	private void getPlayOption(Player currentPlayer, PlayerHands hand) {
+	private void getPlayOption(Player currentPlayer, PlayerHands hand, ListIterator<PlayerHands> hands) {
 		// Create scanner to get keyboard input
 		Scanner input = new Scanner(System.in);
 		
@@ -672,7 +669,7 @@ public class GameEngine {
 		}
 
 		// Perform actions player wanted
-		this.processPlayOption(option, currentPlayer, hand);;
+		this.processPlayOption(option, currentPlayer, hand, hands);;
 	}
 	
 	/**
@@ -681,7 +678,7 @@ public class GameEngine {
 	 * @param option
 	 * @param player
 	 */
-	private void processPlayOption(int option, Player currentPlayer, PlayerHands hand) {
+	private void processPlayOption(int option, Player currentPlayer, PlayerHands hand, ListIterator<PlayerHands> hands) {
 		/*
 		 *  The following statement will determine enum value that is represented by the int
 		 *  that the customer chose in the previous step.  enum.values() returns an array of the 
@@ -703,8 +700,11 @@ public class GameEngine {
 				this.doubleDown(currentPlayer, hand);
 				break;
 			case SPLIT:
-				// TODO: Call some function to process the split.
-				
+				hand.splitHands(currentPlayer, hand, hands);
+				// Set the new total for each hand
+				for (PlayerHands playerHand : currentPlayer.getPlayerHands()) {
+					getSumOfCards(playerHand);
+				}
 				break;
 			default:
 				System.out.println("Something went wrong in the processPlayOption Method!");

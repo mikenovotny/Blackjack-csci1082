@@ -2,6 +2,7 @@ package cscsi_1082.finalproject.blackjack;
 
 import java.util.ArrayList; 
 import java.util.List;
+import java.util.ListIterator;
 
 public class PlayerHands {
 	
@@ -110,14 +111,16 @@ public class PlayerHands {
 	 * @return true if both cards are the same rank else false
 	 */
 	public boolean canSplit () {
-			if (this.getPlayerHand().size() == 2 &&  this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) {
-				return true;
-			} else {
-				return false;
-			}		
+		/*
+		 * if (this.getPlayerHand().size() == 2 &&
+		 * this.getPlayerHand().get(FIRSTCARD).getCardRankValue() ==
+		 * this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { return true; }
+		 * else { return false; }
+		 */
+		return true;
 	}
 	
-	public void splitHands (Player currentPlayer, PlayerHands hand) {
+	public void splitHands (Player currentPlayer, PlayerHands hand, ListIterator<PlayerHands> hands) {
 		// Create new list of cards
 		List<Card> newHand = new ArrayList<Card>();
 		
@@ -129,9 +132,9 @@ public class PlayerHands {
 		
 		// Remove the second card from the original hand
 		hand.getPlayerHand().remove(SECONDCARD);
-		
+				
 		// Add the new hand to the player
-		currentPlayer.addPlayerHand(newPlayerHand);
+		hands.add(newPlayerHand);
 	}
 	
 
