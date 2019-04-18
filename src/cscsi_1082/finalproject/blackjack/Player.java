@@ -3,7 +3,6 @@
  * their bets, and the type of player
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -41,6 +40,7 @@ public class Player {
 		this.turnOver = false;
 		this.handTotal = 0;
 		this.hasBlackJack = false;
+		this.seat = seat;
 	}
 	
 	/**

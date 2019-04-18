@@ -5,7 +5,6 @@
  * instance of the game engine.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 

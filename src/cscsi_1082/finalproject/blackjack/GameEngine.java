@@ -6,7 +6,6 @@
  * and deckShoe.
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -26,7 +25,7 @@ public class GameEngine {
 	private Dealer dealer;
 	private Shoe deckShoe;
 	private boolean quit;
-	private List<Player> playerList;								// Declare array to hold player list
+	private List<Player> playerList;									// Declare array to hold player list
 	//private boolean roundOver;
 	public static final int MAXTOTAL = 21;
 	public static Player DEALERPLAYER = null;
@@ -42,7 +41,7 @@ public class GameEngine {
 	 * @param playerList
 	 */
 	public GameEngine() {
-		dealer = new Dealer("Dealer", PlayerType.DEALER, 0);
+		dealer = new Dealer();
 		deckShoe = new Shoe();
 		this.quit = false;
 		this.playerList = new ArrayList<Player>();
@@ -331,7 +330,7 @@ public class GameEngine {
 			for (Player currentPlayer : this.playerList) {
 				
 				// Get the top cards from the deck and add the card to the player's hand
-				currentPlayer.getPlayerHands().get(0).addCard(this.dealer.dealCard(this.deckShoe));
+				currentPlayer.getPlayerHands().get(0).addCard(this.deckShoe.dealCard());
 				
 				// the second card has just been dealt.  Update the players hand total
 				if (cardsPerPlayer > 0) {
@@ -350,7 +349,7 @@ public class GameEngine {
 	 * @return another Card
 	 */
 	public Card hit() {
-		return this.dealer.dealCard(this.deckShoe);
+		return this.deckShoe.dealCard();
 	}
 	
 	/**

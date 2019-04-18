@@ -2,13 +2,12 @@
  * Card class is responsible for tracking the suit and rank of each Card
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
-package cscsi_1082.finalproject.blackjack;
+package cscsi_1082.finalproject.blackjack; 
 
-import cscsi_1082.finalproject.blackjack.Rank;
+import cscsi_1082.finalproject.blackjack.Rank;  
 import cscsi_1082.finalproject.blackjack.Suit;
 
 public class Card {

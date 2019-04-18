@@ -2,7 +2,6 @@
  * Dealer class extends player class.  Dealer is responsible for dealing cards
  * 
  * @author Mike Novotny
- * @author Ryan Westling
  * @version 1.0
  */
 
@@ -19,27 +18,12 @@ public class Dealer extends Player{
 	 * @param playerName
 	 * @param type
 	 */
-	public Dealer(String playerName, PlayerType type, int seat) {
-		super(playerName, type, seat);
+	public Dealer() {
+		super("Dealer", PlayerType.DEALER, 0);
 	}
 
 	/**
-	 * This method deals a card to Player or the dealer.  This method first
-	 * checks if the deckShoe is empty.  If True, it re-populates the deckShoe.
-	 * Then it returns the first card from the deckShoe ArrayList. 
-	 * 
-	 * @param deckShoe
-	 * @return a Card
-	 */
-	public Card dealCard(Shoe deckShoe) {
-		if (deckShoe.isEmpty()) {
-			deckShoe.createDeckShoe();
-		}
-		return deckShoe.getNextCard();
-	}	
-	
-	/**
-	 * Method to display the dealer's Up card to the players.
+	 * Method to display the dealer's Up card to the players. 
 	 * This method is somewhat redundant to getDealersUpCard but is done this way so it's easier to 
 	 * just call this method versus having to make extra code to display it after getting it each time.
 	 * 
