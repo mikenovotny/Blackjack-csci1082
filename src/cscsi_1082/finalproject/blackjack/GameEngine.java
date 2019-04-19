@@ -213,7 +213,9 @@ public class GameEngine {
 	private void playGame() {	
 		// Get the player bets
 		for (Player currentPlayer : this.playerList) {
-			this.dealer.getBets(currentPlayer);
+			for (PlayerHands hand : currentPlayer.getPlayerHands()) {
+				this.dealer.getBets(currentPlayer, hand);
+			}
 		}
 				
 		// Deal the cards to the players
@@ -221,19 +223,23 @@ public class GameEngine {
 			
 		// Check if any player has blackjack.  They get paid first
 		for (Player currentPlayer : this.playerList) {
+			
+			// Each player only has one hand at this time.  Set the object
+			PlayerHands hand = currentPlayer.getPlayerHands().get(0);
+			
 			switch (currentPlayer.getType()) {
 				case HUMAN:
 				case COMPUTER:
 					
 					// Players just have one hand for now so check the first hand
-					if (currentPlayer.getPlayerHands().get(0).isBlackJack()) {
+					if (hand.isBlackJack()) {
 						System.out.println("**********************************************************");
-						currentPlayer.getPlayerHands().get(0).displayPlayerHand();
+						hand.displayPlayerHand();
 						System.out.println("Player: " + currentPlayer.getPlayerName() + " has BlackJack! Pays out at 3 to 2!" + 
-										   "\nYou Won $" + (currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT));
-						this.dealer.payPlayer(currentPlayer, currentPlayer.getPlayerHands().get(0));
+										   "\nYou Won $" + (hand.getHandBet() * GameEngine.BLACKJACK_PAYOUT));
+						this.dealer.payPlayer(currentPlayer, hand);
 						System.out.println("**********************************************************");
-						currentPlayer.getPlayerHands().get(0).setHandOver(true);
+						hand.setHandOver(true);
 					}
 					break;
 				case DEALER:
@@ -380,10 +386,10 @@ public class GameEngine {
 		 * Remove the money from the players total first.  Doubling down is the original bet * 2
 		 * the original bet is already removed from the users total so just remove it again.
 		 */
-		this.dealer.takeBet(currentPlayer);
+		this.dealer.takeBet(currentPlayer, hand);
 		
 		// Update the bet amount to reflect the new total
-		currentPlayer.setPlayerBet(currentPlayer.getPlayerBet() * 2);
+		hand.setHandBet(hand.getHandBet() * 2);
 		
 		// Give the user one more card
 		hand.addCard(this.hit());													// Add a new card to players Hand
@@ -444,7 +450,7 @@ public class GameEngine {
 					else if (hand.getHandTotal() <= MAXTOTAL && DEALERHAND.getHandTotal() > MAXTOTAL) {
 						// Pay the player
 						this.dealer.payPlayer(currentPlayer, hand);
-						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
+						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
 										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
 					}		
 		
@@ -452,19 +458,19 @@ public class GameEngine {
 					else if (hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() > DEALERHAND.getHandTotal()) {
 						// Pay the player
 						this.dealer.payPlayer(currentPlayer, hand);
-						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + currentPlayer.getPlayerBet() + 
+						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
 									       "\nYour total money is $" + currentPlayer.getPlayerMoney());
 					} 
 		
 					// Player pushed
 					else if(hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() == DEALERHAND.getHandTotal()) {
-						this.dealer.payPlayer(currentPlayer, true);
+						this.dealer.payPlayer(currentPlayer, hand, true);
 						System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
 					}
 		
 					// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
 					else {
-						System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + currentPlayer.getPlayerBet() + 
+						System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + hand.getHandBet() + 
 										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
 					}
 					break;
@@ -639,9 +645,9 @@ public class GameEngine {
 					option = input.nextInt();
 					input.nextLine();											// Dump Buffer
 					
-					// Check if the player has enough funds to double down.
-					if (option == 3 && !currentPlayer.checkFunds(currentPlayer.getPlayerBet() * 2)) {
-						System.out.println("Sorry, You do not have enough money to double down.");
+					// Check if the player has enough funds to double down or split.  Both require twice their original bet
+					if (option == 3 || option == 4 && !currentPlayer.checkFunds(hand.getHandBet() * 2)) {
+						System.out.println("Sorry, You do not have enough money to do this.");
 						// Reset option to zero so we stay in the loop
 						option = 0;	
 					}
@@ -700,7 +706,12 @@ public class GameEngine {
 				this.doubleDown(currentPlayer, hand);
 				break;
 			case SPLIT:
+				// Take the additional bet from the user
+				this.dealer.takeBet(currentPlayer, hand);
+				
+				// Split the hands
 				hand.splitHands(currentPlayer, hand, hands);
+								
 				// Set the new total for each hand
 				for (PlayerHands playerHand : currentPlayer.getPlayerHands()) {
 					getSumOfCards(playerHand);
@@ -733,12 +744,39 @@ public class GameEngine {
 			}
 		}
 		
-		// TODO: Code for when to split.
+		/* 
+		 * Determine if the Computer should split.  canSplit() already checks that the cards
+		 * have the same value, so we only need to validate the value of one card in the if
+		 * statements below.
+		 */
+		if (hand.canSplit()) {
+			// Always split aces and 8's
+			if (numberOfAces == 2 || hand.getPlayerHand().get(0).getRank() == Rank.EIGHT) {
+					return PlayOption.SPLIT.getPlayOptionValue();
+			} 
 		
-		// Always split aces
-		if (numberOfAces == 2 && hand.getPlayerHand().size() == 2) {
-			return PlayOption.SPLIT.getPlayOptionValue();
-		}
+			// Split 2, 3's and 7's if dealer UP card is a 7 or lower
+			else if (dealerUpCard.getRank().getRankValue() <= 7 && 
+					hand.getPlayerHand().get(0).getRank() == Rank.TWO ||
+					hand.getPlayerHand().get(0).getRank() == Rank.THREE ||
+					hand.getPlayerHand().get(0).getRank() == Rank.EIGHT) {
+						return PlayOption.SPLIT.getPlayOptionValue();
+			}
+			
+			// Split 6's if the Dealer up card is 6 or less
+			else if (dealerUpCard.getRank().getRankValue() <= 6 && 
+					hand.getPlayerHand().get(0).getRank() == Rank.SIX) {
+						return PlayOption.SPLIT.getPlayOptionValue();
+			}
+			
+			// Split 9's if the Dealer Up card is 6 or worse, 8 or 9
+			else if (dealerUpCard.getRank().getRankValue() <= 6 ||
+					dealerUpCard.getRank().getRankValue() == 8 ||
+					dealerUpCard.getRank().getRankValue() == 9 &&
+					hand.getPlayerHand().get(0).getRank() == Rank.NINE) {
+						return PlayOption.SPLIT.getPlayOptionValue();
+			}
+		}		
 		
 		/*
 		 *  Determine Soft total option.  A soft total means there is an ace in the hand.  This only matters when 

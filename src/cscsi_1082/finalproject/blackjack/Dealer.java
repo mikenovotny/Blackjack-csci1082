@@ -53,10 +53,10 @@ public class Dealer extends Player{
 	 */
 	public void payPlayer(Player currentPlayer, PlayerHands hand) {
 		if (hand.isBlackJack()) {
-			currentPlayer.addMoney(currentPlayer.getPlayerBet() * GameEngine.BLACKJACK_PAYOUT);
+			currentPlayer.addMoney(hand.getHandBet() * GameEngine.BLACKJACK_PAYOUT);
 		}else {
 			
-		currentPlayer.addMoney(currentPlayer.getPlayerBet() * 2);
+		currentPlayer.addMoney(hand.getHandBet() * 2);
 		}
 	}
 	
@@ -67,15 +67,15 @@ public class Dealer extends Player{
 	 * @param player
 	 * @param pushed
 	 */
-	public void payPlayer(Player currentPlayer, boolean pushed) {
-		currentPlayer.addMoney(currentPlayer.getPlayerBet());
+	public void payPlayer(Player currentPlayer, PlayerHands hand, boolean pushed) {
+		currentPlayer.addMoney(hand.getHandBet());
 	}
 	
 	/** 
 	 * Method to get the bet amount from a player.  Human players will be asked.  
 	 * Computer players bet a random amount.  Dealer doesn't bet.
 	 */
-	public void getBets(Player currentPlayer) {
+	public void getBets(Player currentPlayer, PlayerHands hand) {
 		// Create scanner to get keyboard input
 		Scanner input = new Scanner(System.in);
 		
@@ -90,17 +90,17 @@ public class Dealer extends Player{
 						System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
 											"You have: $" + currentPlayer.getPlayerMoney());			
 					} else {
-						currentPlayer.setPlayerBet(bet);
+						hand.setHandBet(bet);
 					}
 					
 					// Dump buffer
 					if (input.hasNextLine()) {
 						input.nextLine();
 					}
-				} while (currentPlayer.getPlayerBet() <= 0);
+				} while (hand.getHandBet() <= 0);
 				
 				// Remove the bet from the players total
-				this.takeBet(currentPlayer);
+				this.takeBet(currentPlayer, hand);
 				break;
 			case COMPUTER:
 				// Generate a random bet for the computer between 10 and 30
@@ -108,14 +108,14 @@ public class Dealer extends Player{
 				int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
 				
 				System.out.println("The computers random bet is: " + computerBet);
-				currentPlayer.setPlayerBet(computerBet);									// use a default bet for the computer
+				hand.setHandBet(computerBet);									// use a default bet for the computer
 				
 				// Computer doesn't have enough money.  Set his bet to the remainder of his money
 				if (!currentPlayer.checkFunds(computerBet)) {
-					currentPlayer.setPlayerBet(currentPlayer.getPlayerMoney());
+					hand.setHandBet(currentPlayer.getPlayerMoney());
 				}
 				// Remove the bet from the players total
-				takeBet(currentPlayer);
+				takeBet(currentPlayer, hand);
 				break;
 			
 				// The dealer doesn't bet.  Do nothing.
@@ -136,7 +136,7 @@ public class Dealer extends Player{
 	 * @param playerList
 	 * @param player
 	 */
-	public void takeBet(Player currentPlayer) {
-		currentPlayer.removeMoney(currentPlayer.getPlayerBet());
+	public void takeBet(Player currentPlayer, PlayerHands hand) {
+		currentPlayer.removeMoney(hand.getHandBet());
 	}
 }

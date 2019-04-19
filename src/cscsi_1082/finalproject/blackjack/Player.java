@@ -19,10 +19,8 @@ public class Player {
 	private double playerMoney;											
 	private PlayerType type;												// Human or Computer Player
 	private int seat;
-	private double playerBet;
 	private boolean turnOver;
-	private int handTotal;													// Value to hold the sum of their hand
-	private boolean hasBlackJack;
+	//private boolean hasBlackJack;
 	
 	/**
 	 *  Constructor to create an instance of player.  This requires that a
@@ -38,8 +36,7 @@ public class Player {
 		this.createFirstHand();												// Create default hand object		
 		this.playerMoney = 500;												// Player starts out with $500
 		this.turnOver = false;
-		this.handTotal = 0;
-		this.hasBlackJack = false;
+		//this.hasBlackJack = false;
 		this.seat = seat;
 	}
 	
@@ -117,26 +114,7 @@ public class Player {
 	public void setType(PlayerType type) {
 		this.type = type;
 	}
-	
-	/**
-	 * Method to return how much the player has bet
-	 * 
-	 * @return amount player has bet
-	 */
-	public double getPlayerBet() {
-		return this.playerBet;
-	}
-	
-	/**
-	 * Method to set the amount a player has bet
-	 * 
-	 * @param playerBet
-	 */
-	public void setPlayerBet(double playerBet) {
-		this.playerBet = playerBet;
-	}
-	
-	
+		
 	/**
 	 * Method to determine if the players turn is over
 	 * 
@@ -206,7 +184,6 @@ public class Player {
 	public void resetPlayer() {
 		this.playerHands.removeAll(this.getPlayerHands());
 		this.createFirstHand(); 																// Create default hand object
-		this.setPlayerBet(0); 																	// Reset bet to 0
 		this.setTurnOver(false);																// Reset turn over flag
 	}
 
@@ -216,7 +193,6 @@ public class Player {
 	@Override
 	public String toString() {
 		return "Player [playerName=" + playerName + ", playerHands=" + playerHands + ", playerMoney=" + playerMoney
-				+ ", type=" + type + ", playerBet=" + playerBet + ", turnOver=" + turnOver 
-				+ ", handTotal=" + handTotal + ", hasBlackJack=" + hasBlackJack + "]";
+				+ ", type=" + type + ", turnOver=" + turnOver + "]";
 	}
 }

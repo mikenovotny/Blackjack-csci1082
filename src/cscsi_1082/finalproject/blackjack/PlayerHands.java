@@ -10,6 +10,7 @@ public class PlayerHands {
 	private List<Card> hand;											// ArrayList to hold cards in players hand
 	private int handTotal = 0;
 	private boolean handOver = false;
+	private double handBet = 0;
 	private final int FIRSTCARD = 0;
 	private final int SECONDCARD = 1;
 	private static final int MAXTOTAL = 21;
@@ -79,6 +80,24 @@ public class PlayerHands {
 	}
 
 	/**
+	 * Method to get the amount bet on this hand
+	 * 
+	 * @return amount bet on this hand as a double
+	 */
+	public double getHandBet() {
+		return handBet;
+	}
+
+	/**
+	 * Method to set the amount bet on this hand
+	 * 
+	 * @param handBet
+	 */
+	public void setHandBet(double handBet) {
+		this.handBet = handBet;
+	}
+
+	/**
 	 * Method to display the cards in a player's hand
 	 * 
 	 * @param PlayerHands
@@ -111,13 +130,14 @@ public class PlayerHands {
 	 * @return true if both cards are the same rank else false
 	 */
 	public boolean canSplit () {
-		/*
-		 * if (this.getPlayerHand().size() == 2 &&
-		 * this.getPlayerHand().get(FIRSTCARD).getCardRankValue() ==
-		 * this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { return true; }
-		 * else { return false; }
-		 */
-		return true;
+		
+		 if (this.getPlayerHand().size() == 2 &&
+		     this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { 
+			 return true; 
+		 }
+		 else { return false; 
+		 }
+
 	}
 	
 	public void splitHands (Player currentPlayer, PlayerHands hand, ListIterator<PlayerHands> hands) {
