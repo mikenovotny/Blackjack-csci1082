@@ -418,8 +418,11 @@ public class GameEngine {
 	public void roundOver() {
 		// See if any player won and then reset the variables for the next round
 		for (Player currentPlayer : this.playerList) {
-			this.checkForWinners(currentPlayer);
-
+			// Loop through each hand and determine if they win
+			for (PlayerHands hand : currentPlayer.getPlayerHands()) {
+				this.checkForWinners(currentPlayer, hand);
+			}
+			
 			// Reset the players for the next round
 			currentPlayer.resetPlayer();
 		}
@@ -434,15 +437,18 @@ public class GameEngine {
 	 * @param player Card list and dealer Card list
 	 * @return true if winner
 	 */
-	public void checkForWinners(Player currentPlayer) {
+	public void checkForWinners(Player currentPlayer, PlayerHands hand) {
 		switch (currentPlayer.getType()) {
 			case HUMAN:
 			case COMPUTER:
-				
-				// Loop through each hand and determine if they win
-				for (PlayerHands hand : currentPlayer.getPlayerHands()) {
-				// exclude them if they got blackjack  We will pay out blackjack another way.  Blackjack always pays out
-					if (hand.isBlackJack()) {
+				/*
+				 *  exclude them if they got blackjack  We will pay out blackjack another way.  
+				 *  This check only excludes paying out a BlackJack hand if it is their only hand.
+				 *  A player is not allowed to be paid out blackjack on a split hand but they could
+				 *  still have a hand that would meet the isBlackJack() criteria
+				 */
+					if (hand.isBlackJack() && currentPlayer.getPlayerHands().size() == 1) {
+						System.out.println(currentPlayer.getPlayerName() + " Had blackjack and has already been paid");
 						return;
 					}
 		
@@ -474,7 +480,7 @@ public class GameEngine {
 										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
 					}
 					break;
-				}
+				
 			case DEALER:
 				// Dealer can't get paid, just break the loop
 				break;

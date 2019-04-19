@@ -131,12 +131,13 @@ public class PlayerHands {
 	 */
 	public boolean canSplit () {
 		
-		 if (this.getPlayerHand().size() == 2 &&
-		     this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { 
-			 return true; 
-		 }
-		 else { return false; 
-		 }
+		if (this.getPlayerHand().size() == 2 &&
+		    this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { 
+				return true; 
+		}
+		else { 
+			return false; 
+		}
 
 	}
 	
@@ -144,11 +145,15 @@ public class PlayerHands {
 		// Create new list of cards
 		List<Card> newHand = new ArrayList<Card>();
 		
+		
 		// Create a new PlayerHand
 		PlayerHands newPlayerHand = new PlayerHands(newHand);
 		
 		// Add the second card from the original hand to this new list
 		newHand.add(hand.getPlayerHand().get(SECONDCARD));
+		
+		// Set the bet amount on this hand
+		newPlayerHand.setHandBet(hand.getHandBet());
 		
 		// Remove the second card from the original hand
 		hand.getPlayerHand().remove(SECONDCARD);

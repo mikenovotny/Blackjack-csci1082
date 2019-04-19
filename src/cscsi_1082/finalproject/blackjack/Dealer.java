@@ -54,8 +54,7 @@ public class Dealer extends Player{
 	public void payPlayer(Player currentPlayer, PlayerHands hand) {
 		if (hand.isBlackJack()) {
 			currentPlayer.addMoney(hand.getHandBet() * GameEngine.BLACKJACK_PAYOUT);
-		}else {
-			
+		} else {
 		currentPlayer.addMoney(hand.getHandBet() * 2);
 		}
 	}
