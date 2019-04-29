@@ -20,6 +20,7 @@ public class Shoe {
 		
 	private final int NUMBEROFDECKS = 8;								// A Casino Deck shoe typically holds 8 decks
 	private  List<Card> deckShoe = new ArrayList<Card>();				// Create a ArrayList to hold all the cards
+	private int cardCount = 0;											// Variable to hold the current card count.  Think someone counting cards to get an advantage over the house 
 	
 	/**
 	 * Constructor
@@ -31,7 +32,29 @@ public class Shoe {
 		public Shoe() {
 			createDeckShoe();
 		}
+	
+	/**
+	 * Method to get the current card count.  A higher card card means a possible advantage to the player as
+	 * there would be more cards available for the dealer to bust
+	 * 
+	 * @return card count.  
+	 */
 		
+	public int getCardCount() {
+		return cardCount;
+	}
+	
+	/**
+	 * Method to update the current card count
+	 * 
+	 * @param countChange
+	 */
+	public void updateCardCount(int countChange) {
+		this.cardCount = this.cardCount += countChange;		
+	}
+
+
+
 	/**
 	 * This method initializes the deckShoe.  It ensures the ArrayList is clear
 	 * then it repopulates and finally randomizes the Cards in the ArrayList
@@ -122,9 +145,20 @@ public class Shoe {
 	public Card getNextCard() {
 		Card card = deckShoe.get(0);									// Get first element from ArrayList
 		deckShoe.remove(0); 											// remove card from the deckShoe
+		
+		// Update the card count
+		int countChange = 0;
+		if (card.getCardRankValue() <= 6) {								// If the card has a value of 2-6 then increment the card count
+			countChange = 1;			
+		} else if (card.getCardRankValue() >= 10) {						// If the card has a value of 10-A then decrement the card count
+			countChange = -1;
+		}
+		this.updateCardCount(countChange);
+		
+		// Return the card
 		return card;
 	}
-	
+		
 	@Override
 	public String toString() {
 		return "Shoe [deckShoe=" + deckShoe + "]";

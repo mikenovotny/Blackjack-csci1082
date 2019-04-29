@@ -762,7 +762,7 @@ public class GameEngine {
 			} 
 		
 			// Split 2, 3's and 7's if dealer UP card is a 7 or lower
-			else if (dealerUpCard.getRank().getRankValue() <= 7 && 
+			else if (dealerUpCard.getCardRankValue() <= 7 && 
 					hand.getPlayerHand().get(0).getRank() == Rank.TWO ||
 					hand.getPlayerHand().get(0).getRank() == Rank.THREE ||
 					hand.getPlayerHand().get(0).getRank() == Rank.EIGHT) {
@@ -770,15 +770,15 @@ public class GameEngine {
 			}
 			
 			// Split 6's if the Dealer up card is 6 or less
-			else if (dealerUpCard.getRank().getRankValue() <= 6 && 
+			else if (dealerUpCard.getCardRankValue() <= 6 && 
 					hand.getPlayerHand().get(0).getRank() == Rank.SIX) {
 						return PlayOption.SPLIT.getPlayOptionValue();
 			}
 			
 			// Split 9's if the Dealer Up card is 6 or worse, 8 or 9
-			else if (dealerUpCard.getRank().getRankValue() <= 6 ||
-					dealerUpCard.getRank().getRankValue() == 8 ||
-					dealerUpCard.getRank().getRankValue() == 9 &&
+			else if (dealerUpCard.getCardRankValue() <= 6 ||
+					dealerUpCard.getCardRankValue() == 8 ||
+					dealerUpCard.getCardRankValue() == 9 &&
 					hand.getPlayerHand().get(0).getRank() == Rank.NINE) {
 						return PlayOption.SPLIT.getPlayOptionValue();
 			}
@@ -795,7 +795,7 @@ public class GameEngine {
 			}
 			
 			// If Computer has 17 and Dealer is showing 9 or better, hit, else Stand
-			else if (dealerUpCard.getRank().getRankValue() <= Rank.EIGHT.getRankValue() && hand.getHandTotal() == 17) {
+			else if (dealerUpCard.getCardRankValue() <= Rank.EIGHT.getRankValue() && hand.getHandTotal() == 17) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
@@ -816,19 +816,19 @@ public class GameEngine {
 			}
 			
 			// Stand on any total >= 13 if the dealer is showing a six or below
-			else if (hand.getHandTotal() >= 13 && dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
+			else if (hand.getHandTotal() >= 13 && dealerUpCard.getCardRankValue() <= Rank.SIX.getRankValue()) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
 			// Hit on any total >= 12 and < 17 if the dealer is showing a 7 or above
 			else if (hand.getHandTotal() >= 12 && hand.getHandTotal() < 17 &&
-					 dealerUpCard.getRank().getRankValue() > Rank.SIX.getRankValue()) {
+					 dealerUpCard.getCardRankValue() > Rank.SIX.getRankValue()) {
 				return PlayOption.HIT.getPlayOptionValue();
 			}
 			
 			// if hand total == 12 and dealer is showing a 4, 5, or 6 then stand
-			else if (hand.getHandTotal() == 12 && dealerUpCard.getRank().getRankValue() >= Rank.FOUR.getRankValue() &&
-					 dealerUpCard.getRank().getRankValue() <= Rank.SIX.getRankValue()) {
+			else if (hand.getHandTotal() == 12 && dealerUpCard.getCardRankValue() >= Rank.FOUR.getRankValue() &&
+					 dealerUpCard.getCardRankValue() <= Rank.SIX.getRankValue()) {
 				return PlayOption.STAND.getPlayOptionValue();
 			}
 			
