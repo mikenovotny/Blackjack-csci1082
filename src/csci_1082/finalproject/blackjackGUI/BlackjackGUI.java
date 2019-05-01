@@ -10,6 +10,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 	
 	private ActionPanel actionPanel = new ActionPanel();
 	private GameBoard gameBoard = new GameBoard();
+	private LoadingScreen loadingScreen = new LoadingScreen();
 	
 	// Constructor
 	public BlackjackGUI() {
@@ -17,7 +18,7 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 		setTitle("BlackJack");
 		setLayout(new BorderLayout());
 		add(actionPanel, BorderLayout.SOUTH);
-		add(gameBoard, BorderLayout.CENTER);
+		add(loadingScreen, BorderLayout.CENTER);
 		pack();
 		setVisible(true);
 	}

@@ -1,19 +1,19 @@
 package csci_1082.finalproject.blackjackGUI;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 
-import javax.swing.ImageIcon;
 import javax.swing.*;
 
-public class GameBoard extends JPanel {
-	
+public class LoadingScreen extends JPanel {
+
 	private JLabel panelBG = new JLabel();
 	private String baseImagePath = "/images/"; 
+	private JButton playButton = new JButton();
+	
 
 	
-	public GameBoard() {
-		ImageIcon baseGameBoard = createImageIcon(baseImagePath + "gameBoard.jpg");
+	public LoadingScreen() {
+		ImageIcon baseGameBoard = createImageIcon(baseImagePath + "blackjacklogo.png");
 		panelBG.setIcon(baseGameBoard);
 		this.setLayout(new BorderLayout());
 		this.add(panelBG, BorderLayout.CENTER);
