@@ -8,8 +8,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.sun.jmx.mbeanserver.NamedObject;
-
 import csci_1082.finalproject.blackjack.GameEngine;
 import csci_1082.finalproject.blackjack.Player;
 import csci_1082.finalproject.blackjack.PlayerType;
@@ -24,7 +22,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	private LoadingScreen loadingScreen = new LoadingScreen();
 	private JPanel gamePanel = new JPanel(new BorderLayout());
 	private GameEngine gameEngine;
-	private boolean nameValid = false;
 	private String tempName = null;
 	
 	// Constructor
@@ -47,7 +44,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 
 	public void addListeners() {
 		loadingScreen.getPlayButton().addActionListener(this);
-		namePopUpFrame.getOkButton().addActionListener(this);
 	}
 	
 	public ActionPanel getActionPanel() {
@@ -92,15 +88,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			gameEngine = GameEngine.newTable();
 			getPlayerNames();
 			break;
-		case "OK":
-			tempName = namePopUpFrame.getNameTextField().getText();
-			if (tempName.length() < 1) {
-				namePopUpFrame.warn();
-			} else {
-				nameValid = true;
-				namePopUpFrame.setVisible(false);
-			}
-			break;
 		}
 			updateGamePanel();
 		
@@ -113,9 +100,31 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				gameEngine.addPlayer("Computer " + compPlayerIndex, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
 				compPlayerIndex++;
 			} else if (loadingScreen.getPlayers()[loopIndex]== PlayerType.HUMAN) {
-				nameValid = false;
+				switch (loopIndex) {
+				case 0:
+					tempName = loadingScreen.getSeat1TextField().getText();
+					
+					break;
+				case 1:
+					tempName = loadingScreen.getSeat2TextField().getText();
+					break;
+				case 2:
+					tempName = loadingScreen.getSeat3TextField().getText();
+					break;
+				case 3:
+					tempName = loadingScreen.getSeat4TextField().getText();
+					break;
+				case 4:
+					tempName = loadingScreen.getSeat5TextField().getText();
+					break;
+				case 5:
+					tempName = loadingScreen.getSeat6TextField().getText();
+					break;
+				case 6:
+					tempName = loadingScreen.getSeat7TextField().getText();
+					break;
+				}
 				
-				while (!nameValid) {System.out.println("waiting for name to be valid....");}
 				gameEngine.addPlayer(tempName, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
 			} else {
 				// do Nothing
