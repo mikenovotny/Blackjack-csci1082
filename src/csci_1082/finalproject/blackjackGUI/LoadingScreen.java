@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ArrayList;
@@ -118,6 +119,10 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 		}
 	}
 	
+	public void warn() {
+		JOptionPane.showMessageDialog(null, "Error: You must have at least one Human Player!", "Error Message", JOptionPane.ERROR_MESSAGE);
+	}
+	
 	public PlayerType[] getPlayers() {
 		return players;
 	}
@@ -160,7 +165,9 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 		for (JTextField seatTextField : this.seatTextFields) {
 			if (seatTextField.isEditable()) {
 				seatTextField.setBackground(seatTextField.getText().equalsIgnoreCase("") ? Color.RED : Color.GREEN);
-			}	
+			} else {
+				seatTextField.setBackground(SystemColor.text);
+			}
 		}
 	}
 
@@ -190,8 +197,8 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 				switch (sourceSeat.getSelectedIndex()) {
 					case 0: 
 						seatChoices &= ~(1 << 0);
-						sourceTextField.setText("Enter Player Name");
 						sourceTextField.setEditable(false);
+						sourceTextField.setText("Enter Player Name");
 						break;
 					case 1: 
 						seatChoices |= (1 << 0);
@@ -201,14 +208,14 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 						break;
 					case 2:
 						seatChoices |= (1 << 0);
-						sourceTextField.setText("Computer Player");
 						sourceTextField.setEditable(false);
+						sourceTextField.setText("Computer Player");
 						players[0] = PlayerType.COMPUTER;
 						break;
 					case 3:
 						seatChoices |= (1 << 0);
-						sourceTextField.setText("Empty Seat");
 						sourceTextField.setEditable(false);
+						sourceTextField.setText("Empty Seat");
 						players[0] = null;
 						break;
 				}
@@ -220,8 +227,8 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 				switch (sourceSeat.getSelectedIndex()) {
 				case 0: 
 					seatChoices &= ~(1 << 1);
-					sourceTextField.setText("Enter Player Name");
 					sourceTextField.setEditable(false);
+					sourceTextField.setText("Enter Player Name");
 					break;
 				case 1: 
 					seatChoices |= (1 << 1);
@@ -231,14 +238,14 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 					break;
 				case 2:
 					seatChoices |= (1 << 1);
-					sourceTextField.setText("Computer Player");
 					sourceTextField.setEditable(false);
+					sourceTextField.setText("Computer Player");
 					players[1] = PlayerType.COMPUTER;
 					break;
 				case 3:
 					seatChoices |= (1 << 1);
-					sourceTextField.setText("Empty Seat");
 					sourceTextField.setEditable(false);
+					sourceTextField.setText("Empty Seat");
 					players[1] = null;
 					break;
 				}

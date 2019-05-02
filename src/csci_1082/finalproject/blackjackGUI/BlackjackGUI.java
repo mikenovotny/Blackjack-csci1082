@@ -85,12 +85,31 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent event) {
 		switch (event.getActionCommand()) {
 		case "Play":
-			gameEngine = GameEngine.newTable();
-			getPlayerNames();
+			if (checkIfHumanPlayer()) {
+				gameEngine = GameEngine.newTable();
+				getPlayerNames();
+				changeToGameBoard();
+			}
 			break;
 		}
-			updateGamePanel();
+			
 		
+	}
+
+	private boolean checkIfHumanPlayer() {
+		int numHumanPlayers = 0;
+		for (int loopIndex = 0; loopIndex < loadingScreen.getPlayers().length; loopIndex++) {
+			if (loadingScreen.getPlayers()[loopIndex]== PlayerType.HUMAN) {
+				numHumanPlayers++;
+			}
+		}
+		
+		if (numHumanPlayers == 0) {
+			loadingScreen.warn();
+			return false;
+		}
+		
+		return true;		
 	}
 
 	private void getPlayerNames() {
@@ -135,13 +154,18 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		}
 	}
 
-	private void updateGamePanel() {
+	private void changeToGameBoard() {
 		gamePanel.removeAll();
 		gamePanel.add(actionPanel, BorderLayout.SOUTH);
 		gamePanel.add(gameBoard, BorderLayout.CENTER);
 		mainFrame.pack();
 		mainFrame.revalidate();
 		mainFrame.repaint();
+		gameEngine.startRound(this);
 	}
-
+	
+	private void updateGUI() {
+		mainFrame.revalidate();
+		mainFrame.repaint();
+	}
 }

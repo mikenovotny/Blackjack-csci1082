@@ -25,21 +25,7 @@ public class Blackjack {
 				newGame = new BlackjackGUI();
 			}
 		});
-		//GameEngine.newTable();
 	}
-
-	
-	
-	public BlackjackGUI getNewGame() {
-		return newGame;
-	}
-
-
-
-	public void setNewGame(BlackjackGUI newGame) {
-		this.newGame = newGame;
-	}
-
 
 
 	/**

@@ -23,7 +23,7 @@ public class ActionPanel extends JPanel {
 	
 	// Menu Panel
 	private JButton cashOut = new JButton("Cash Out");
-	private JTextArea handHistory = new JTextArea();
+	private JTextArea gameHistory = new JTextArea();
 	
 	// Panels
 	private JPanel handActionPanel = new JPanel(new GridLayout(1, 4, 10, 10));
@@ -41,6 +41,13 @@ public class ActionPanel extends JPanel {
 		this.add(handActionPanel);
 	}
 	
+	
+	
+	public JTextArea getGameHistory() {
+		return gameHistory;
+	}
+
+
 	private ImageIcon createImageIcon(String path) {
 		java.net.URL imgURL = getClass().getResource(path);
 		
@@ -113,7 +120,7 @@ public class ActionPanel extends JPanel {
 	
 	private void buildMenuPanel() {
 		menuPanel.add(cashOut, BorderLayout.SOUTH);
-		menuPanel.add(handHistory, BorderLayout.CENTER);
+		menuPanel.add(gameHistory, BorderLayout.CENTER);
 		menuPanel.setBackground(Color.BLACK);
 	}
 }

@@ -20,11 +20,12 @@ import csci_1082.finalproject.blackjack.PlayOption;
 import csci_1082.finalproject.blackjack.PlayerType;
 import csci_1082.finalproject.blackjack.Rank;
 import csci_1082.finalproject.blackjack.StartingOption;
+import csci_1082.finalproject.blackjackGUI.*;
 
 public class GameEngine {
 	
-	private Dealer dealer;
-	private Shoe deckShoe;
+	private final Dealer dealer;
+	private final Shoe deckShoe;
 	private boolean quit;
 	private List<Player> playerList;									// Declare array to hold player list
 	public static final int MAXTOTAL = 21;
@@ -33,6 +34,7 @@ public class GameEngine {
 	public static final double BLACKJACK_PAYOUT = 2.5;					// Blackjack pays out at 3 to 2.  This is set at 2.5 as we've already removed the original bet from the players money
 	public static final int COMPUTER_MAX_BET = 30;
 	public static final int COMPUTER_MIN_BET = 10;
+	private BlackjackGUI blackjackGUI;
 	
 	/**
 	 * Constructor for the game Engine.  This will create the dealer and deckShoe
@@ -130,21 +132,21 @@ public class GameEngine {
 	 * @param None
 	 * @return Nothing
 	 */
-	private void startRound() {
+	public void startRound(BlackjackGUI blackjackGUI) {
 		
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case COMPUTER:
 					// Computer player has no money, remove them from table
 					if (currentPlayer.getPlayerMoney() <= 0) {
-						System.out.println(currentPlayer.getPlayerName() + " is out of money!  They have left the table.");
+						blackjackGUI.getActionPanel().getGameHistory().append(currentPlayer.getPlayerName() + " is out of money!  They have left the table.\n");
 						this.playerList.remove(currentPlayer);
 					}
 					break;
 				case HUMAN: 
 					// Player has no money.  Quit
 					if (currentPlayer.getPlayerMoney() <= 0) {
-						System.out.println("Sorry " + currentPlayer.getPlayerName() + " !  You are Broke!  Come again when you have more money!");
+						blackjackGUI.getActionPanel().getGameHistory().append("Sorry " + currentPlayer.getPlayerName() + " !  You are Broke!  Come again when you have more money!\n");
 						System.exit(0);
 					} else {
 						// Let player play or quit
@@ -152,7 +154,7 @@ public class GameEngine {
 					}
 					
 					if (this.isQuit() == true) {
-						System.out.println("Thanks for Playing!");
+						blackjackGUI.getActionPanel().getGameHistory().append("Thanks for Playing!\n");
 						System.exit(0);
 					}
 					break;
@@ -161,7 +163,7 @@ public class GameEngine {
 					this.updateDealerObject();
 					break;
 				default:
-					System.out.println("Error! Can't find player!");
+					blackjackGUI.getActionPanel().getGameHistory().append("Error! Can't find player!\n");
 					System.exit(0);						
 			}
 		}
@@ -174,11 +176,21 @@ public class GameEngine {
 	 * This is the main game flow logic engine.  This makes all the major calls to other methods
 	 * to control how the game works
 	 */
-	private void playGame() {	
+	public void playGame() {	
 		// Get the player bets
 		for (Player currentPlayer : this.playerList) {
 			for (PlayerHands hand : currentPlayer.getPlayerHands()) {
-				this.dealer.getBets(currentPlayer, hand);
+				blackjackGUI.getActionPanel().getGameHistory().append(currentPlayer + " emter your Bet amount\n");
+				Thread getBetThread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							this.dealer.getBets(currentPlayer, hand, blackjackGUI);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				});
 			}
 		}
 				

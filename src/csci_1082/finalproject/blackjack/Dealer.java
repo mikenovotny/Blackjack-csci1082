@@ -75,14 +75,11 @@ public class Dealer extends Player{
 	 * Method to get the bet amount from a player.  Human players will be asked.  
 	 * Computer players bet a random amount.  Dealer doesn't bet.
 	 */
-	public void getBets(Player currentPlayer, PlayerHands hand) {
-		// Create scanner to get keyboard input
-		Scanner input = new Scanner(System.in);
-		
+	public double getBets(Player currentPlayer, PlayerHands hand) {
 		switch (currentPlayer.getType()) {
 			case HUMAN:
 				do {
-					System.out.print(currentPlayer.getPlayerName() + " enter your bet amount: $");
+					getHumanBet();
 					double bet = input.nextDouble();
 					
 					// Make sure they have enough money left to make this bet
