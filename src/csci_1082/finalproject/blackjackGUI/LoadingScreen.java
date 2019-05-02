@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import csci_1082.finalproject.blackjack.Player;
+import csci_1082.finalproject.blackjack.PlayerType;
+
 import javax.swing.*;
 
 public class LoadingScreen extends JPanel implements ActionListener, ItemListener{
@@ -30,13 +33,16 @@ public class LoadingScreen extends JPanel implements ActionListener, ItemListene
 	private JComboBox<String> seat7 = new JComboBox<String>(seatOptions);
 	private int seatChoices = 128;
 	private int baseSeatByte = 0;
+	private Player[] players = new Player[7];
+	
+	private NamePopUp namePopUpFrame = new NamePopUp();
+	private String tempName = null;
 
 	
 	public LoadingScreen() {
 		buildLogoPanel();
 		buildSeatPanel();
 		buildLoadingScreen();
-		validate();
 	}
 	
 	private void buildLogoPanel() {
@@ -75,7 +81,7 @@ public class LoadingScreen extends JPanel implements ActionListener, ItemListene
 		seat5.addItemListener(this);
 		seat6.addItemListener(this);
 		seat7.addItemListener(this);
-		playButton.addActionListener(this);
+		namePopUpFrame.getOkButton().addActionListener(this);
 	}
 	
 	private void checkIfSeatsFilled() {
@@ -118,74 +124,170 @@ public class LoadingScreen extends JPanel implements ActionListener, ItemListene
 				 * For all seat events, if the selected index is not the first JComboBox entry 
 				 * then change the associated bit to a one.
 				 */
-				if(seat1.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 0);
-				} 
-				
-				/*
-				 * For all seat events, if the selected Index goes back to being the first JComboBox
-				 * entry then set the associated bit to a zero.
-				 */
-				else {
-					seatChoices &= ~(1 << 0);
+				switch (seat1.getSelectedIndex()) {
+					case 0: 
+						seatChoices &= ~(1 << 0);
+						break;
+					case 1: 
+						seatChoices |= (1 << 0);
+						namePopUpFrame.clearNameTextField();
+						namePopUpFrame.setVisible(true);
+						break;
+					case 2:
+						seatChoices |= (1 << 0);
+						players[0] = PlayerType.COMPUTER;
+						break;
+					case 3:
+						seatChoices |= (1 << 0);
+						players[0] = null;
+						break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat2) {
-				if(seat2.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 1);
-				} else {
+				switch (seat2.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 1);
+					break;
+				case 1: 
+					seatChoices |= (1 << 1);
+					players[1] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 1);
+					players[1] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 1);
+					players[1] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat3) {
-				if(seat3.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 2);
-				} else {
+				switch (seat3.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 2);
+					break;
+				case 1: 
+					seatChoices |= (1 << 2);
+					players[2] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 2);
+					players[2] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 2);
+					players[2] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat4) {
-				if(seat4.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 3);
-				} else {
+				switch (seat4.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 3);
+					break;
+				case 1: 
+					seatChoices |= (1 << 3);
+					players[3] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 3);
+					players[3] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 3);
+					players[3] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat5) {
-				if(seat5.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 4);
-				} else {
+				switch (seat5.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 4);
+					break;
+				case 1: 
+					seatChoices |= (1 << 4);
+					players[4] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 4);
+					players[4] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 4);
+					players[4] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat6) {
-				if(seat6.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 5);
-				} else {
+				switch (seat6.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 5);
+					break;
+				case 1: 
+					seatChoices |= (1 << 5);
+					players[5] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 5);
+					players[5] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 5);
+					players[5] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 			else if (event.getSource() == seat7) {
-				if(seat7.getSelectedIndex() > 0) {
-					seatChoices |= (1 << 6);
-				} else {
+				switch (seat7.getSelectedIndex()) {
+				case 0: 
 					seatChoices &= ~(1 << 6);
+					break;
+				case 1: 
+					seatChoices |= (1 << 6);
+					players[6] = PlayerType.HUMAN;
+					break;
+				case 2:
+					seatChoices |= (1 << 6);
+					players[6] = PlayerType.COMPUTER;
+					break;
+				case 3:
+					seatChoices |= (1 << 6);
+					players[6] = null;
+					break;
 				}
 				checkIfSeatsFilled();
 			}
 		}
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+	
+	public Player[] getPlayers() {
+		return players;
 	}
 
+	public JButton getPlayButton() {
+		return playButton;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		switch (event.getActionCommand()) {
+		case "OK":
+			tempName = namePopUpFrame.getNameTextField().getText();
+			if (tempName.length() < 1) {
+				namePopUpFrame.warn();
+			} else {
+				
+				namePopUpFrame.setVisible(false);
+			}
+			break;
+		}		
+	}
 }

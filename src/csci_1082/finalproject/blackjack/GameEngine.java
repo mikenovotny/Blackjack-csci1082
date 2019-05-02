@@ -90,69 +90,33 @@ public class GameEngine {
 	}
 	
 	
+	public List<Player> getPlayerList() {
+		return playerList;
+	}
+
+
 	/**
 	 * Method to start a new blackjack table.  
 	 *  
 	 * @return Nothing
 	 */
-	public static void newTable() {
+	public static GameEngine newTable() {
 		// Create the game engine
 		GameEngine gameEngine = new GameEngine();
+		return gameEngine;
 		
 		// Start a new BlackJack table
-		gameEngine.startTable();
+		//gameEngine.startTable();
 	}
 	
 	/**
 	 * Method to populate the new BlackJack table with players
 	 */
-	public void startTable() {
-		
-		// Create scanner to get keyboard input
-		Scanner input = new Scanner(System.in);
-		
-		// Loop through and populate the seats.  Dealer is seat 0, start at 1
-		int newSeat = 1;
-		int compPlayers = 0;
-		do {
-			System.out.print("Seat " + (newSeat) + ":" + 
-							 "\n\t(e)mpty" + 
-							 "\n\t(h)uman player" + 
-							 "\n\t(c)omputer player" + 
-							 "\nHow do you want to fill Seat " + (newSeat) + "? ");
-			
-			char seatOption = input.nextLine().toLowerCase().charAt(0);
-			
-			switch (seatOption) {
-				case 'e':
-					newSeat++;
-					break;
-				case 'h':
-					System.out.print("Enter your name: ");
-					String playerName = input.nextLine();
-					Player humanPlayer = new Player(playerName, PlayerType.HUMAN, newSeat);
-					this.playerList.add(humanPlayer);
-					newSeat++;
-					break;
-				case 'c':
-					String compPlayerName = "Computer " + (compPlayers + 1);
-					Player compPlayer = new Player(compPlayerName, PlayerType.COMPUTER, newSeat);
-					this.playerList.add(compPlayer);
-					newSeat++;
-					compPlayers++;
-					break;
-				default:
-					System.out.println("Error!  Invalid selection");
-					break;
-			} 
-		} while (newSeat < 8);
-			
-		// Add the dealer to the playerList.
-		this.playerList.add(this.dealer);	
-		
+	public void addPlayer(String name, PlayerType type, int seat) {
+		Player newPlayer = new Player(name, type, seat);
+		this.playerList.add(newPlayer);
 		// Start the first round
-		this.startRound();
-				
+		//this.startRound();
 	}
 
 	

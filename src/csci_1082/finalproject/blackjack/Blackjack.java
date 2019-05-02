@@ -9,15 +9,22 @@
  */
 
 package csci_1082.finalproject.blackjack;
+import javax.swing.SwingUtilities;
+
 import csci_1082.finalproject.blackjackGUI.*;
 
 public class Blackjack {
 	
-	private BlackjackGUI newGame = new BlackjackGUI();
+	private BlackjackGUI newGame;
 	/**
 	 * Constructor
 	 */
 	public Blackjack () {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				newGame = new BlackjackGUI();
+			}
+		});
 		//GameEngine.newTable();
 	}
 

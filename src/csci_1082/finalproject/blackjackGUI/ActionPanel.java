@@ -1,10 +1,6 @@
 package csci_1082.finalproject.blackjackGUI;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
@@ -43,7 +39,6 @@ public class ActionPanel extends JPanel {
 		this.add(menuPanel);
 		this.add(betPanel);
 		this.add(handActionPanel);
-		validate();
 	}
 	
 	private ImageIcon createImageIcon(String path) {

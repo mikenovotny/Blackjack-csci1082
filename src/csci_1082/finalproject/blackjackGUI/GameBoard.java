@@ -1,8 +1,6 @@
 package csci_1082.finalproject.blackjackGUI;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-
 import javax.swing.ImageIcon;
 import javax.swing.*;
 
@@ -17,7 +15,6 @@ public class GameBoard extends JPanel {
 		panelBG.setIcon(baseGameBoard);
 		this.setLayout(new BorderLayout());
 		this.add(panelBG, BorderLayout.CENTER);
-		validate();
 	}
 	
 	
