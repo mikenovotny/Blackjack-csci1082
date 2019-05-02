@@ -11,14 +11,12 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 	private ActionPanel actionPanel = new ActionPanel();
 	private GameBoard gameBoard = new GameBoard();
 	private LoadingScreen loadingScreen = new LoadingScreen();
-	private SeatPanel seatPanel = new SeatPanel();
 	
 	// Constructor
 	public BlackjackGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("BlackJack");
 		setLayout(new BorderLayout());
-		add(seatPanel, BorderLayout.SOUTH);
 		add(loadingScreen, BorderLayout.CENTER);
 		pack();
 		setVisible(true);
@@ -59,19 +57,6 @@ public class BlackjackGUI extends JFrame implements ActionListener {
 	public void setLoadingScreen(LoadingScreen loadingScreen) {
 		this.loadingScreen = loadingScreen;
 	}
-
-
-
-	public SeatPanel getSeatPanel() {
-		return seatPanel;
-	}
-
-
-
-	public void setSeatPanel(SeatPanel seatPanel) {
-		this.seatPanel = seatPanel;
-	}
-
 
 
 	@Override
