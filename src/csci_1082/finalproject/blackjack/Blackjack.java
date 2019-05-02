@@ -13,20 +13,35 @@ import csci_1082.finalproject.blackjackGUI.*;
 
 public class Blackjack {
 	
+	private BlackjackGUI newGame = new BlackjackGUI();
 	/**
 	 * Constructor
 	 */
 	public Blackjack () {
-		BlackjackGUI newGame = new BlackjackGUI(); 
 		//GameEngine.newTable();
 	}
 
 	
+	
+	public BlackjackGUI getNewGame() {
+		return newGame;
+	}
+
+
+
+	public void setNewGame(BlackjackGUI newGame) {
+		this.newGame = newGame;
+	}
+
+
+
 	/**
 	 * Main method.  This starts and instance of the BlackJack class
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		Blackjack gameOfBlackjack = new Blackjack();
-		}
+
+
 	}
+}
