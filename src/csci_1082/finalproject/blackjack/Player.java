@@ -42,6 +42,20 @@ public class Player {
 		this.seat = seat;
 	}
 	
+	
+	
+	public int getSeat() {
+		return seat;
+	}
+
+
+
+	public void setSeat(int seat) {
+		this.seat = seat;
+	}
+
+
+
 	/**
 	 * Method to get the players name
 	 * 

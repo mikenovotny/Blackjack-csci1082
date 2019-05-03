@@ -14,7 +14,7 @@ public class ActionPanel extends JPanel {
 	private JButton splitButton = new JButton("SPLIT");
 	
 	// Bet panel components
-	private JTextField betAmount = new JTextField();
+	private JTextField betAmount = new JTextField("0");
 	private JButton increaseBet = new JButton("+");
 	private JButton decreaseBet = new JButton("-");
 	private JButton betButton = new JButton("BET");
@@ -23,7 +23,8 @@ public class ActionPanel extends JPanel {
 	
 	// Menu Panel
 	private JButton cashOut = new JButton("Cash Out");
-	private JTextArea gameHistory = new JTextArea(10,20);
+	private JTextArea gameHistory = new JTextArea(5,40);
+	
 	
 	// Panels
 	private JPanel handActionPanel = new JPanel(new GridLayout(1, 4, 10, 10));
@@ -43,6 +44,18 @@ public class ActionPanel extends JPanel {
 	
 	
 	
+	public JButton getHitButton() {
+		return hitButton;
+	}
+
+
+
+	public void setHitButton(JButton hitButton) {
+		this.hitButton = hitButton;
+	}
+
+
+
 	public JButton getStandButton() {
 		return standButton;
 	}
@@ -153,32 +166,41 @@ public class ActionPanel extends JPanel {
 	
 	private void buildHandActionPanel() {
 		// Format and Add Split Button
-		ImageIcon splitButtonIcon = createImageIcon(baseImagePath + "splitButtonIcon.jpg");
+		
+		/*
+	 	ImageIcon splitButtonIcon = createImageIcon(baseImagePath + "splitButtonIcon.jpg");
 		ImageIcon splitButtonIconPressed = createImageIcon(baseImagePath + "splitButtonIconPressed.jpg");
 		ImageIcon splitButtonIconDisabled = createImageIcon(baseImagePath + "splitButtonDisabled.jpg");
 		formatButton(splitButton, splitButtonIcon, splitButtonIconPressed, splitButtonIconDisabled);
+		*/
 		//splitButton.setEnabled(false);
 		handActionPanel.add(splitButton);
 				
 		// Format and Add Double Down button
+		/*
 		ImageIcon doubleDownIcon = createImageIcon(baseImagePath + "doubleDownIcon.jpg");
 		ImageIcon doubleDownIconPressed = createImageIcon(baseImagePath + "doubleDownIconPressed.jpg");
 		ImageIcon doubleDownIconDisabled = createImageIcon(baseImagePath + "doubleDownDisabled.jpg");
 		formatButton(doubleButton, doubleDownIcon, doubleDownIconPressed, doubleDownIconDisabled);
+		*/
 		handActionPanel.add(doubleButton);
 		
 		// Format and add Stand button
+		/*
 		ImageIcon standButtonIcon = createImageIcon(baseImagePath + "standButtonIcon.jpg");
 		ImageIcon standButtonIconPressed = createImageIcon(baseImagePath + "standButtonIconPressed.jpg");
 		ImageIcon standButtonIconDisabled = createImageIcon(baseImagePath + "standButtonDisabled.jpg");
 		formatButton(standButton, standButtonIcon, standButtonIconPressed, standButtonIconDisabled);
+		*/
 		handActionPanel.add(standButton);
 		
 		// Format and add Hit button
+		/*
 		ImageIcon hitButtonIcon = createImageIcon(baseImagePath + "hitButtonIcon.jpg");
 		ImageIcon hitButtonIconPressed = createImageIcon(baseImagePath + "hitButtonIconPressed.jpg");
 		ImageIcon hitButtonIconDisabled = createImageIcon(baseImagePath + "hitButtonDisabled.jpg");
 		formatButton(hitButton, hitButtonIcon, hitButtonIconPressed, hitButtonIconDisabled);
+		*/
 		handActionPanel.add(hitButton);		
 		
 		handActionPanel.setBackground(Color.BLACK);
@@ -202,7 +224,7 @@ public class ActionPanel extends JPanel {
 	
 	private void buildMenuPanel() {
 		menuPanel.add(cashOut, BorderLayout.SOUTH);
-		menuPanel.add(gameHistory, BorderLayout.CENTER);
+		menuPanel.add(new JScrollPane(gameHistory), BorderLayout.CENTER);
 		menuPanel.setBackground(Color.BLACK);
 	}
 }

@@ -55,7 +55,7 @@ public class Card {
 	}
 	
 	public String getFileName() {
-		String fileName = rank + "" + suit + ".png";
+		String fileName = rank + "" + suit + ".jpg";
 		return fileName;
 	}
 

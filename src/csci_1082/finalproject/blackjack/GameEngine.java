@@ -37,6 +37,8 @@ public class GameEngine {
 	private BlackjackGUI blackjackGUI;
 	private Player currentGUIPlayer;
 	private int currentPlayerIndex = 0;
+	private boolean betsComplete = false;
+	private boolean cardsDelt = false;
 	
 	/**
 	 * Constructor for the game Engine.  This will create the dealer and deckShoe
@@ -85,6 +87,16 @@ public class GameEngine {
 		this.quit = true;
 	}
 	
+	
+	
+	public boolean isCardsDelt() {
+		return cardsDelt;
+	}
+
+	public void setCardsDelt(boolean cardsDelt) {
+		this.cardsDelt = cardsDelt;
+	}
+
 	/**
 	 * Method to set the DEALERPLAYER and DEALERHAND objects
 	 */
@@ -98,6 +110,14 @@ public class GameEngine {
 		return playerList;
 	}
 
+
+	public boolean isBetsComplete() {
+		return betsComplete;
+	}
+
+	public void setBetsComplete(boolean betsComplete) {
+		this.betsComplete = betsComplete;
+	}
 
 	/**
 	 * Method to start a new blackjack table.  
@@ -185,6 +205,7 @@ public class GameEngine {
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
 			System.out.println(this.currentGUIPlayer.toString());
 		} else {
+			areBetsDone();
 			this.currentPlayerIndex = 0;
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
 		}
@@ -194,6 +215,18 @@ public class GameEngine {
 	
 	
 	
+	private void areBetsDone() {
+		// Set this to true, then loop through and if we find a bet with a zero value set to false
+		betsComplete = true;
+		for (Player player : playerList) {
+			for (PlayerHands hand : player.getPlayerHands()) {
+				if (hand.getHandBet() == 0 && player.getType() != PlayerType.DEALER) {
+					betsComplete = false;
+				} 
+			}
+		}
+	}
+
 	public Player getCurrentGUIPlayer() {
 		return currentGUIPlayer;
 	}
@@ -342,7 +375,7 @@ public class GameEngine {
 	 * 
 	 * @return nothing
 	 */
-	private void dealCards() {
+	public void dealCards() {
 		// Message to give indication of what's happening
 		System.out.println("\nDealing Cards...");
 		
@@ -367,6 +400,7 @@ public class GameEngine {
 		}
 		
 		System.out.println("Cards Delt\n");
+		cardsDelt = true;
 	}
 	
 	/**
@@ -740,7 +774,7 @@ public class GameEngine {
 	 * @param player
 	 * @return option the computer should do
 	 */
-	private int computerDecision(Player currentPlayer, PlayerHands hand) {
+	public int computerDecision(Player currentPlayer, PlayerHands hand) {
 			
 		// Get the dealer's upCard
 		Card dealerUpCard = dealer.getDealersUpCard(DEALERPLAYER);
@@ -849,7 +883,7 @@ public class GameEngine {
 	 * @param player
 	 * @return option dealer wants to take
 	 */
-	private int dealerDecision() {
+	public int dealerDecision() {
 		// Determine if computer has any aces
 		int numberOfAces = 0;
 		for (Card dealerCard : DEALERHAND.getPlayerHand()) {
@@ -882,5 +916,10 @@ public class GameEngine {
 			
 		// Hit anything else
 		return PlayOption.HIT.getPlayOptionValue();
+	}
+
+	public void addDealerToList() {
+		playerList.add(dealer);
+		
 	}
 }

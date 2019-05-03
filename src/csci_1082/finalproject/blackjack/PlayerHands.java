@@ -130,14 +130,16 @@ public class PlayerHands {
 	 * @return true if both cards are the same rank else false
 	 */
 	public boolean canSplit () {
-		
+		/*
+		 * Disabling all canSplit functionality for now
+		 * 
 		if (this.getPlayerHand().size() == 2 &&
 		    this.getPlayerHand().get(FIRSTCARD).getCardRankValue() == this.getPlayerHand().get(SECONDCARD).getCardRankValue()) { 
 				return true; 
 		}
-		else { 
+		else {
+		*/ 
 			return false; 
-		}
 
 	}
 	
