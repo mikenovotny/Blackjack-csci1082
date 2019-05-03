@@ -71,57 +71,20 @@ public class Dealer extends Player{
 		currentPlayer.addMoney(hand.getHandBet());
 	}
 	
+	
 	/** 
 	 * Method to get the bet amount from a player.  Human players will be asked.  
 	 * Computer players bet a random amount.  Dealer doesn't bet.
 	 */
-	public double getBets(Player currentPlayer, PlayerHands hand) {
+	public void getBets(Player currentPlayer, PlayerHands hand) {
 		switch (currentPlayer.getType()) {
 			case HUMAN:
-				do {
-					getHumanBet();
-					double bet = input.nextDouble();
-					
-					// Make sure they have enough money left to make this bet
-					if (!currentPlayer.checkFunds(bet)) {
-						System.out.println("Insufficient money to bet this amount ($" + bet + ")!\n"+
-											"You have: $" + currentPlayer.getPlayerMoney());			
-					} else {
-						hand.setHandBet(bet);
-					}
-					
-					// Dump buffer
-					if (input.hasNextLine()) {
-						input.nextLine();
-					}
-				} while (hand.getHandBet() <= 0);
-				
-				// Remove the bet from the players total
+			case COMPUTER:
 				this.takeBet(currentPlayer, hand);
 				break;
-			case COMPUTER:
-				// Generate a random bet for the computer between 10 and 30
-				Random randomBet = new Random();
-				int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
-				
-				System.out.println("The computers random bet is: " + computerBet);
-				hand.setHandBet(computerBet);									// use a default bet for the computer
-				
-				// Computer doesn't have enough money.  Set his bet to the remainder of his money
-				if (!currentPlayer.checkFunds(computerBet)) {
-					hand.setHandBet(currentPlayer.getPlayerMoney());
-				}
-				// Remove the bet from the players total
-				takeBet(currentPlayer, hand);
+			// The dealer doesn't bet.  Do nothing.
+			case DEALER:
 				break;
-			
-				// The dealer doesn't bet.  Do nothing.
-				case DEALER:
-					break;
-						
-				default:
-					System.out.println("Something went wrong!.  I am trying to get the type of player in the playGame function!");
-					System.exit(0);
 		}
 	}
 	

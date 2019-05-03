@@ -35,6 +35,8 @@ public class GameEngine {
 	public static final int COMPUTER_MAX_BET = 30;
 	public static final int COMPUTER_MIN_BET = 10;
 	private BlackjackGUI blackjackGUI;
+	private Player currentGUIPlayer;
+	private int currentPlayerIndex = 0;
 	
 	/**
 	 * Constructor for the game Engine.  This will create the dealer and deckShoe
@@ -117,10 +119,11 @@ public class GameEngine {
 	public void addPlayer(String name, PlayerType type, int seat) {
 		Player newPlayer = new Player(name, type, seat);
 		this.playerList.add(newPlayer);
-		// Start the first round
-		//this.startRound();
 	}
 
+	public void setGUIObject(BlackjackGUI blackjackGUI) {
+		this.blackjackGUI = blackjackGUI;
+	}
 	
 	/**
 	 * Method to begin the cycle of rounds.  This method first checks the players has chosen
@@ -132,8 +135,7 @@ public class GameEngine {
 	 * @param None
 	 * @return Nothing
 	 */
-	public void startRound(BlackjackGUI blackjackGUI) {
-		
+	public void startRound() {
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case COMPUTER:
@@ -148,9 +150,6 @@ public class GameEngine {
 					if (currentPlayer.getPlayerMoney() <= 0) {
 						blackjackGUI.getActionPanel().getGameHistory().append("Sorry " + currentPlayer.getPlayerName() + " !  You are Broke!  Come again when you have more money!\n");
 						System.exit(0);
-					} else {
-						// Let player play or quit
-						this.getStartOption(currentPlayer);
 					}
 					
 					if (this.isQuit() == true) {
@@ -161,15 +160,59 @@ public class GameEngine {
 				case DEALER:
 					// Create a constant pointer to the dealer:
 					this.updateDealerObject();
-					break;
-				default:
-					blackjackGUI.getActionPanel().getGameHistory().append("Error! Can't find player!\n");
-					System.exit(0);						
+					break;					
 			}
 		}
-		playGame();
+		// start with the first user
+		currentGUIPlayer = this.playerList.get(currentPlayerIndex);
+		blackjackGUI.processUser();
 	}
 	
+	public boolean hasMorePlayers() {
+		int numberOfUsers = this.playerList.size();
+		System.out.println("Number of users = " + numberOfUsers);
+		if (currentPlayerIndex  < numberOfUsers - 1) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void switchToNextPlayer() {
+		System.out.println("currentPlayerIndex value = " + this.currentPlayerIndex);
+		if (hasMorePlayers()) {
+			this.currentPlayerIndex++;
+			System.out.println("new currentPlayerIndex value = " + this.currentPlayerIndex);
+			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
+			System.out.println(this.currentGUIPlayer.toString());
+		} else {
+			this.currentPlayerIndex = 0;
+			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
+		}
+		System.out.println(this.currentGUIPlayer.toString());
+		blackjackGUI.processUser();
+	}
+	
+	
+	
+	public Player getCurrentGUIPlayer() {
+		return currentGUIPlayer;
+	}
+
+
+	public void setCurrentGUIPlayer(Player currentGUIPlayer) {
+		this.currentGUIPlayer = currentGUIPlayer;
+	}
+	
+	
+
+	public int getCurrentPlayerIndex() {
+		return currentPlayerIndex;
+	}
+
+	public void setCurrentPlayerIndex(int currentPlayerIndex) {
+		this.currentPlayerIndex = currentPlayerIndex;
+	}
+
 	/**
 	 * Method to begin the rounds
 	 * 
@@ -177,22 +220,6 @@ public class GameEngine {
 	 * to control how the game works
 	 */
 	public void playGame() {	
-		// Get the player bets
-		for (Player currentPlayer : this.playerList) {
-			for (PlayerHands hand : currentPlayer.getPlayerHands()) {
-				blackjackGUI.getActionPanel().getGameHistory().append(currentPlayer + " emter your Bet amount\n");
-				Thread getBetThread = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							this.dealer.getBets(currentPlayer, hand, blackjackGUI);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-			}
-		}
 				
 		// Deal the cards to the players
 		this.dealCards();
@@ -404,7 +431,7 @@ public class GameEngine {
 		}
 		
 		// Start a new round
-		this.startRound();
+		//this.startRound();
 	}
 	
 	/**

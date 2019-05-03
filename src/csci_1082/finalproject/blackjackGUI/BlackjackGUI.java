@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import csci_1082.finalproject.blackjack.GameEngine;
@@ -44,6 +45,12 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 
 	public void addListeners() {
 		loadingScreen.getPlayButton().addActionListener(this);
+		actionPanel.getBetButton().addActionListener(this);
+		actionPanel.getIncreaseBet().addActionListener(this);
+		actionPanel.getDecreaseBet().addActionListener(this);
+		actionPanel.getStandButton().addActionListener(this);
+		actionPanel.getSplitButton().addActionListener(this);
+		actionPanel.getDoubleButton().addActionListener(this);
 	}
 	
 	public ActionPanel getActionPanel() {
@@ -91,9 +98,50 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				changeToGameBoard();
 			}
 			break;
+		case "BET":
+			Player currentPlayer = gameEngine.getCurrentGUIPlayer();
+			if (currentPlayer.getType() == PlayerType.COMPUTER) {
+				double computerBet = currentPlayer.generateComputerBet();
+				if (!currentPlayer.checkFunds(computerBet)) {
+					computerBet = currentPlayer.getPlayerMoney();
+				}
+				actionPanel.setBetAmount(computerBet);
+			}
+			if (currentPlayer.checkFunds(Double.parseDouble(actionPanel.getBetAmount().getText()))) {
+				currentPlayer.getPlayerHands().get(0).setHandBet(Double.parseDouble(actionPanel.getBetAmount().getText()));
+				gameEngine.getDealer().getBets(currentPlayer, currentPlayer.getPlayerHands().get(0));
+				actionPanel.getGameHistory().append(currentPlayer.getPlayerName() + " bet " + currentPlayer.getPlayerHands().get(0).getHandBet() + "\n");
+				actionPanel.clearBetAmount();
+				gameEngine.switchToNextPlayer();
+			} else {
+				fundsWarning();
+			}
+			break;
+		case "+":
+			double bet = Double.parseDouble(actionPanel.getBetAmount().getText());
+			bet += 5;
+			actionPanel.setBetAmount(bet);
+			break;
+		case "-":
+			double bet2 = Double.parseDouble(actionPanel.getBetAmount().getText());
+			bet2 -= 5;
+			actionPanel.setBetAmount(bet2);
+			break;
+		case "HIT":
+			break;
+		case "STAND":
+			break;
+		case "SPLIT":
+			break;
+		case "DOUBLE":
+			break;
 		}
 			
 		
+	}
+	
+	private void fundsWarning() {
+		JOptionPane.showMessageDialog(null, "Error: You do not have enough money to make this Bet!", "Error Message", JOptionPane.ERROR_MESSAGE);
 	}
 
 	private boolean checkIfHumanPlayer() {
@@ -122,7 +170,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				switch (loopIndex) {
 				case 0:
 					tempName = loadingScreen.getSeat1TextField().getText();
-					
 					break;
 				case 1:
 					tempName = loadingScreen.getSeat2TextField().getText();
@@ -161,11 +208,31 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		mainFrame.pack();
 		mainFrame.revalidate();
 		mainFrame.repaint();
-		gameEngine.startRound(this);
+		gameEngine.setGUIObject(this);
+		gameEngine.startRound();
 	}
 	
 	private void updateGUI() {
 		mainFrame.revalidate();
 		mainFrame.repaint();
+	}
+
+	public void processUser() {
+		Player currentPlayer = gameEngine.getCurrentGUIPlayer();
+		actionPanel.getGameHistory().append("Current Player is: " + currentPlayer.getPlayerName() + "\n");
+		//TODO: display information about the user
+		switch (currentPlayer.getType()) {
+		case COMPUTER:
+			actionPanel.getGameHistory().append("I found a Computer Player!\n");
+			if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
+				actionPanel.getBetButton().doClick();
+			}
+			break;
+		case HUMAN:
+			break;
+		case DEALER:
+			System.out.println("I made it to the Dealer spot");
+			break;
+		}
 	}
 }

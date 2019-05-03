@@ -8,10 +8,10 @@ public class ActionPanel extends JPanel {
 	
 	// Hand action panel components
 	private String baseImagePath = "/images/"; 
-	private JButton hitButton = new JButton();
-	private JButton standButton = new JButton();
-	private JButton doubleButton = new JButton();
-	private JButton splitButton = new JButton();
+	private JButton hitButton = new JButton("HIT");
+	private JButton standButton = new JButton("STAND");
+	private JButton doubleButton = new JButton("DOUBLE");
+	private JButton splitButton = new JButton("SPLIT");
 	
 	// Bet panel components
 	private JTextField betAmount = new JTextField();
@@ -23,7 +23,7 @@ public class ActionPanel extends JPanel {
 	
 	// Menu Panel
 	private JButton cashOut = new JButton("Cash Out");
-	private JTextArea gameHistory = new JTextArea();
+	private JTextArea gameHistory = new JTextArea(10,20);
 	
 	// Panels
 	private JPanel handActionPanel = new JPanel(new GridLayout(1, 4, 10, 10));
@@ -43,9 +43,91 @@ public class ActionPanel extends JPanel {
 	
 	
 	
+	public JButton getStandButton() {
+		return standButton;
+	}
+
+
+
+	public void setStandButton(JButton standButton) {
+		this.standButton = standButton;
+	}
+
+
+
+	public JButton getDoubleButton() {
+		return doubleButton;
+	}
+
+
+
+	public void setDoubleButton(JButton doubleButton) {
+		this.doubleButton = doubleButton;
+	}
+
+
+
+	public JButton getSplitButton() {
+		return splitButton;
+	}
+
+
+
+	public void setSplitButton(JButton splitButton) {
+		this.splitButton = splitButton;
+	}
+
+
+
+	public JButton getIncreaseBet() {
+		return increaseBet;
+	}
+
+
+
+	public void setIncreaseBet(JButton increaseBet) {
+		this.increaseBet = increaseBet;
+	}
+
+
+
+	public JButton getDecreaseBet() {
+		return decreaseBet;
+	}
+
+
+
+	public void setDecreaseBet(JButton decreaseBet) {
+		this.decreaseBet = decreaseBet;
+	}
+
+
+
+	public JButton getBetButton() {
+		return betButton;
+	}
+
+
 	public JTextArea getGameHistory() {
 		return gameHistory;
 	}
+
+
+	
+	public JTextField getBetAmount() {
+		return betAmount;
+	}
+
+
+
+	public void setBetAmount(double betAmount) {
+		this.betAmount.setText(Double.toString(betAmount));
+	}
+	
+	public void clearBetAmount() {
+		this.betAmount.setText("0");
+	}
+
 
 
 	private ImageIcon createImageIcon(String path) {

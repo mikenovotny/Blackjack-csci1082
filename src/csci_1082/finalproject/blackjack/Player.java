@@ -10,6 +10,7 @@ package csci_1082.finalproject.blackjack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import csci_1082.finalproject.blackjack.PlayerType;
 
@@ -154,6 +155,14 @@ public class Player {
 		} else {
 			return true;
 		}
+	}
+	
+	public double generateComputerBet() {
+		// Generate a random bet for the computer between 10 and 30
+		Random randomBet = new Random();
+		int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
+		return computerBet;
+
 	}
 	
 	/**
