@@ -26,8 +26,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	
 	private JFrame mainFrame = new JFrame();
 	
-	private ActionPanel actionPanel = new ActionPanel();
-	private GameBoard gameBoard = new GameBoard();
+	private ActionPanel actionPanel;
+	private GameBoard gameBoard;
 	private LoadingScreen loadingScreen = new LoadingScreen();
 	private JPanel gamePanel = new JPanel(new BorderLayout());
 	private GameEngine gameEngine;
@@ -43,7 +43,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		mainFrame.pack();
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		mainFrame.setLocation(((dim.width / 2) - (mainFrame.getSize().width / 2)), ((dim.height / 2) - (mainFrame.getSize().height / 2)));
-		addListeners();
+		loadingScreen.getPlayButton().addActionListener(this);
 		mainFrame.setVisible(true);
 	}
 	
@@ -51,8 +51,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		gamePanel.add(loadingScreen, BorderLayout.CENTER);		
 	}
 
-	public void addListeners() {
-		loadingScreen.getPlayButton().addActionListener(this);
+	public void addActionPanelListeners() {
 		actionPanel.getBetButton().addActionListener(this);
 		actionPanel.getIncreaseBet().addActionListener(this);
 		actionPanel.getDecreaseBet().addActionListener(this);
@@ -240,15 +239,13 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 
 	private void changeToGameBoard() {
-		//mainFrame.setContentPane(new Background());
+		gameBoard = new GameBoard(gameEngine.getPlayerList());
+		actionPanel = new ActionPanel();
 		gamePanel.removeAll();
 		gamePanel.add(actionPanel, BorderLayout.SOUTH);
 		gamePanel.add(gameBoard, BorderLayout.CENTER);
-		gamePanel.validate();
-		//mainFrame.pack();
-		//gamePanel.setVisible(true);
-		mainFrame.validate();
-		
+		mainFrame.pack();
+		addActionPanelListeners();
 		gameEngine.setGUIObject(this);
 		gameEngine.startRound();
 	}

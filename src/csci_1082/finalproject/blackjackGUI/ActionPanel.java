@@ -7,7 +7,6 @@ import javax.swing.*;
 public class ActionPanel extends JPanel {
 	
 	// Hand action panel components
-	private String baseImagePath = "/images/"; 
 	private JButton hitButton = new JButton("HIT");
 	private JButton standButton = new JButton("STAND");
 	private JButton doubleButton = new JButton("DOUBLE");

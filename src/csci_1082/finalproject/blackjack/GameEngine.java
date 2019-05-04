@@ -27,7 +27,7 @@ public class GameEngine {
 	private final Dealer dealer;
 	private final Shoe deckShoe;
 	private boolean quit;
-	private List<Player> playerList;									// Declare array to hold player list
+	private ArrayList<Player> playerList;									// Declare array to hold player list
 	public static final int MAXTOTAL = 21;
 	public static Player DEALERPLAYER = null;
 	public static PlayerHands DEALERHAND = null;
@@ -106,7 +106,7 @@ public class GameEngine {
 	}
 	
 	
-	public List<Player> getPlayerList() {
+	public ArrayList<Player> getPlayerList() {
 		return playerList;
 	}
 
