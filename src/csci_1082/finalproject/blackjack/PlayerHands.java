@@ -11,6 +11,7 @@ public class PlayerHands {
 	private int handTotal = 0;
 	private boolean handOver = false;
 	private double handBet = 0;
+	private String handWinLossStatus = null;
 	private final int FIRSTCARD = 0;
 	private final int SECONDCARD = 1;
 	private static final int MAXTOTAL = 21;
@@ -143,6 +144,16 @@ public class PlayerHands {
 
 	}
 	
+	
+	
+	public String getHandWinLossStatus() {
+		return handWinLossStatus;
+	}
+
+	public void setHandWinLossStatus(String handWinLossStatus) {
+		this.handWinLossStatus = handWinLossStatus;
+	}
+
 	public void splitHands (Player currentPlayer, PlayerHands hand, ListIterator<PlayerHands> hands) {
 		// Create new list of cards
 		List<Card> newHand = new ArrayList<Card>();

@@ -12,7 +12,6 @@
 package csci_1082.finalproject.blackjack;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
@@ -190,26 +189,34 @@ public class GameEngine {
 	
 	public boolean hasMorePlayers() {
 		int numberOfUsers = this.playerList.size();
-		System.out.println("Number of users = " + numberOfUsers);
 		if (currentPlayerIndex  < numberOfUsers - 1) {
 			return true;
 		}
 		return false;
 	}
 	
+	private boolean isRoundOver() {
+		for (Player p : this.playerList) {
+			if (p.isTurnOver() == false) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
 	public void switchToNextPlayer() {
-		System.out.println("currentPlayerIndex value = " + this.currentPlayerIndex);
-		if (hasMorePlayers()) {
+		if (isRoundOver()) {
+			checkForWinners();
+			blackjackGUI.finishRound();
+		} else if (hasMorePlayers()) {
 			this.currentPlayerIndex++;
-			System.out.println("new currentPlayerIndex value = " + this.currentPlayerIndex);
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
-			System.out.println(this.currentGUIPlayer.toString());
 		} else {
 			areBetsDone();
 			this.currentPlayerIndex = 0;
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
 		}
-		System.out.println(this.currentGUIPlayer.toString());
 		blackjackGUI.processUser();
 	}
 	
@@ -376,9 +383,6 @@ public class GameEngine {
 	 * @return nothing
 	 */
 	public void dealCards() {
-		// Message to give indication of what's happening
-		System.out.println("\nDealing Cards...");
-		
 		// Variable to track how many cards have been dealt
 		int cardsPerPlayer = 0;
 			
@@ -398,8 +402,6 @@ public class GameEngine {
 			}
 			cardsPerPlayer++;
 		}
-		
-		System.out.println("Cards Delt\n");
 		cardsDelt = true;
 	}
 	
@@ -457,7 +459,7 @@ public class GameEngine {
 		for (Player currentPlayer : this.playerList) {
 			// Loop through each hand and determine if they win
 			for (PlayerHands hand : currentPlayer.getPlayerHands()) {
-				this.checkForWinners(currentPlayer, hand);
+				this.checkForWinners();
 			}
 			
 			// Reset the players for the next round
@@ -474,16 +476,18 @@ public class GameEngine {
 	 * @param player Card list and dealer Card list
 	 * @return true if winner
 	 */
-	public void checkForWinners(Player currentPlayer, PlayerHands hand) {
-		switch (currentPlayer.getType()) {
-			case HUMAN:
-			case COMPUTER:
-				/*
-				 *  exclude them if they got blackjack  We will pay out blackjack another way.  
-				 *  This check only excludes paying out a BlackJack hand if it is their only hand.
-				 *  A player is not allowed to be paid out blackjack on a split hand but they could
-				 *  still have a hand that would meet the isBlackJack() criteria
-				 */
+	public void checkForWinners() {
+		for (Player currentPlayer : this.playerList) {
+			switch (currentPlayer.getType()) {
+				case HUMAN:
+				case COMPUTER:
+					for (PlayerHands hand : currentPlayer.getPlayerHands()) {
+					/*
+					 *  exclude them if they got blackjack  We will pay out blackjack another way.  
+					 *  This check only excludes paying out a BlackJack hand if it is their only hand.
+					 *  A player is not allowed to be paid out blackjack on a split hand but they could
+					 *  still have a hand that would meet the isBlackJack() criteria
+					 */
 					if (hand.isBlackJack() && currentPlayer.getPlayerHands().size() == 1) {
 						System.out.println(currentPlayer.getPlayerName() + " Had blackjack and has already been paid");
 						return;
@@ -495,6 +499,7 @@ public class GameEngine {
 						this.dealer.payPlayer(currentPlayer, hand);
 						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
 										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
 					}		
 		
 					// Player beat Dealer 
@@ -503,24 +508,28 @@ public class GameEngine {
 						this.dealer.payPlayer(currentPlayer, hand);
 						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
 									       "\nYour total money is $" + currentPlayer.getPlayerMoney());
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
 					} 
 		
 					// Player pushed
 					else if(hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() == DEALERHAND.getHandTotal()) {
 						this.dealer.payPlayer(currentPlayer, hand, true);
 						System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("push");
 					}
 		
 					// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
 					else {
 						System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + hand.getHandBet() + 
 										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("lost");
 					}
 					break;
-				
-			case DEALER:
-				// Dealer can't get paid, just break the loop
-				break;
+					}
+					case DEALER:
+						// Dealer can't get paid, just break the loop
+						break;
+				}
 		}
 	}
 	
@@ -921,5 +930,14 @@ public class GameEngine {
 	public void addDealerToList() {
 		playerList.add(dealer);
 		
+	}
+
+	public boolean playerTurnsOver() {
+		for (Player p : playerList) {
+			if (!(p.isTurnOver()) && p.getType() != PlayerType.DEALER) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

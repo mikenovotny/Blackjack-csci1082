@@ -119,8 +119,14 @@ public class LoadingScreen extends JPanel implements ItemListener, DocumentListe
 		}
 	}
 	
-	public void warn() {
+	public void noHumanPlayersWarn() {
 		JOptionPane.showMessageDialog(null, "Error: You must have at least one Human Player!", "Error Message", JOptionPane.ERROR_MESSAGE);
+	}
+	
+	public void emptyNameWarn(int seat) {
+		// Increment the incoming seat value as this came from a zero indexed for loop
+		seat += 1;
+		JOptionPane.showMessageDialog(null, "Error: You must enter a Player Name for seat " + seat, "Error Message", JOptionPane.ERROR_MESSAGE);
 	}
 	
 	public PlayerType[] getPlayers() {

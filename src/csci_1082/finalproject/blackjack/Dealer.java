@@ -32,7 +32,7 @@ public class Dealer extends Player{
 	 * @param dealerIndex
 	 */
 	public void displayDealersUpCard(Player dealer) {
-		System.out.println("Dealer is showing a " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getRank() + " of " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getSuit());
+		System.out.println("Dealer is showing a " + dealer.getPlayerHands().get(0).getPlayerHand().get(1).getRank() + " of " + dealer.getPlayerHands().get(0).getPlayerHand().get(0).getSuit());
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class Dealer extends Player{
 	 * @return first Card in dealer's hand
 	 */
 	public Card getDealersUpCard(Player dealer) {
-		return dealer.getPlayerHands().get(0).getPlayerHand().get(0);
+		return dealer.getPlayerHands().get(0).getPlayerHand().get(1);
 	}
 	
 	/**

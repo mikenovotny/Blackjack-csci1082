@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -21,7 +22,9 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import csci_1082.finalproject.blackjack.Card;
 import csci_1082.finalproject.blackjack.Player;
+import csci_1082.finalproject.blackjack.PlayerHands;
 import csci_1082.finalproject.blackjack.PlayerType;
 
 public class GameBoard extends JPanel {
@@ -83,7 +86,7 @@ public class GameBoard extends JPanel {
 		for (int seat = 0; seat < 9; seat++) {
 			JLabel seatLabel = new JLabel();
 			seatLabel.setMaximumSize(new Dimension(150, 50));
-			seatLabel.setFont(new Font("Arial Black", Font.PLAIN, 20));
+			seatLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 			seatLabel.setForeground(Color.BLACK);
 			seatLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 			String seatLabelText = "<html>Seat " + seat;
@@ -268,112 +271,132 @@ public class GameBoard extends JPanel {
 
 
 	private void buildWinPanel() {
-		winLabel.setVisible(false);
+		winLabel.setFont(new Font("Arial Black", Font.BOLD, 28));
 		winLabel.setSize(150, 150);
 		winPanel.add(winLabel);	
 		winPanel.setBackground(new Color(0,128,0,255));
-		//winPanel.setOpaque(false);
 	}
 
-	public void updateCardPanel(int seat, JLabel card) {
-		setCardAttributes(seat, card);
-		switch (seat) {
-		case 0:
-			seat0Cards.add(card, new Integer(seat0depth++));
-			break;
-		case 1:
-			seat1Cards.add(card, new Integer(seat1depth++));
-			break;
-		case 2:
-			seat2Cards.add(card, new Integer(seat2depth++));
-			break;
-		case 3:
-			seat3Cards.add(card, new Integer(seat3depth++));
-			break;
-		case 4:
-			seat4Cards.add(card, new Integer(seat4depth++));
-			break;
-		case 5:
-			seat5Cards.add(card, new Integer(seat5depth++));
-			break;
-		case 6:
-			seat6Cards.add(card, new Integer(seat6depth++));
-			break;
-		case 7:
-			seat7Cards.add(card, new Integer(seat7depth++));
-			break;
-		}
-		
-	}
 	
-	private void setCardAttributes(int seat, JLabel card) {
-		switch (seat) {
-		case 0:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat0point.x, seat0point.y, 75, 105);
-			seat0point.x += 20;
-			seat0point.y += 20;
-			break;
-		case 1:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat1point.x, seat1point.y, 75, 105);
-			seat1point.x += 20;
-			seat1point.y += 20;
-			break;
-		case 2:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat2point.x, seat2point.y, 75, 105);
-			seat2point.x += 20;
-			seat2point.y += 20;
-			break;
-		case 3:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat3point.x, seat3point.y, 75, 105);
-			seat3point.x += 20;
-			seat3point.y += 20;
-			break;
-		case 4:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat4point.x, seat4point.y, 75, 105);
-			seat4point.x += 20;
-			seat4point.y += 20;
-			break;
-		case 5:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat5point.x, seat5point.y, 75, 105);
-			seat5point.x += 20;
-			seat5point.y += 20;
-			break;
-		case 6:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat6point.x, seat6point.y, 75, 105);
-			seat6point.x += 20;
-			seat6point.y += 20;
-			break;
-		case 7:
-			card.setVerticalAlignment(JLabel.TOP);
-			card.setHorizontalAlignment(JLabel.CENTER);
-			card.setOpaque(true);
-			card.setBounds(seat7point.x, seat7point.y, 75, 105);
-			seat7point.x += 20;
-			seat7point.y += 20;
-			break;
-		}
-		
+
+
+	public int getSeat0depth() {
+		return seat0depth;
+	}
+
+
+	public void setSeat0depth(int seat0depth) {
+		this.seat0depth = seat0depth;
+	}
+
+
+	public int getSeat1depth() {
+		return seat1depth;
+	}
+
+
+	public void setSeat1depth(int seat1depth) {
+		this.seat1depth = seat1depth;
+	}
+
+
+	public int getSeat2depth() {
+		return seat2depth;
+	}
+
+
+	public void setSeat2depth(int seat2depth) {
+		this.seat2depth = seat2depth;
+	}
+
+
+	public int getSeat3depth() {
+		return seat3depth;
+	}
+
+
+	public void setSeat3depth(int seat3depth) {
+		this.seat3depth = seat3depth;
+	}
+
+
+	public int getSeat4depth() {
+		return seat4depth;
+	}
+
+
+	public void setSeat4depth(int seat4depth) {
+		this.seat4depth = seat4depth;
+	}
+
+
+	public int getSeat5depth() {
+		return seat5depth;
+	}
+
+
+	public void setSeat5depth(int seat5depth) {
+		this.seat5depth = seat5depth;
+	}
+
+
+	public int getSeat6depth() {
+		return seat6depth;
+	}
+
+
+	public void setSeat6depth(int seat6depth) {
+		this.seat6depth = seat6depth;
+	}
+
+
+	public int getSeat7depth() {
+		return seat7depth;
+	}
+
+
+	public void setSeat7depth(int seat7depth) {
+		this.seat7depth = seat7depth;
+	}
+
+
+	public JLayeredPane getSeat0Cards() {
+		return seat0Cards;
+	}
+
+
+	public JLayeredPane getSeat1Cards() {
+		return seat1Cards;
+	}
+
+
+	public JLayeredPane getSeat2Cards() {
+		return seat2Cards;
+	}
+
+
+	public JLayeredPane getSeat3Cards() {
+		return seat3Cards;
+	}
+
+
+	public JLayeredPane getSeat4Cards() {
+		return seat4Cards;
+	}
+
+
+	public JLayeredPane getSeat5Cards() {
+		return seat5Cards;
+	}
+
+
+	public JLayeredPane getSeat6Cards() {
+		return seat6Cards;
+	}
+
+
+	public JLayeredPane getSeat7Cards() {
+		return seat7Cards;
 	}
 
 
@@ -403,7 +426,160 @@ public class GameBoard extends JPanel {
 		seat7point.x = 5;
 		seat7point.y = 5;
 	}
-	
+
+	public void clearDealerCards() {
+		seat0Cards.removeAll();
+		seat0depth = 0;
+		seat0point.x = 5;
+		seat0point.y = 5;
+	}
+
+	public void updateWinLabel(String text) {
+		winLabel.setText(text);		
+	}
+
+	public void clearPlayerCards(Player currentPlayer) {
+		switch(currentPlayer.getSeat()) {
+		case 0:
+			seat0Cards.removeAll();
+			seat0depth = 0;
+			seat0point.x = 5;
+			seat0point.y = 5;
+			break;
+		case 1:
+			seat1Cards.removeAll();
+			seat1depth = 0;
+			seat1point.x = 5;
+			seat1point.y = 5;
+			break;
+		case 2:
+			seat2Cards.removeAll();
+			seat2depth = 0;
+			seat2point.x = 5;
+			seat2point.y = 5;
+			break;
+		case 3:
+			seat3Cards.removeAll();
+			seat3depth = 0;
+			seat3point.x = 5;
+			seat3point.y = 5;
+			break;
+		case 4:
+			seat4Cards.removeAll();
+			seat4depth = 0;
+			seat4point.x = 5;
+			seat4point.y = 5;
+			break;
+		case 5:
+			seat5Cards.removeAll();
+			seat5depth = 0;
+			seat5point.x = 5;
+			seat5point.y = 5;
+			break;
+		case 6:
+			seat6Cards.removeAll();
+			seat6depth = 0;
+			seat6point.x = 5;
+			seat6point.y = 5;
+			break;
+		case 7:
+			seat7Cards.removeAll();
+			seat7depth = 0;
+			seat7point.x = 5;
+			seat7point.y = 5;
+			break;
+		}		
+	}
+	public void setCardAttributes(int seat, JLabel card) {
+		switch (seat) {
+		case 0:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat0point.x, seat0point.y, 75, 105);
+			seat0point.x += 20;
+			seat0point.y += 20;
+			updateCard(card, this.getSeat0Cards(), this.getSeat0depth());
+			this.seat0depth++;
+			break;
+		case 1:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat1point.x, seat1point.y, 75, 105);
+			seat1point.x += 20;
+			seat1point.y += 20;
+			updateCard(card, this.getSeat1Cards(), this.getSeat1depth());
+			this.seat1depth++;
+			break;
+		case 2:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat2point.x, seat2point.y, 75, 105);
+			seat2point.x += 20;
+			seat2point.y += 20;
+			updateCard(card, this.getSeat2Cards(), this.getSeat2depth());
+			this.seat2depth++;
+			break;
+		case 3:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat3point.x, seat3point.y, 75, 105);
+			seat3point.x += 20;
+			seat3point.y += 20;
+			updateCard(card, this.getSeat3Cards(), this.getSeat3depth());
+			this.seat3depth++;
+			break;
+		case 4:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat4point.x, seat4point.y, 75, 105);
+			seat4point.x += 20;
+			seat4point.y += 20;
+			updateCard(card, this.getSeat4Cards(), this.getSeat4depth());
+			this.seat4depth++;
+			break;
+		case 5:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat5point.x, seat5point.y, 75, 105);
+			seat5point.x += 20;
+			seat5point.y += 20;
+			updateCard(card, this.getSeat5Cards(), this.getSeat5depth());
+			this.seat5depth++;
+			break;
+		case 6:	
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat6point.x, seat6point.y, 75, 105);
+			seat6point.x += 20;
+			seat6point.y += 20;
+			updateCard(card, this.getSeat6Cards(), this.getSeat6depth());
+			this.seat6depth++;
+			break;
+		case 7:
+			card.setVerticalAlignment(JLabel.TOP);
+			card.setHorizontalAlignment(JLabel.CENTER);
+			card.setOpaque(true);
+			card.setBounds(seat7point.x, seat7point.y, 75, 105);
+			seat7point.x += 20;
+			seat7point.y += 20;
+			updateCard(card, this.getSeat7Cards(), this.getSeat7depth());
+			this.seat7depth++;
+			break;
+		}
+	}
+
+
+	private void updateCard(JLabel card, JLayeredPane seatCardPane, int cardDepth) {
+		seatCardPane.add(card, new Integer(cardDepth));
+	}
+
 	private ImageIcon createImageIcon(String path) {
 		URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {
@@ -414,11 +590,58 @@ public class GameBoard extends JPanel {
 		return null;
 	}
 	
-	//@Override
-	//protected void paintComponent(Graphics g) {
-	////	super.paintComponent(g);
-	//		g.drawImage(gameBoardBackground, 0, 0, null);
-	//	
-//	}
-	
+
+	public void updateHandStatus(int seat, String status) {
+		JLabel statusLabel = new JLabel();
+		ImageIcon handStatusIcon = null;
+		switch (status) {
+		case "busted":
+			handStatusIcon = createImageIcon("/images/busted.jpg");
+			break;
+		case "winner":
+			handStatusIcon = createImageIcon("/images/winner.jpg");
+			break;
+		case "push":
+			handStatusIcon = createImageIcon("/images/push.jpg");
+			break;
+		case "lost":
+			handStatusIcon = createImageIcon("/images/lost.jpg");
+			break;
+		}
+			
+		
+		statusLabel.setIcon(handStatusIcon);
+		statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		statusLabel.setOpaque(true);
+		statusLabel.setBounds(20, 50, 160, 60);
+
+		switch (seat) {
+		case 0:
+			seat0Cards.add(statusLabel, 20, 0);
+			break;
+		case 1:
+			seat1Cards.add(statusLabel, 20, 0);
+			break;
+		case 2:
+			seat2Cards.add(statusLabel, 20, 0);
+			break;
+		case 3:
+			seat3Cards.add(statusLabel, 20, 0);
+			break;
+		case 4:
+			seat4Cards.add(statusLabel, 20, 0);
+			break;
+		case 5:
+			seat5Cards.add(statusLabel, 20, 0);
+			break;
+		case 6:
+			seat6Cards.add(statusLabel, 20, 0);
+			break;
+		case 7:
+			seat7Cards.add(statusLabel, 20, 0);
+			break;
+		}	
+		
+	}
+		
 }

@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import csci_1082.finalproject.blackjack.Card;
 import csci_1082.finalproject.blackjack.GameEngine;
@@ -139,13 +140,13 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			break;
 		case "HIT":
 			currentPlayer = gameEngine.getCurrentGUIPlayer();
-			System.out.println(currentPlayer.getPlayerName() + " is in the Hit action");
 			Card newCard = gameEngine.hit();
 			currentPlayer.getPlayerHands().get(0).addCard(newCard);
-			displayNewCard(newCard);
+			displayNewCard(currentPlayer, newCard);
 			gameEngine.getSumOfCards(currentPlayer.getPlayerHands().get(0));
 			if (gameEngine.checkIfBusted(currentPlayer.getPlayerHands().get(0))) {
 				actionPanel.getGameHistory().append(currentPlayer.getPlayerName() + " Busted!\n");
+				gameBoard.updateHandStatus(currentPlayer.getSeat(), "busted");
 				currentPlayer.setTurnOver(true);
 				gameEngine.switchToNextPlayer();
 			} else {
@@ -168,6 +169,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			gameEngine.getSumOfCards(currentPlayer.getPlayerHands().get(0));
 			if (gameEngine.checkIfBusted(currentPlayer.getPlayerHands().get(0))) {
 				actionPanel.getGameHistory().append(currentPlayer.getPlayerName() + " Busted!\n");
+				gameBoard.updateHandStatus(currentPlayer.getSeat(), "busted");
 			}
 				currentPlayer.setTurnOver(true);
 				gameEngine.switchToNextPlayer();
@@ -177,6 +179,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		
 	}
 	
+
 	private void fundsWarning() {
 		JOptionPane.showMessageDialog(null, "Error: You do not have enough money to make this Bet!", "Error Message", JOptionPane.ERROR_MESSAGE);
 	}
@@ -184,18 +187,63 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	private boolean checkIfHumanPlayer() {
 		int numHumanPlayers = 0;
 		for (int loopIndex = 0; loopIndex < loadingScreen.getPlayers().length; loopIndex++) {
-			if (loadingScreen.getPlayers()[loopIndex]== PlayerType.HUMAN) {
+			if (loadingScreen.getPlayers()[loopIndex] == PlayerType.HUMAN) {
+				switch (loopIndex) {
+				case 0:
+					if (loadingScreen.getSeat1TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 1:
+					if (loadingScreen.getSeat2TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 2:
+					if (loadingScreen.getSeat3TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 3:
+					if (loadingScreen.getSeat4TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 4:
+					if (loadingScreen.getSeat5TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 5:
+					if (loadingScreen.getSeat6TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				case 6:
+					if (loadingScreen.getSeat7TextField().getText().equalsIgnoreCase("")) {
+						loadingScreen.emptyNameWarn(loopIndex);
+						return false;
+					}
+					break;
+				}
 				numHumanPlayers++;
 			}
+
 		}
-		
 		if (numHumanPlayers == 0) {
-			loadingScreen.warn();
+			loadingScreen.noHumanPlayersWarn();
 			return false;
 		}
 		
 		return true;		
 	}
+
 
 	private void getPlayerNames() {
 		int compPlayerIndex = 1;
@@ -232,9 +280,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			} else {
 				// do Nothing
 			}
-		}
-		for (Player player : gameEngine.getPlayerList()) {
-			System.out.println(player.toString());
 		}
 	}
 
@@ -275,36 +320,26 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		// If the bets are all made, deal the cards
 		if (gameEngine.isBetsComplete() && !(gameEngine.isCardsDelt())) {
 			gameEngine.dealCards();
-			for (Player p : gameEngine.getPlayerList()) {
-				System.out.println(p.toString());
-			}
 			displayInitialCards();
 		}
+		
 		//TODO: display information about the user
 		switch (currentPlayer.getType()) {
 		case COMPUTER:
-			//toggleActionPanelButtons(false);
-			actionPanel.getGameHistory().append("I found a Computer Player!\n");
 			if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
 				actionPanel.getBetButton().doClick();
 			}else {
-				//toggleActionPanelButtons(true);
-				System.out.println(currentPlayer.getPlayerName() + " is making a decision...");
 				int computerChoice = gameEngine.computerDecision(currentPlayer, currentPlayer.getPlayerHands().get(0));
-				System.out.println(currentPlayer.getPlayerName() + " is chosing option " + computerChoice);
 				// convert this to an Enum Friendly name
 				PlayOption playerOption = PlayOption.values()[computerChoice - 1];
 				switch (playerOption) {
 				case HIT:
-					System.out.println(currentPlayer.getPlayerName() + " is in the HIT Case...");
 					actionPanel.getHitButton().doClick();
 					break;
 				case STAND:
-					System.out.println(currentPlayer.getPlayerName() + " is in the STAND Case...");
 					actionPanel.getStandButton().doClick();
 					break;
 				case DOUBLE_DOWN:
-					System.out.println(currentPlayer.getPlayerName() + " is in the DOUBLE_DOWN Case...");
 					actionPanel.getDoubleButton().doClick();
 					break;
 				case SPLIT:
@@ -317,14 +352,31 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			break;
 		case HUMAN:
 			if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
-				//toggleActionPanelButtons(false);
+				toggleActionPanelButtons(false);
+				actionPanel.getBetButton().setEnabled(true);
+				actionPanel.getIncreaseBet().setEnabled(true);
+				actionPanel.getDecreaseBet().setEnabled(true);
+			} else if (currentPlayer.getPlayerHands().get(0).getPlayerHand().size() > 2) {
+				actionPanel.getBetButton().setEnabled(false);
+				actionPanel.getIncreaseBet().setEnabled(false);
+				actionPanel.getDecreaseBet().setEnabled(false);
+				actionPanel.getSplitButton().setEnabled(false);
+				actionPanel.getStandButton().setEnabled(true);
+				actionPanel.getDoubleButton().setEnabled(false);
+				actionPanel.getHitButton().setEnabled(true);
 			} else {
-				//toggleActionPanelButtons(true);
+				actionPanel.getBetButton().setEnabled(false);
+				actionPanel.getIncreaseBet().setEnabled(false);
+				actionPanel.getDecreaseBet().setEnabled(false);
+				actionPanel.getSplitButton().setEnabled(false);
+				actionPanel.getStandButton().setEnabled(true);
+				actionPanel.getDoubleButton().setEnabled(true);
+				actionPanel.getHitButton().setEnabled(true);				
 			}
 			break;
 		case DEALER:
-			//toggleActionPanelButtons(true);
-			if (gameEngine.isCardsDelt()) {
+			if (gameEngine.isCardsDelt() && gameEngine.playerTurnsOver()) {
+				displayDealersCards();
 				int dealerChoice = gameEngine.dealerDecision();
 				// convert this to an Enum Friendly name
 				PlayOption playerOption = PlayOption.values()[dealerChoice - 1];
@@ -349,28 +401,54 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			break;
 		}
 	}
-
+	
 	private void displayInitialCards() {
+		int dealerCardsShown = 0;
 		for (Player p : gameEngine.getPlayerList()) {
 			for (PlayerHands hand : p.getPlayerHands()) {
 				for (Card card : hand.getPlayerHand()) {
 					String baseImagePath = "/cards/";
-					ImageIcon cardIcon = createImageIcon(baseImagePath + card.getFileName());
+					ImageIcon cardIcon = null;
+					if (p.getType() == PlayerType.DEALER && dealerCardsShown == 0) {
+						cardIcon = createImageIcon(baseImagePath + "cardBack.png");
+						dealerCardsShown++;
+					}  else {			
+						cardIcon = createImageIcon(baseImagePath + card.getFileName());
+					}
 					JLabel cardLabel = new JLabel();
 					cardLabel.setIcon(cardIcon);
-					gameBoard.updateCardPanel(p.getSeat(), cardLabel);
+					gameBoard.setCardAttributes(p.getSeat(), cardLabel);
 				}
 			}
 		}
 		
 	}
 	
-	private void displayNewCard(Card card) {
+	private void displayNewCard(Player p, Card card) {
 		String baseImagePath = "/cards/";
 		ImageIcon cardIcon = createImageIcon(baseImagePath + card.getFileName());
 		JLabel cardLabel = new JLabel();
 		cardLabel.setIcon(cardIcon);
-		gameBoard.updateCardPanel(gameEngine.getCurrentGUIPlayer().getSeat(), cardLabel);
+		gameBoard.setCardAttributes(p.getSeat(), cardLabel);
+	}
+	
+	public void displayDealersCards() {
+		gameBoard.clearDealerCards();
+		for (Player p : gameEngine.getPlayerList()) {
+			if (p.getType() == PlayerType.DEALER) {
+				for (PlayerHands hand : p.getPlayerHands()) {
+					for (Card card : hand.getPlayerHand()) {
+						String baseImagePath = "/cards/";
+						ImageIcon cardIcon = createImageIcon(baseImagePath + card.getFileName());
+						JLabel cardLabel = new JLabel();
+						cardLabel.setIcon(cardIcon);
+						gameBoard.setCardAttributes(p.getSeat(), cardLabel);
+					}
+				}
+			}
+		}
+		
+		
 	}
 	
 	private ImageIcon createImageIcon(String path) {
@@ -382,4 +460,28 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		}
 		return null;
 	}
+
+	public void finishRound() {
+		System.out.println("I'm in the finishRound method");
+		for (Player p : gameEngine.getPlayerList()) {
+			if (p.getType() != PlayerType.DEALER) {
+				switch (p.getPlayerHands().get(0).getHandWinLossStatus()) {
+				case "winner":
+					gameBoard.updateHandStatus(p.getSeat(), "winner");
+					break;
+				case "push":
+					gameBoard.updateHandStatus(p.getSeat(), "push");
+					break;
+				case "lost":
+					gameBoard.updateHandStatus(p.getSeat(), "lost");
+					break;
+				case "busted":
+					gameBoard.updateHandStatus(p.getSeat(), "busted");
+					break;	
+				}
+			}
+			
+		}
+	}
+		
 }

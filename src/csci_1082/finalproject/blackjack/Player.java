@@ -40,6 +40,7 @@ public class Player {
 		this.turnOver = false;
 		//this.hasBlackJack = false;
 		this.seat = seat;
+		
 	}
 	
 	

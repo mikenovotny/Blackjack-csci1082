@@ -226,4 +226,5 @@ public class ActionPanel extends JPanel {
 		menuPanel.add(new JScrollPane(gameHistory), BorderLayout.CENTER);
 		menuPanel.setBackground(Color.BLACK);
 	}
+	
 }
