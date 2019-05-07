@@ -1,18 +1,25 @@
 package csci_1082.finalproject.blackjackGUI;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.net.URL;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import csci_1082.finalproject.blackjack.Card;
@@ -33,6 +40,9 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	private JPanel gamePanel = new JPanel(new BorderLayout());
 	private GameEngine gameEngine;
 	private String tempName = null;
+	private final int ONE_SECOND = 1000;
+	private int timerStartTime;
+	private int numberOfHumanPlayer = 0;
 	
 	// Constructor
 	public BlackjackGUI() {
@@ -67,6 +77,14 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 
 
+
+	public int getNumberOfHumanPlayer() {
+		return numberOfHumanPlayer;
+	}
+
+	public void setNumberOfHumanPlayer(int numberOfHumanPlayer) {
+		this.numberOfHumanPlayer = numberOfHumanPlayer;
+	}
 
 	public void setActionPanel(ActionPanel actionPanel) {
 		this.actionPanel = actionPanel;
@@ -240,7 +258,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			loadingScreen.noHumanPlayersWarn();
 			return false;
 		}
-		
+		numberOfHumanPlayer = numHumanPlayers;
 		return true;		
 	}
 
@@ -482,6 +500,152 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			}
 			
 		}
+		dispalyNextRoundTimer();
+	}
+	
+	private void dispalyNextRoundTimer() {
+		timerStartTime = 7;				// max value of progressbar in secon
+		gameBoard.getGameMessagePanel().setLayout(new BoxLayout(gameBoard.getGameMessagePanel(), BoxLayout.Y_AXIS));
+		
+		// Make JPanels for organizing items
+		JPanel nextRoundTimerPanel = new JPanel();
+		JPanel progressBarPanel = new JPanel(new BorderLayout());
+		
+		// Set Panel Attributes
+		progressBarPanel.setBackground(new Color(0,128,0,255));
+		nextRoundTimerPanel.setPreferredSize(new Dimension(720, 10));
+		nextRoundTimerPanel.setLayout(new BoxLayout(nextRoundTimerPanel, BoxLayout.X_AXIS));	
+		nextRoundTimerPanel.setBackground(new Color(0,128,0,255));
+		
+		// Create JLabel that will act as Title for ProgressBar
+		JLabel nextRoundLabel = new JLabel();
+		nextRoundLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
+		nextRoundLabel.setForeground(Color.BLACK);
+		nextRoundLabel.setBackground(Color.GREEN);
+		nextRoundLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		nextRoundLabel.setText("Next Round Starts In...");
+		
+		// Create ProgressBar
+		JProgressBar nextRoundProgressBar = new JProgressBar(0, timerStartTime);
+		nextRoundProgressBar.setValue(timerStartTime);
+		
+		// Build the helper Panel for the progressBar
+		progressBarPanel.add(nextRoundProgressBar, BorderLayout.CENTER);
+		
+		// Build the helper panel to center progressBar
+		nextRoundTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		nextRoundTimerPanel.add(progressBarPanel);
+		nextRoundTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		
+		// Display the progressBar
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(nextRoundLabel);
+		gameBoard.getGameMessagePanel().add(nextRoundTimerPanel);
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().revalidate();
+		
+		// Create Timer and Start Timer
+		Timer nextRoundTimer = new Timer(ONE_SECOND, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				nextRoundProgressBar.setValue(--timerStartTime);
+				if (timerStartTime == 0) {
+					startNewRound();
+				}
+			}
+		});
+		nextRoundTimer.start();
+		}
+		
+	protected void startNewRound() {
+		Player brokePlayer = null;
+		System.out.println("new round stuff should go here");
+		brokePlayer = gameEngine.checkForBrokePlayers();
+		if (brokePlayer == null) {
+			gameBoard.resetGameBoard();
+			mainFrame.pack();
+			gameEngine.resetPlayers();
+			gameEngine.startRound();
+		} else if (brokePlayer.getType() == PlayerType.COMPUTER) {
+			actionPanel.getGameHistory().append(brokePlayer.getPlayerName() + " is out of money and has left the table.\n");
+		} else if (brokePlayer.getType() == PlayerType.HUMAN) {
+			numberOfHumanPlayer--;
+			if (numberOfHumanPlayer == 0) {
+				displayGameEndTimer();
+			} else {
+				actionPanel.getGameHistory().append(brokePlayer.getPlayerName() + " is out of money and has left the table.\n");			
+			}
+		}
+	}
+
+	private void displayGameEndTimer() {
+		// Clear any current items in the game message panel
+		gameBoard.getGameMessagePanel().removeAll();
+		
+		// max value of progressbar in secon
+		timerStartTime = 15;				
+		
+		// Set Layout
+		gameBoard.getGameMessagePanel().setLayout(new BoxLayout(gameBoard.getGameMessagePanel(), BoxLayout.Y_AXIS));
+		
+		// Make JPanels for organizing items
+		JPanel gameEndTimerPanel = new JPanel();
+		JPanel progressBarPanel = new JPanel(new BorderLayout());
+		
+		// Set Panel Attributes
+		progressBarPanel.setBackground(new Color(0,128,0,255));
+		gameEndTimerPanel.setPreferredSize(new Dimension(720, 10));
+		gameEndTimerPanel.setLayout(new BoxLayout(gameEndTimerPanel, BoxLayout.X_AXIS));	
+		gameEndTimerPanel.setBackground(new Color(0,128,0,255));
+		
+		// Create JLabel that will act as Title for ProgressBar
+		JLabel gameEndLabel = new JLabel();
+		gameEndLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
+		gameEndLabel.setForeground(Color.BLACK);
+		gameEndLabel.setBackground(Color.GREEN);
+		gameEndLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		gameEndLabel.setText("All Human players have no Money.  Ending Game in...");
+		
+		// Create ProgressBar
+		JProgressBar gameEndProgressBar = new JProgressBar(0, timerStartTime);
+		gameEndProgressBar.setValue(timerStartTime);
+		
+		// Build the helper Panel for the progressBar
+		progressBarPanel.add(gameEndProgressBar, BorderLayout.CENTER);
+		
+		// Build the helper panel to center progressBar
+		gameEndTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		gameEndTimerPanel.add(progressBarPanel);
+		gameEndTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		
+		// Display the progressBar
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(gameEndLabel);
+		gameBoard.getGameMessagePanel().add(gameEndTimerPanel);
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().revalidate();
+		
+		// Create Timer and Start Timer
+		Timer gameEndTimer = new Timer(ONE_SECOND, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				gameEndProgressBar.setValue(--timerStartTime);
+				if (timerStartTime == 0) {
+					mainFrame.dispose();
+				}
+			}
+		});
+		gameEndTimer.start();
+	}
+		
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				BlackjackGUI newBlackjackGame = new BlackjackGUI();
+			}
+		});
 	}
 		
 }
+

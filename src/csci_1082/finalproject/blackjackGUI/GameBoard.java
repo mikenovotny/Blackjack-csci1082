@@ -13,6 +13,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -29,8 +31,7 @@ import csci_1082.finalproject.blackjack.PlayerType;
 
 public class GameBoard extends JPanel {
 	
-	private JPanel winPanel = new JPanel();
-	private JLabel winLabel = new JLabel();
+	private JPanel gameMessagePanel = new JPanel();
 	private JPanel gamePanel = new JPanel();
 	private JPanel leftPanel = new JPanel();
 	private JPanel rightPanel = new JPanel();
@@ -70,10 +71,11 @@ public class GameBoard extends JPanel {
 	private Point seat5point = new Point(5, 5);
 	private Point seat6point = new Point(5, 5);
 	private Point seat7point = new Point(5, 5);
+	private int timerStartTime = 0;
+	private final int ONE_SECOND = 1000;
 	
 	public GameBoard(ArrayList<Player> playerlist) {
 		createSeatLabels(playerlist);
-		buildWinPanel();
 		buildgamePanel();
 		this.setMinimumSize(new Dimension(1200,800));
 		this.setPreferredSize(new Dimension(1200,800));
@@ -123,10 +125,10 @@ public class GameBoard extends JPanel {
 	private void buildCenterPanel() {
 		buildbottomPanel();
 		buildDealerpanel();
-		buildWinPanel();
+		buildGameMessagePanel();
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		centerPanel.add(dealerPanel);
-		centerPanel.add(winPanel);
+		centerPanel.add(gameMessagePanel);
 		centerPanel.add(bottomPanel);
 	}
 
@@ -145,7 +147,7 @@ public class GameBoard extends JPanel {
 	private void configurePanelSizes() {
 		dealerPanel.setPreferredSize(new Dimension(720, 300));
 		bottomPanel.setPreferredSize(new Dimension(720, 300));
-		winPanel.setPreferredSize(new Dimension(720, 200));
+		gameMessagePanel.setPreferredSize(new Dimension(720, 200));
 		seat0Panel.setPreferredSize(new Dimension(240, 300));
 		seat1Panel.setPreferredSize(new Dimension(240, 300));
 		seat2Panel.setPreferredSize(new Dimension(240, 300));
@@ -270,14 +272,25 @@ public class GameBoard extends JPanel {
 	}
 
 
-	private void buildWinPanel() {
-		winLabel.setFont(new Font("Arial Black", Font.BOLD, 28));
-		winLabel.setSize(150, 150);
-		winPanel.add(winLabel);	
-		winPanel.setBackground(new Color(0,128,0,255));
+	private void buildGameMessagePanel() {
+		gameMessagePanel.setBackground(new Color(0,128,0,255));
 	}
 
 	
+
+
+	public JPanel getGameMessagePanel() {
+		return gameMessagePanel;
+	}
+
+	public int getTimerStartTime() {
+		return timerStartTime;
+	}
+
+
+	public void setTimerStartTime(int timerStartTime) {
+		this.timerStartTime = timerStartTime;
+	}
 
 
 	public int getSeat0depth() {
@@ -433,9 +446,43 @@ public class GameBoard extends JPanel {
 		seat0point.x = 5;
 		seat0point.y = 5;
 	}
-
-	public void updateWinLabel(String text) {
-		winLabel.setText(text);		
+	
+	public void resetGameBoard() {
+		System.out.println("I'm in the resetGameBoard function");
+		// Clear cards and reset JLayeredPane values
+		seat0Cards.removeAll();
+		seat0depth = 0;
+		seat0point.x = 5;
+		seat0point.y = 5;
+		seat1Cards.removeAll();
+		seat1depth = 0;
+		seat1point.x = 5;
+		seat1point.y = 5;
+		seat2Cards.removeAll();
+		seat2depth = 0;
+		seat2point.x = 5;
+		seat2point.y = 5;
+		seat3Cards.removeAll();
+		seat3depth = 0;
+		seat3point.x = 5;
+		seat3point.y = 5;
+		seat4Cards.removeAll();
+		seat4depth = 0;
+		seat4point.x = 5;
+		seat4point.y = 5;
+		seat5Cards.removeAll();
+		seat5depth = 0;
+		seat5point.x = 5;
+		seat5point.y = 5;
+		seat6Cards.removeAll();
+		seat6depth = 0;
+		seat6point.x = 5;
+		seat6point.y = 5;
+		seat7Cards.removeAll();
+		seat7depth = 0;
+		seat7point.x = 5;
+		seat7point.y = 5;
+		gameMessagePanel.removeAll();
 	}
 
 	public void clearPlayerCards(Player currentPlayer) {
@@ -643,5 +690,4 @@ public class GameBoard extends JPanel {
 		}	
 		
 	}
-		
 }

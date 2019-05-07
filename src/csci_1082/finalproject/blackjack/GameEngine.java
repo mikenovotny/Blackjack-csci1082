@@ -155,6 +155,7 @@ public class GameEngine {
 	 * @return Nothing
 	 */
 	public void startRound() {
+		System.out.println("I'm in the startRoundMethod");
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case COMPUTER:
@@ -212,12 +213,14 @@ public class GameEngine {
 		} else if (hasMorePlayers()) {
 			this.currentPlayerIndex++;
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
+			blackjackGUI.processUser();
 		} else {
 			areBetsDone();
 			this.currentPlayerIndex = 0;
 			this.currentGUIPlayer = this.playerList.get(this.currentPlayerIndex);
+			blackjackGUI.processUser();
 		}
-		blackjackGUI.processUser();
+		
 	}
 	
 	
@@ -470,6 +473,13 @@ public class GameEngine {
 		//this.startRound();
 	}
 	
+	public void resetPlayers() {
+		System.out.println("i'm in the resetPlayers function");
+		for (Player p : playerList) {
+			p.resetPlayer();
+		}
+	}
+	
 	/**
 	 * Method to determine if a player won the hand
 	 * 
@@ -490,7 +500,7 @@ public class GameEngine {
 					 */
 					if (hand.isBlackJack() && currentPlayer.getPlayerHands().size() == 1) {
 						System.out.println(currentPlayer.getPlayerName() + " Had blackjack and has already been paid");
-						return;
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
 					}
 		
 					// Dealer Busted, everyone wins that didn't bust
@@ -516,6 +526,10 @@ public class GameEngine {
 						this.dealer.payPlayer(currentPlayer, hand, true);
 						System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("push");
+					}
+					
+					else if (hand.getHandTotal() > MAXTOTAL) {
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("busted");
 					}
 		
 					// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
@@ -939,5 +953,16 @@ public class GameEngine {
 			}
 		}
 		return true;
+	}
+
+	public Player checkForBrokePlayers() {
+		for (Player p : playerList) {
+			if (p.getPlayerMoney() < 10) {
+				playerList.remove(p);
+				return p;
+				
+			}
+		}
+		return null;		
 	}
 }
