@@ -109,29 +109,6 @@ public class GameEngine {
 		return playerList;
 	}
 
-
-	public boolean isBetsComplete() {
-		return betsComplete;
-	}
-
-	public void setBetsComplete(boolean betsComplete) {
-		this.betsComplete = betsComplete;
-	}
-
-	/**
-	 * Method to start a new blackjack table.  
-	 *  
-	 * @return Nothing
-	 */
-	public static GameEngine newTable() {
-		// Create the game engine
-		GameEngine gameEngine = new GameEngine();
-		return gameEngine;
-		
-		// Start a new BlackJack table
-		//gameEngine.startTable();
-	}
-	
 	/**
 	 * Method to populate the new BlackJack table with players
 	 */
@@ -225,16 +202,15 @@ public class GameEngine {
 	
 	
 	
-	private void areBetsDone() {
-		// Set this to true, then loop through and if we find a bet with a zero value set to false
-		betsComplete = true;
+	public boolean areBetsDone() {
 		for (Player player : playerList) {
 			for (PlayerHands hand : player.getPlayerHands()) {
 				if (hand.getHandBet() == 0 && player.getType() != PlayerType.DEALER) {
-					betsComplete = false;
+					return false;
 				} 
 			}
 		}
+		return true;
 	}
 
 	public Player getCurrentGUIPlayer() {
@@ -500,7 +476,7 @@ public class GameEngine {
 					 */
 					if (hand.isBlackJack() && currentPlayer.getPlayerHands().size() == 1) {
 						System.out.println(currentPlayer.getPlayerName() + " Had blackjack and has already been paid");
-						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
+						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("blackjack");
 					}
 		
 					// Dealer Busted, everyone wins that didn't bust

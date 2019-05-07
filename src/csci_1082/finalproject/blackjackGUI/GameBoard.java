@@ -83,6 +83,15 @@ public class GameBoard extends JPanel {
 		this.add(gamePanel, BorderLayout.CENTER);
 	}
 	
+	public void replaceGamePanel(ArrayList<Player> playerlist) {
+		this.removeAll();
+		createSeatLabels(playerlist);
+		buildgamePanel();
+		this.add(gamePanel, BorderLayout.CENTER);
+		this.revalidate();
+		this.repaint();
+	}
+	
 	
 	private void createSeatLabels(ArrayList<Player> playerList) {
 		for (int seat = 0; seat < 9; seat++) {
@@ -90,7 +99,7 @@ public class GameBoard extends JPanel {
 			seatLabel.setMaximumSize(new Dimension(150, 50));
 			seatLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 			seatLabel.setForeground(Color.BLACK);
-			seatLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			seatLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 			String seatLabelText = "<html>Seat " + seat;
 			for (Player player : playerList) {
 				if (player.getSeat() == seat) {
@@ -447,7 +456,7 @@ public class GameBoard extends JPanel {
 		seat0point.y = 5;
 	}
 	
-	public void resetGameBoard() {
+	public void resetGameBoard(ArrayList<Player> playerList) {
 		System.out.println("I'm in the resetGameBoard function");
 		// Clear cards and reset JLayeredPane values
 		seat0Cards.removeAll();
@@ -483,6 +492,43 @@ public class GameBoard extends JPanel {
 		seat7point.x = 5;
 		seat7point.y = 5;
 		gameMessagePanel.removeAll();
+		
+		createSeatLabels(playerList);
+		updateSeatLabels();
+		revalidatePanels();
+
+	}
+
+	private void revalidatePanels() {
+		seat0Panel.revalidate();
+		seat0Panel.repaint();
+		seat1Panel.revalidate();
+		seat1Panel.repaint();
+		seat2Panel.revalidate();
+		seat2Panel.repaint();
+		seat3Panel.revalidate();
+		seat3Panel.repaint();
+		seat4Panel.revalidate();
+		seat4Panel.repaint();
+		seat5Panel.revalidate();
+		seat5Panel.repaint();
+		seat6Panel.revalidate();
+		seat6Panel.repaint();
+		seat7Panel.revalidate();
+		seat7Panel.repaint();
+		gameMessagePanel.setBackground(new Color(0,128,0,255));
+		gameMessagePanel.revalidate();
+		gameMessagePanel.repaint();
+	}
+
+	private void updateSeatLabels() {
+		seat1Panel.add(seatPlayerLabels.get(1), BorderLayout.NORTH);
+		seat2Panel.add(seatPlayerLabels.get(2), BorderLayout.NORTH);
+		seat3Panel.add(seatPlayerLabels.get(3), BorderLayout.NORTH);
+		seat4Panel.add(seatPlayerLabels.get(4), BorderLayout.NORTH);
+		seat5Panel.add(seatPlayerLabels.get(5), BorderLayout.NORTH);
+		seat6Panel.add(seatPlayerLabels.get(6), BorderLayout.NORTH);
+		seat7Panel.add(seatPlayerLabels.get(7), BorderLayout.NORTH);	
 	}
 
 	public void clearPlayerCards(Player currentPlayer) {
@@ -653,6 +699,9 @@ public class GameBoard extends JPanel {
 			break;
 		case "lost":
 			handStatusIcon = createImageIcon("/images/lost.jpg");
+			break;
+		case "blackjack":
+			handStatusIcon = createImageIcon("/images/blackjack.jpg");
 			break;
 		}
 			

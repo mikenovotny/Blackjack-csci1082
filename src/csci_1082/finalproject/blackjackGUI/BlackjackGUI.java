@@ -4,12 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.net.URL;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.Timer;
 
 import csci_1082.finalproject.blackjack.Card;
@@ -43,9 +43,15 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	private final int ONE_SECOND = 1000;
 	private int timerStartTime;
 	private int numberOfHumanPlayer = 0;
+	private Timer nextRoundTimer = new Timer(ONE_SECOND, null);
+	private JProgressBar nextRoundProgressBar = new JProgressBar();
+	private Timer gameEndTimer = new Timer(ONE_SECOND, null);
+	private JProgressBar gameEndProgressBar = new JProgressBar();
+
 	
 	// Constructor
 	public BlackjackGUI() {
+		setTimerSettings();
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainFrame.setTitle("BlackJack");
@@ -58,6 +64,14 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		mainFrame.setVisible(true);
 	}
 	
+	private void setTimerSettings() {
+		nextRoundTimer.setActionCommand("nextRoundTimer");
+		nextRoundTimer.addActionListener(this);
+		gameEndTimer.setActionCommand("gameEndTimer");
+		gameEndTimer.addActionListener(this);
+		
+	}
+
 	private void buildGamePanel() {
 		gamePanel.add(loadingScreen, BorderLayout.CENTER);		
 	}
@@ -121,7 +135,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		switch (event.getActionCommand()) {
 		case "Play":
 			if (checkIfHumanPlayer()) {
-				gameEngine = GameEngine.newTable();
+				gameEngine = new GameEngine();
 				getPlayerNames();
 				gameEngine.addDealerToList();
 				changeToGameBoard();
@@ -183,7 +197,9 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			break;
 		case "DOUBLE":
 			currentPlayer = gameEngine.getCurrentGUIPlayer();
-			currentPlayer.getPlayerHands().get(0).addCard(gameEngine.hit());
+			Card doubleDownCard = gameEngine.hit();
+			currentPlayer.getPlayerHands().get(0).addCard(doubleDownCard);
+			displayNewCard(currentPlayer, doubleDownCard);
 			gameEngine.getSumOfCards(currentPlayer.getPlayerHands().get(0));
 			if (gameEngine.checkIfBusted(currentPlayer.getPlayerHands().get(0))) {
 				actionPanel.getGameHistory().append(currentPlayer.getPlayerName() + " Busted!\n");
@@ -191,6 +207,20 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			}
 				currentPlayer.setTurnOver(true);
 				gameEngine.switchToNextPlayer();
+			break;
+		case "nextRoundTimer":
+			this.nextRoundProgressBar.setValue(--timerStartTime);
+			if (timerStartTime == 0) {
+				nextRoundTimer.stop();
+				newRoundPreChecks();
+			}
+			break;
+		case "gameEndTimer":
+			this.gameEndProgressBar.setValue(--timerStartTime);
+			if (timerStartTime == 0) {
+				gameEndTimer.stop();
+				mainFrame.dispose();
+			}
 			break;
 		}
 			
@@ -313,10 +343,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		gameEngine.startRound();
 	}
 	
-	private void updateGUI() {
-		mainFrame.revalidate();
-		mainFrame.repaint();
-	}
 	
 	private void toggleActionPanelButtons(boolean status) {
 		if (status) {
@@ -330,43 +356,53 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			actionPanel.getDoubleButton().setEnabled(false);
 			actionPanel.getHitButton().setEnabled(false);
 	}
-
+	
 	public void processUser() {
 		Player currentPlayer = gameEngine.getCurrentGUIPlayer();
 		actionPanel.getGameHistory().append("Current Player is: " + currentPlayer.getPlayerName() + "\n");
 		
 		// If the bets are all made, deal the cards
-		if (gameEngine.isBetsComplete() && !(gameEngine.isCardsDelt())) {
+		if (gameEngine.areBetsDone() && !(gameEngine.isCardsDelt())) {
 			gameEngine.dealCards();
 			displayInitialCards();
+		} else {
+			getPlayerActions();
 		}
-		
+	}
+	public void getPlayerActions() {
 		//TODO: display information about the user
+		Player currentPlayer = gameEngine.getCurrentGUIPlayer();
 		switch (currentPlayer.getType()) {
 		case COMPUTER:
+			// Create Worker Thread to handle computer decision
+			SwingWorker<Boolean, String> computerActionThread = new SwingWorker<Boolean, String>() {
+				int computerChoice = 0;
+				@Override
+				protected Boolean doInBackground() throws Exception {
+						computerChoice = gameEngine.computerDecision(currentPlayer, currentPlayer.getPlayerHands().get(0));
+						Thread.sleep(100);	
+						return true;
+					}
+
+				@Override
+				protected void done() {
+					boolean status = false;
+					try {
+						status = get();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					processComputerOption(computerChoice);
+				}
+			};
+			
 			if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
 				actionPanel.getBetButton().doClick();
-			}else {
-				int computerChoice = gameEngine.computerDecision(currentPlayer, currentPlayer.getPlayerHands().get(0));
-				// convert this to an Enum Friendly name
-				PlayOption playerOption = PlayOption.values()[computerChoice - 1];
-				switch (playerOption) {
-				case HIT:
-					actionPanel.getHitButton().doClick();
-					break;
-				case STAND:
-					actionPanel.getStandButton().doClick();
-					break;
-				case DOUBLE_DOWN:
-					actionPanel.getDoubleButton().doClick();
-					break;
-				case SPLIT:
-					// Do nothing, we shouldn't get here.  Log a message just in case
-					actionPanel.getGameHistory().append("Oh No, the split option was chose somehow!\n");
-					break;
-				}
-					
+			} else {
+				computerActionThread.execute();
 			}
+			
+			
 			break;
 		case HUMAN:
 			if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
@@ -393,26 +429,32 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			}
 			break;
 		case DEALER:
-			if (gameEngine.isCardsDelt() && gameEngine.playerTurnsOver()) {
-				displayDealersCards();
-				int dealerChoice = gameEngine.dealerDecision();
-				// convert this to an Enum Friendly name
-				PlayOption playerOption = PlayOption.values()[dealerChoice - 1];
-				switch (playerOption) {
-				case HIT:
-					actionPanel.getHitButton().doClick();
-					break;
-				case STAND:
-					actionPanel.getStandButton().doClick();
-					break;
-				case DOUBLE_DOWN:
-					actionPanel.getDoubleButton().doClick();
-					break;
-				case SPLIT:
-					// Do nothing, we shouldn't get here.  Log a message just in case
-					actionPanel.getGameHistory().append("Oh No, the split option was chose somehow!\n");
-					break;
+			
+			SwingWorker<Boolean, String> dealerActionThread = new SwingWorker<Boolean, String>() {
+				int dealerChoice = 0;
+				
+				@Override
+				protected Boolean doInBackground() throws Exception {
+						displayDealersCards();
+						dealerChoice = gameEngine.dealerDecision();
+						Thread.sleep(100);
+						return true;
 				}
+
+				@Override
+				protected void done() {
+					boolean status = false;
+					try {
+						status = get();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					processDealerOption(dealerChoice);
+				}
+			};
+		
+			if (gameEngine.isCardsDelt() && gameEngine.playerTurnsOver()) {
+			dealerActionThread.execute();
 			} else {
 				gameEngine.switchToNextPlayer();
 			}
@@ -420,28 +462,208 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void displayInitialCards() {
-		int dealerCardsShown = 0;
-		for (Player p : gameEngine.getPlayerList()) {
-			for (PlayerHands hand : p.getPlayerHands()) {
-				for (Card card : hand.getPlayerHand()) {
-					String baseImagePath = "/cards/";
-					ImageIcon cardIcon = null;
-					if (p.getType() == PlayerType.DEALER && dealerCardsShown == 0) {
-						cardIcon = createImageIcon(baseImagePath + "cardBack.png");
-						dealerCardsShown++;
-					}  else {			
-						cardIcon = createImageIcon(baseImagePath + card.getFileName());
-					}
-					JLabel cardLabel = new JLabel();
-					cardLabel.setIcon(cardIcon);
-					gameBoard.setCardAttributes(p.getSeat(), cardLabel);
-				}
-			}
+	protected void processComputerOption(int computerChoice) {
+		// convert this to an Enum Friendly name
+		PlayOption playerOption = PlayOption.values()[computerChoice - 1];
+		switch (playerOption) {
+		case HIT:
+			actionPanel.getHitButton().doClick();
+			break;
+		case STAND:
+			actionPanel.getStandButton().doClick();
+			break;
+		case DOUBLE_DOWN:
+			actionPanel.getDoubleButton().doClick();
+			break;
+		case SPLIT:
+			// Do nothing, we shouldn't get here.  Log a message just in case
+			actionPanel.getGameHistory().append("Oh No, the split option was chose somehow!\n");
+			break;
 		}
-		
 	}
 	
+	protected void processDealerOption(int dealerChoice) {
+		// convert this to an Enum Friendly name
+		PlayOption playerOption = PlayOption.values()[dealerChoice - 1];
+		switch (playerOption) {
+		case HIT:
+			actionPanel.getHitButton().doClick();
+			break;
+		case STAND:
+			actionPanel.getStandButton().doClick();
+			break;
+		case DOUBLE_DOWN:
+			actionPanel.getDoubleButton().doClick();
+			break;
+		case SPLIT:
+			// Do nothing, we shouldn't get here.  Log a message just in case
+			actionPanel.getGameHistory().append("Oh No, the split option was chose somehow!\n");
+			break;
+		}
+	}
+
+	private void displayInitialCards() {
+		SwingWorker<Boolean, String> displayCardsThread = new SwingWorker<Boolean, String>() {
+
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				int cardsDisplayed = 0;
+				int dealerCardsShown = 0;
+				setProgress(0);
+				for (Player p : gameEngine.getPlayerList()) {
+					for (PlayerHands hand : p.getPlayerHands()) {
+						for (Card card : hand.getPlayerHand()) {
+							String baseImagePath = "/cards/";
+							ImageIcon cardIcon = null;
+							if (p.getType() == PlayerType.DEALER && dealerCardsShown == 0) {
+								cardIcon = createImageIcon(baseImagePath + "cardBack.png");
+								dealerCardsShown++;
+							}  else {			
+								cardIcon = createImageIcon(baseImagePath + card.getFileName());
+							}
+							JLabel cardLabel = new JLabel();
+							cardLabel.setIcon(cardIcon);
+							gameBoard.setCardAttributes(p.getSeat(), cardLabel);
+							cardsDisplayed++;
+							setProgress((cardsDisplayed / (gameEngine.getPlayerList().size() * 2)) * 100);
+							publish("displayed Card");
+							Thread.sleep(200);
+						}
+					}
+				}
+				return true;
+			}
+
+			@Override
+			protected void done() {
+				boolean status = false;
+				try {
+					status = get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				checkForPlayerBlackJack();
+				getPlayerActions();
+			}
+		};
+		displayCardsThread.execute();		
+	}
+	
+	protected void checkForPlayerBlackJack() {
+		SwingWorker<Boolean, String> checkForPlayerBJThread = new SwingWorker<Boolean, String>() {
+
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				int playersChecked = 0;
+				setProgress(0);
+				for (Player p : gameEngine.getPlayerList()) {
+					if (p.getType() != PlayerType.DEALER) {
+						for (PlayerHands hand : p.getPlayerHands()) {
+							if (hand.isBlackJack()) {
+								gameEngine.getDealer().payPlayer(p, hand);
+								gameBoard.updateHandStatus(p.getSeat(), "blackjack");
+								p.setTurnOver(true);
+							}
+						}
+					}
+					playersChecked++;
+					setProgress((playersChecked / gameEngine.getPlayerList().size()) * 100);
+					publish("checked player for blackjack");
+					Thread.sleep(100);
+				}
+				return true;
+			}
+
+			@Override
+			protected void done() {
+				boolean status = false;
+				try {
+					status = get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				checkForDealerBlackJack();
+			}
+		};
+		checkForPlayerBJThread.execute();		
+	}
+		
+
+	protected void checkForDealerBlackJack() {
+		SwingWorker<Boolean, String> checkForDealerBJThread = new SwingWorker<Boolean, String>() {
+			boolean dealerHasBlackjack = false;
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				setProgress(0);
+				for (Player p : gameEngine.getPlayerList()) {
+					if (p.getType() == PlayerType.DEALER) {
+						for (PlayerHands hand : p.getPlayerHands()) {
+							if (hand.isBlackJack()) {
+								dealerHasBlackjack = true;
+								gameBoard.updateHandStatus(p.getSeat(), "blackjack");
+								p.setTurnOver(true);
+							}
+						}
+					}
+					setProgress(100);
+					publish("checked dealer for blackjack");
+				}
+				return true;
+			}
+
+			@Override
+			protected void done() {
+				boolean status = false;
+				try {
+					status = get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (dealerHasBlackjack) {
+					processRoundEnd();
+				} else {
+				checkForDealerBlackJack();
+				}
+			}
+		};
+		checkForDealerBJThread.execute();		
+	}
+
+	protected void processRoundEnd() {
+		SwingWorker<Boolean, String> processRoundEndThread = new SwingWorker<Boolean, String>() {
+			int playersProcessed = 0;
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				setProgress(0);
+				for (Player p : gameEngine.getPlayerList()) {
+					if (p.getType() == PlayerType.DEALER) {
+						for (PlayerHands hand : p.getPlayerHands()) {
+							hand.setHandWinLossStatus("lost");
+							p.setTurnOver(true);
+							}
+						}
+					playersProcessed++;
+					setProgress((playersProcessed / gameEngine.getPlayerList().size()) * 100);
+					publish("set player hand status to lost");
+				}
+				return true;
+			}
+
+			@Override
+			protected void done() {
+				boolean status = false;
+				try {
+					status = get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+					finishRound();
+			}
+		};
+		processRoundEndThread.execute();
+		
+	}
+
 	private void displayNewCard(Player p, Card card) {
 		String baseImagePath = "/cards/";
 		ImageIcon cardIcon = createImageIcon(baseImagePath + card.getFileName());
@@ -480,30 +702,54 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 
 	public void finishRound() {
-		System.out.println("I'm in the finishRound method");
-		for (Player p : gameEngine.getPlayerList()) {
-			if (p.getType() != PlayerType.DEALER) {
-				switch (p.getPlayerHands().get(0).getHandWinLossStatus()) {
-				case "winner":
-					gameBoard.updateHandStatus(p.getSeat(), "winner");
-					break;
-				case "push":
-					gameBoard.updateHandStatus(p.getSeat(), "push");
-					break;
-				case "lost":
-					gameBoard.updateHandStatus(p.getSeat(), "lost");
-					break;
-				case "busted":
-					gameBoard.updateHandStatus(p.getSeat(), "busted");
-					break;	
+		SwingWorker<Boolean, String> finishRoundThread = new SwingWorker<Boolean, String>() {
+
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				setProgress(0);
+				int playerResultsUpdated = 0;
+				for (Player p : gameEngine.getPlayerList()) {
+					if (p.getType() != PlayerType.DEALER) {
+						switch (p.getPlayerHands().get(0).getHandWinLossStatus()) {
+						case "winner":
+							gameBoard.updateHandStatus(p.getSeat(), "winner");
+							break;
+						case "push":
+							gameBoard.updateHandStatus(p.getSeat(), "push");
+							break;
+						case "lost":
+							gameBoard.updateHandStatus(p.getSeat(), "lost");
+							break;
+						case "busted":
+							gameBoard.updateHandStatus(p.getSeat(), "busted");
+							break;	
+						case "blackjack":
+							// Do nothing, we already handled what was needed.
+						}
+					}
+					playerResultsUpdated++;
+					setProgress((playerResultsUpdated / (gameEngine.getPlayerList().size())) * 100);
+					publish("displayed hand status");
+					Thread.sleep(100);
 				}
+				return true;
 			}
-			
-		}
-		dispalyNextRoundTimer();
+
+			@Override
+			protected void done() {
+				boolean status = false;
+				try {
+					status = get();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				displayNextRoundTimer();
+			}
+		};	
+		finishRoundThread.execute();
 	}
 	
-	private void dispalyNextRoundTimer() {
+	private void displayNextRoundTimer() {
 		timerStartTime = 7;				// max value of progressbar in secon
 		gameBoard.getGameMessagePanel().setLayout(new BoxLayout(gameBoard.getGameMessagePanel(), BoxLayout.Y_AXIS));
 		
@@ -526,7 +772,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		nextRoundLabel.setText("Next Round Starts In...");
 		
 		// Create ProgressBar
-		JProgressBar nextRoundProgressBar = new JProgressBar(0, timerStartTime);
+		nextRoundProgressBar.setMinimum(0);
+		nextRoundProgressBar.setMaximum(timerStartTime);
 		nextRoundProgressBar.setValue(timerStartTime);
 		
 		// Build the helper Panel for the progressBar
@@ -537,45 +784,45 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		nextRoundTimerPanel.add(progressBarPanel);
 		nextRoundTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
 		
+		this.nextRoundTimer.start();
 		// Display the progressBar
-		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,20)));
 		gameBoard.getGameMessagePanel().add(nextRoundLabel);
 		gameBoard.getGameMessagePanel().add(nextRoundTimerPanel);
-		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,120)));
 		gameBoard.getGameMessagePanel().revalidate();
 		
-		// Create Timer and Start Timer
-		Timer nextRoundTimer = new Timer(ONE_SECOND, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				nextRoundProgressBar.setValue(--timerStartTime);
-				if (timerStartTime == 0) {
-					startNewRound();
-				}
-			}
-		});
-		nextRoundTimer.start();
+		this.nextRoundTimer.start();		
 		}
-		
-	protected void startNewRound() {
+	
+	protected void newRoundPreChecks() {
 		Player brokePlayer = null;
 		System.out.println("new round stuff should go here");
 		brokePlayer = gameEngine.checkForBrokePlayers();
 		if (brokePlayer == null) {
-			gameBoard.resetGameBoard();
-			mainFrame.pack();
-			gameEngine.resetPlayers();
-			gameEngine.startRound();
+			startNewRound();
 		} else if (brokePlayer.getType() == PlayerType.COMPUTER) {
 			actionPanel.getGameHistory().append(brokePlayer.getPlayerName() + " is out of money and has left the table.\n");
+			startNewRound();
 		} else if (brokePlayer.getType() == PlayerType.HUMAN) {
 			numberOfHumanPlayer--;
 			if (numberOfHumanPlayer == 0) {
 				displayGameEndTimer();
 			} else {
-				actionPanel.getGameHistory().append(brokePlayer.getPlayerName() + " is out of money and has left the table.\n");			
+				actionPanel.getGameHistory().append(brokePlayer.getPlayerName() + " is out of money and has left the table.\n");	
+				startNewRound();
 			}
 		}
+	}
+		
+	protected void startNewRound() {
+		gameBoard.resetGameBoard(gameEngine.getPlayerList());
+		
+		mainFrame.revalidate();
+		mainFrame.repaint();
+		gameEngine.resetPlayers();
+		gameEngine.setCardsDelt(false); 
+		gameEngine.startRound();
 	}
 
 	private void displayGameEndTimer() {
@@ -607,7 +854,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		gameEndLabel.setText("All Human players have no Money.  Ending Game in...");
 		
 		// Create ProgressBar
-		JProgressBar gameEndProgressBar = new JProgressBar(0, timerStartTime);
+		gameEndProgressBar.setMinimum(0);
+		gameEndProgressBar.setMaximum(timerStartTime);
 		gameEndProgressBar.setValue(timerStartTime);
 		
 		// Build the helper Panel for the progressBar
@@ -619,22 +867,12 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		gameEndTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
 		
 		// Display the progressBar
-		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,20)));
 		gameBoard.getGameMessagePanel().add(gameEndLabel);
 		gameBoard.getGameMessagePanel().add(gameEndTimerPanel);
-		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,70)));
+		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,120)));
 		gameBoard.getGameMessagePanel().revalidate();
 		
-		// Create Timer and Start Timer
-		Timer gameEndTimer = new Timer(ONE_SECOND, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				gameEndProgressBar.setValue(--timerStartTime);
-				if (timerStartTime == 0) {
-					mainFrame.dispose();
-				}
-			}
-		});
 		gameEndTimer.start();
 	}
 		
