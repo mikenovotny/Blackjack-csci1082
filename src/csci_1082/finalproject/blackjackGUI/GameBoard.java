@@ -73,6 +73,7 @@ public class GameBoard extends JPanel {
 	private Point seat7point = new Point(5, 5);
 	private int timerStartTime = 0;
 	private final int ONE_SECOND = 1000;
+	Background background = new Background(); 
 	
 	public GameBoard(ArrayList<Player> playerlist) {
 		createSeatLabels(playerlist);
@@ -96,7 +97,7 @@ public class GameBoard extends JPanel {
 	private void createSeatLabels(ArrayList<Player> playerList) {
 		for (int seat = 0; seat < 9; seat++) {
 			JLabel seatLabel = new JLabel();
-			seatLabel.setMaximumSize(new Dimension(150, 50));
+			seatLabel.setMaximumSize(new Dimension(150, 30));
 			seatLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 			seatLabel.setForeground(Color.BLACK);
 			seatLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
@@ -125,7 +126,7 @@ public class GameBoard extends JPanel {
 		gamePanel.add(leftPanel);
 		gamePanel.add(centerPanel);
 		gamePanel.add(rightPanel);
-		gamePanel.setBackground(new Color(0,128,0,255));
+		gamePanel.setBackground(new Color(0, 153, 0, 255));
 		gamePanel.setVisible(true);
 		
 	}
@@ -138,39 +139,42 @@ public class GameBoard extends JPanel {
 		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
 		centerPanel.add(dealerPanel);
 		centerPanel.add(gameMessagePanel);
+		centerPanel.add(Box.createRigidArea(new Dimension(720,170)));
 		centerPanel.add(bottomPanel);
+		centerPanel.setBackground(new Color(0, 153, 0, 255));
+		centerPanel.setVisible(true);
 	}
 
 
 	private void buildDealerpanel() {
 		seat0Panel.add(seatPlayerLabels.get(0), BorderLayout.NORTH);
 		seat0Panel.add(seat0Cards, BorderLayout.CENTER);
-		seat0Panel.setBackground(new Color(0,128,0,255));
+		seat0Panel.setBackground(new Color(0, 153, 0, 255));
 		dealerPanel.add(seat0Panel);
-		dealerPanel.setBackground(new Color(0,128,0,255));
+		dealerPanel.setBackground(new Color(0, 153, 0, 255));
 		dealerPanel.setVisible(true);
 		
 	}
 
 
 	private void configurePanelSizes() {
-		dealerPanel.setPreferredSize(new Dimension(720, 300));
-		bottomPanel.setPreferredSize(new Dimension(720, 300));
+		dealerPanel.setPreferredSize(new Dimension(720, 200));
+		bottomPanel.setPreferredSize(new Dimension(720, 230));
 		gameMessagePanel.setPreferredSize(new Dimension(720, 200));
-		seat0Panel.setPreferredSize(new Dimension(240, 300));
+		seat0Panel.setPreferredSize(new Dimension(240, 200));
 		seat1Panel.setPreferredSize(new Dimension(240, 300));
 		seat2Panel.setPreferredSize(new Dimension(240, 300));
-		seat3Panel.setPreferredSize(new Dimension(240, 300));
-		seat4Panel.setPreferredSize(new Dimension(240, 300));
-		seat5Panel.setPreferredSize(new Dimension(240, 300));
+		seat3Panel.setPreferredSize(new Dimension(240, 230));
+		seat4Panel.setPreferredSize(new Dimension(240, 230));
+		seat5Panel.setPreferredSize(new Dimension(240, 230));
 		seat6Panel.setPreferredSize(new Dimension(240, 300));
 		seat7Panel.setPreferredSize(new Dimension(240, 300));
-		seat0Cards.setPreferredSize(new Dimension(200,250));
+		seat0Cards.setPreferredSize(new Dimension(200,170));
 		seat1Cards.setPreferredSize(new Dimension(200,250));
 		seat2Cards.setPreferredSize(new Dimension(200,250));
-		seat3Cards.setPreferredSize(new Dimension(200,250));
-		seat4Cards.setPreferredSize(new Dimension(200,250));
-		seat5Cards.setPreferredSize(new Dimension(200,250));
+		seat3Cards.setPreferredSize(new Dimension(200,200));
+		seat4Cards.setPreferredSize(new Dimension(200,200));
+		seat5Cards.setPreferredSize(new Dimension(200,200));
 		seat6Cards.setPreferredSize(new Dimension(200,250));
 		seat7Cards.setPreferredSize(new Dimension(200,250));
 	}
@@ -184,8 +188,7 @@ public class GameBoard extends JPanel {
 		bottomPanel.add(seat5Panel);
 		bottomPanel.add(seat4Panel);
 		bottomPanel.add(seat3Panel);
-		bottomPanel.setBackground(new Color(0,128,0,255));
-		bottomPanel.setOpaque(false);
+		bottomPanel.setBackground(new Color(0, 153, 0, 255));
 		bottomPanel.setVisible(true);
 	}
 
@@ -193,7 +196,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat3Panel() {
 		seat3Panel.add(seatPlayerLabels.get(3), BorderLayout.NORTH);
 		seat3Panel.add(seat3Cards, BorderLayout.CENTER);
-		seat3Panel.setBackground(new Color(0,128,0,255));
+		seat3Panel.setBackground(new Color(0, 153, 0, 255));
 		seat3Panel.setVisible(true);
 		
 	}
@@ -202,7 +205,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat4Panel() {
 		seat4Panel.add(seatPlayerLabels.get(4), BorderLayout.NORTH);
 		seat4Panel.add(seat4Cards, BorderLayout.CENTER);
-		seat4Panel.setBackground(new Color(0,128,0,255));
+		seat4Panel.setBackground(new Color(0, 153, 0, 255));
 		seat3Panel.setVisible(true);
 		
 	}
@@ -211,7 +214,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat5Panel() {
 		seat5Panel.add(seatPlayerLabels.get(5), BorderLayout.NORTH);
 		seat5Panel.add(seat5Cards, BorderLayout.CENTER);
-		seat5Panel.setBackground(new Color(0,128,0,255));
+		seat5Panel.setBackground(new Color(0, 153, 0, 255));
 		seat5Panel.setVisible(true);
 		
 	}
@@ -225,7 +228,7 @@ public class GameBoard extends JPanel {
 		rightPanel.add(seat1Panel);
 		rightPanel.add(seat2Panel);
 		rightPanel.add(Box.createRigidArea(new Dimension(240,100)));
-		rightPanel.setBackground(new Color(0,128,0,255));
+		rightPanel.setBackground(new Color(0, 153, 0, 255));
 		rightPanel.setVisible(true);
 		
 	}
@@ -234,7 +237,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat2Panel() {
 		seat2Panel.add(seatPlayerLabels.get(2), BorderLayout.NORTH);
 		seat2Panel.add(seat2Cards, BorderLayout.CENTER);
-		seat2Panel.setBackground(new Color(0,128,0,255));
+		seat2Panel.setBackground(new Color(0, 153, 0, 255));
 		seat2Panel.setVisible(true);
 		
 	}
@@ -243,7 +246,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat1Panel() {
 		seat1Panel.add(seatPlayerLabels.get(1), BorderLayout.NORTH);
 		seat1Panel.add(seat1Cards, BorderLayout.CENTER);
-		seat1Panel.setBackground(new Color(0,128,0,255));
+		seat1Panel.setBackground(new Color(0, 153, 0, 255));
 		seat1Panel.setVisible(true);
 		
 	}
@@ -257,7 +260,7 @@ public class GameBoard extends JPanel {
 		leftPanel.add(seat7Panel);
 		leftPanel.add(seat6Panel);
 		leftPanel.add(Box.createRigidArea(new Dimension(240,100)));
-		leftPanel.setBackground(new Color(0,128,0,255));
+		leftPanel.setBackground(new Color(0, 153, 0, 255));
 		leftPanel.setVisible(true);
 		
 	}
@@ -266,7 +269,7 @@ public class GameBoard extends JPanel {
 	private void buildSeat6Panel() {
 		seat6Panel.add(seatPlayerLabels.get(6), BorderLayout.NORTH);
 		seat6Panel.add(seat6Cards, BorderLayout.CENTER);
-		seat6Panel.setBackground(new Color(0,128,0,255));
+		seat6Panel.setBackground(new Color(0, 153, 0, 255));
 		seat6Panel.setVisible(true);
 		
 	}
@@ -275,14 +278,15 @@ public class GameBoard extends JPanel {
 	private void buildSeat7Panel() {
 		seat7Panel.add(seatPlayerLabels.get(7), BorderLayout.NORTH);
 		seat7Panel.add(seat7Cards, BorderLayout.CENTER);
-		seat7Panel.setBackground(new Color(0,128,0,255));
+		seat7Panel.setBackground(new Color(0, 153, 0, 255));
 		seat7Panel.setVisible(true);
 		
 	}
 
 
 	private void buildGameMessagePanel() {
-		gameMessagePanel.setBackground(new Color(0,128,0,255));
+		gameMessagePanel.setLayout(new BorderLayout());
+		gameMessagePanel.add(background, BorderLayout.CENTER);
 	}
 
 	
@@ -516,7 +520,8 @@ public class GameBoard extends JPanel {
 		seat6Panel.repaint();
 		seat7Panel.revalidate();
 		seat7Panel.repaint();
-		gameMessagePanel.setBackground(new Color(0,128,0,255));
+		gameMessagePanel.setLayout(new BorderLayout());
+		gameMessagePanel.add(background, BorderLayout.CENTER);
 		gameMessagePanel.revalidate();
 		gameMessagePanel.repaint();
 	}

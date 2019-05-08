@@ -543,7 +543,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 					e.printStackTrace();
 				}
 				checkForPlayerBlackJack();
-				getPlayerActions();
 			}
 		};
 		displayCardsThread.execute();		
@@ -600,6 +599,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 						for (PlayerHands hand : p.getPlayerHands()) {
 							if (hand.isBlackJack()) {
 								dealerHasBlackjack = true;
+								displayDealersCards();
 								gameBoard.updateHandStatus(p.getSeat(), "blackjack");
 								p.setTurnOver(true);
 							}
@@ -622,7 +622,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				if (dealerHasBlackjack) {
 					processRoundEnd();
 				} else {
-				checkForDealerBlackJack();
+					getPlayerActions();
 				}
 			}
 		};
@@ -636,7 +636,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			protected Boolean doInBackground() throws Exception {
 				setProgress(0);
 				for (Player p : gameEngine.getPlayerList()) {
-					if (p.getType() == PlayerType.DEALER) {
+					if (p.getType() != PlayerType.DEALER) {
 						for (PlayerHands hand : p.getPlayerHands()) {
 							hand.setHandWinLossStatus("lost");
 							p.setTurnOver(true);
@@ -758,16 +758,16 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		JPanel progressBarPanel = new JPanel(new BorderLayout());
 		
 		// Set Panel Attributes
-		progressBarPanel.setBackground(new Color(0,128,0,255));
+		progressBarPanel.setBackground(new Color(0,153,0,255));
 		nextRoundTimerPanel.setPreferredSize(new Dimension(720, 10));
 		nextRoundTimerPanel.setLayout(new BoxLayout(nextRoundTimerPanel, BoxLayout.X_AXIS));	
-		nextRoundTimerPanel.setBackground(new Color(0,128,0,255));
+
 		
 		// Create JLabel that will act as Title for ProgressBar
 		JLabel nextRoundLabel = new JLabel();
 		nextRoundLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 		nextRoundLabel.setForeground(Color.BLACK);
-		nextRoundLabel.setBackground(Color.GREEN);
+		nextRoundLabel.setBackground(new Color(0,153,0,255));
 		nextRoundLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		nextRoundLabel.setText("Next Round Starts In...");
 		
@@ -783,6 +783,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		nextRoundTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
 		nextRoundTimerPanel.add(progressBarPanel);
 		nextRoundTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		nextRoundTimerPanel.setBackground(new Color(0,153,0,255));
+		nextRoundTimerPanel.setVisible(true);
 		
 		this.nextRoundTimer.start();
 		// Display the progressBar
@@ -834,22 +836,23 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		
 		// Set Layout
 		gameBoard.getGameMessagePanel().setLayout(new BoxLayout(gameBoard.getGameMessagePanel(), BoxLayout.Y_AXIS));
+		gameBoard.getGameMessagePanel().setBackground(new Color(0, 153, 0, 255));
 		
 		// Make JPanels for organizing items
 		JPanel gameEndTimerPanel = new JPanel();
 		JPanel progressBarPanel = new JPanel(new BorderLayout());
 		
 		// Set Panel Attributes
-		progressBarPanel.setBackground(new Color(0,128,0,255));
+		progressBarPanel.setBackground(new Color(0,153,0,255));
 		gameEndTimerPanel.setPreferredSize(new Dimension(720, 10));
 		gameEndTimerPanel.setLayout(new BoxLayout(gameEndTimerPanel, BoxLayout.X_AXIS));	
-		gameEndTimerPanel.setBackground(new Color(0,128,0,255));
+		
 		
 		// Create JLabel that will act as Title for ProgressBar
 		JLabel gameEndLabel = new JLabel();
 		gameEndLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 		gameEndLabel.setForeground(Color.BLACK);
-		gameEndLabel.setBackground(Color.GREEN);
+		gameEndLabel.setBackground(new Color(0,153,0,255));
 		gameEndLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		gameEndLabel.setText("All Human players have no Money.  Ending Game in...");
 		
@@ -865,6 +868,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		gameEndTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
 		gameEndTimerPanel.add(progressBarPanel);
 		gameEndTimerPanel.add(Box.createRigidArea(new Dimension(160, 10)));
+		gameEndTimerPanel.setBackground(new Color(0,153,0,255));
+		gameEndTimerPanel.setVisible(true);
 		
 		// Display the progressBar
 		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,20)));

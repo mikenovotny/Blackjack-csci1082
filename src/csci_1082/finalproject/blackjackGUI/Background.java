@@ -13,7 +13,7 @@ public class Background extends JPanel {
 
 	public Background() {
 		try {
-			gameBoardBackground = ImageIO.read(getClass().getResource("/images/gameBoard.jpg"));
+			gameBoardBackground = ImageIO.read(getClass().getResource("/images/background.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
