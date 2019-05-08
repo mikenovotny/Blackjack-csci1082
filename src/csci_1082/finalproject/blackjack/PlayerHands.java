@@ -10,7 +10,7 @@ public class PlayerHands {
 	private List<Card> hand;											// ArrayList to hold cards in players hand
 	private int handTotal = 0;
 	private boolean handOver = false;
-	private double handBet = 0;
+	private int handBet = 0;
 	private String handWinLossStatus = null;
 	private final int FIRSTCARD = 0;
 	private final int SECONDCARD = 1;
@@ -85,7 +85,7 @@ public class PlayerHands {
 	 * 
 	 * @return amount bet on this hand as a double
 	 */
-	public double getHandBet() {
+	public int getHandBet() {
 		return handBet;
 	}
 
@@ -94,7 +94,7 @@ public class PlayerHands {
 	 * 
 	 * @param handBet
 	 */
-	public void setHandBet(double handBet) {
+	public void setHandBet(int handBet) {
 		this.handBet = handBet;
 	}
 

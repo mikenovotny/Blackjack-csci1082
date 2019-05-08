@@ -18,7 +18,7 @@ public class Player {
 	
 	private String playerName;
 	private List<PlayerHands> playerHands;									// ArrayList to hold the hands a player has
-	private double playerMoney;											
+	private int playerMoney;											
 	private PlayerType type;												// Human or Computer Player
 	private int seat;
 	private boolean turnOver;
@@ -98,7 +98,7 @@ public class Player {
 	 * 
 	 * @return money player has remaining
 	 */
-	public double getPlayerMoney() {
+	public int getPlayerMoney() {
 		return this.playerMoney;
 	}
 	
@@ -109,7 +109,7 @@ public class Player {
 	 * 
 	 * @param playerMoney
 	 */
-	public void setPlayerMoney(double playerMoney) {
+	public void setPlayerMoney(int playerMoney) {
 		this.playerMoney = playerMoney;
 	}
 	
@@ -154,7 +154,7 @@ public class Player {
 	 * 
 	 * @param amount of money to add to players total
 	 */
-	public void addMoney(double amount) {
+	public void addMoney(int amount) {
 		this.setPlayerMoney(this.getPlayerMoney() + amount);
 	}
 	
@@ -172,8 +172,8 @@ public class Player {
 		}
 	}
 	
-	public double generateComputerBet() {
-		// Generate a random bet for the computer between 10 and 30
+	public int generateComputerBet() {
+		// Generate a random bet for the computer between 10 and 40
 		Random randomBet = new Random();
 		int computerBet = randomBet.nextInt((GameEngine.COMPUTER_MAX_BET - GameEngine.COMPUTER_MIN_BET) + 1) + GameEngine.COMPUTER_MIN_BET;
 		return computerBet;
@@ -198,7 +198,7 @@ public class Player {
 	 * 
 	 * @param amount of money to remove from players total
 	 */
-	public void removeMoney(double amount) {
+	public void removeMoney(int amount) {
 			this.setPlayerMoney(this.getPlayerMoney() - amount);
 	}
 	

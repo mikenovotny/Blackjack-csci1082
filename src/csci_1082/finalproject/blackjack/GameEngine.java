@@ -31,7 +31,7 @@ public class GameEngine {
 	public static Player DEALERPLAYER = null;
 	public static PlayerHands DEALERHAND = null;
 	public static final double BLACKJACK_PAYOUT = 2.5;					// Blackjack pays out at 3 to 2.  This is set at 2.5 as we've already removed the original bet from the players money
-	public static final int COMPUTER_MAX_BET = 30;
+	public static final int COMPUTER_MAX_BET = 40;
 	public static final int COMPUTER_MIN_BET = 10;
 	private BlackjackGUI blackjackGUI;
 	private Player currentGUIPlayer;
@@ -132,7 +132,6 @@ public class GameEngine {
 	 * @return Nothing
 	 */
 	public void startRound() {
-		System.out.println("I'm in the startRoundMethod");
 		for (Player currentPlayer : this.playerList) {
 			switch (currentPlayer.getType()) {
 				case COMPUTER:
