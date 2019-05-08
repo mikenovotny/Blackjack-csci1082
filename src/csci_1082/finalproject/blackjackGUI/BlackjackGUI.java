@@ -85,6 +85,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		actionPanel.getSplitButton().addActionListener(this);
 		actionPanel.getDoubleButton().addActionListener(this);
 		actionPanel.getHitButton().addActionListener(this);
+		actionPanel.getCardCountButton().addActionListener(this);
+		actionPanel.getCashOut().addActionListener(this);
 	}
 	
 	public ActionPanel getActionPanel() {
@@ -241,9 +243,46 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				mainFrame.dispose();
 			}
 			break;
-		}
-			
-		
+		case "displayCardCount":
+			String cardCountPrefix = "";
+			int currentCardCount = gameEngine.getDeckShoe().getCardCount();
+			if (currentCardCount > 0) {
+				actionPanel.getCardCountDisplay().setForeground(Color.GREEN);
+				cardCountPrefix = "+";
+			} else if (currentCardCount < 0) {
+				actionPanel.getCardCountDisplay().setForeground(Color.RED);
+				cardCountPrefix = "-";
+			} else {
+				actionPanel.getCardCountDisplay().setForeground(Color.ORANGE);
+			}
+			actionPanel.getCardCountDisplay().setText(cardCountPrefix + Integer.toString(currentCardCount));
+			actionPanel.getCardCountButton().setText("Hide Card Count");
+			actionPanel.getCardCountButton().setActionCommand("hideCardCount");
+			break;
+		case "hideCardCount":
+			actionPanel.getCardCountDisplay().setText("");
+			actionPanel.getCardCountButton().setText("Display Card Count");
+			actionPanel.getCardCountButton().setActionCommand("displayCardCount");
+			break;
+		case "cashout":
+			 int result = JOptionPane.showConfirmDialog(mainFrame,
+			            "Are you sure you want to Cash OUt?", "This will end your game.",
+			            JOptionPane.YES_NO_OPTION);
+			        if (result == JOptionPane.YES_OPTION) {
+			        	numberOfHumanPlayer--;
+						if (numberOfHumanPlayer == 0) {
+							mainFrame.dispose();
+						} else {
+							Player exitingPlayer = gameEngine.getCurrentGUIPlayer();
+							gameEngine.getPlayerList().remove(exitingPlayer);
+							newRoundPreChecks();
+						}
+			        }
+			        else if (result == JOptionPane.NO_OPTION) {
+			        	// Do Nothing
+			        }
+			break;
+		}	
 	}
 	
 
@@ -319,7 +358,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 
 	private void getPlayerNames() {
 		int compPlayerIndex = 1;
-		for (int loopIndex = 0; loopIndex < loadingScreen.getPlayers().length; loopIndex++) {
+		for (int loopIndex = (loadingScreen.getPlayers().length -1); loopIndex > 0; loopIndex--) {
 			if (loadingScreen.getPlayers()[loopIndex] == PlayerType.COMPUTER) {
 				gameEngine.addPlayer("Computer " + compPlayerIndex, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
 				compPlayerIndex++;
@@ -368,19 +407,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 	
 	
-	private void toggleActionPanelButtons(boolean status) {
-		if (status) {
-			actionPanel.getSplitButton().setEnabled(false);
-			actionPanel.getStandButton().setEnabled(true);
-			actionPanel.getDoubleButton().setEnabled(true);
-			actionPanel.getHitButton().setEnabled(true);
-		} else
-			actionPanel.getSplitButton().setEnabled(false);
-			actionPanel.getStandButton().setEnabled(false);
-			actionPanel.getDoubleButton().setEnabled(false);
-			actionPanel.getHitButton().setEnabled(false);
-	}
-	
 	public void processUser() {
 		boolean status = updateActionPanel();
 	
@@ -406,7 +432,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			}
 			
 			if (currentPlayer.isTurnOver()) {
-				System.out.println(currentPlayer.getPlayerName() + "'s turn is over while in updateactionPanel");
 				actionPanel.getIncreaseBet().setEnabled(false);
 				actionPanel.getDecreaseBet().setEnabled(false);
 				actionPanel.getBetButton().setEnabled(false);
@@ -414,10 +439,24 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				actionPanel.getStandButton().setEnabled(false);
 				actionPanel.getDoubleButton().setEnabled(false);
 				actionPanel.getSplitButton().setEnabled(false);
-				System.out.println("I should be starting the delay");
 				boolean delayNextPlayer = delay(3000);
-				System.out.println("Delay should be done");
 				gameEngine.switchToNextPlayer();
+			} else if (currentPlayer.getPlayerHands().get(0).getHandBet() > 0 && currentPlayer.getPlayerHands().get(0).getPlayerHand().size() > 2) {
+				actionPanel.getIncreaseBet().setEnabled(false);
+				actionPanel.getDecreaseBet().setEnabled(false);
+				actionPanel.getBetButton().setEnabled(false);
+				actionPanel.getHitButton().setEnabled(true);
+				actionPanel.getStandButton().setEnabled(true);
+				actionPanel.getDoubleButton().setEnabled(false);
+				actionPanel.getSplitButton().setEnabled(false);
+			}else if (currentPlayer.getPlayerHands().get(0).getHandBet() > 0 && currentPlayer.getPlayerHands().get(0).getPlayerHand().size() == 2) {
+				actionPanel.getIncreaseBet().setEnabled(false);
+				actionPanel.getDecreaseBet().setEnabled(false);
+				actionPanel.getBetButton().setEnabled(false);
+				actionPanel.getHitButton().setEnabled(true);
+				actionPanel.getStandButton().setEnabled(true);
+				actionPanel.getDoubleButton().setEnabled(true);
+				actionPanel.getSplitButton().setEnabled(false);
 			} else if (currentPlayer.getPlayerHands().get(0).getHandBet() == 0) {
 				actionPanel.getIncreaseBet().setEnabled(true);
 				actionPanel.getDecreaseBet().setEnabled(true);
@@ -426,7 +465,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 				actionPanel.getStandButton().setEnabled(false);
 				actionPanel.getDoubleButton().setEnabled(false);
 				actionPanel.getSplitButton().setEnabled(false);
-			} else {
+			}
+			else {
 				actionPanel.getIncreaseBet().setEnabled(false);
 				actionPanel.getDecreaseBet().setEnabled(false);
 				actionPanel.getBetButton().setEnabled(false);
@@ -482,7 +522,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 
 	public void getPlayerActions() {
 		Player currentPlayer = gameEngine.getCurrentGUIPlayer();
-		System.out.println(currentPlayer.getPlayerName() + " is in the getPlayerActions Method");
 		switch (currentPlayer.getType()) {
 		case COMPUTER:
 			// Create Worker Thread to handle computer decision
@@ -553,8 +592,13 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 	
 	protected void processComputerOption(int computerChoice) {
+		
 		// convert this to an Enum Friendly name
 		PlayOption playerOption = PlayOption.values()[computerChoice - 1];
+		
+		Player p = gameEngine.getCurrentGUIPlayer();
+		actionPanel.getGameHistory().append(p.getPlayerName() + " chose to: " + playerOption + "!\n");
+		
 		switch (playerOption) {
 		case HIT:
 			actionPanel.getHitButton().doClick();
@@ -575,6 +619,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	protected void processDealerOption(int dealerChoice) {
 		// convert this to an Enum Friendly name
 		PlayOption playerOption = PlayOption.values()[dealerChoice - 1];
+		actionPanel.getGameHistory().append("Dealer chose to: " + playerOption + "!\n"); 
 		switch (playerOption) {
 		case HIT:
 			actionPanel.getHitButton().doClick();
@@ -803,20 +848,25 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 						switch (p.getPlayerHands().get(0).getHandWinLossStatus()) {
 						case "winner":
 							gameBoard.updateHandStatus(p.getSeat(), "winner");
+							actionPanel.getGameHistory().append(p.getPlayerName() + " WON!  Payout: $" + (p.getPlayerHands().get(0).getHandBet() * 2) + "!\n"); 
 							break;
 						case "push":
 							gameBoard.updateHandStatus(p.getSeat(), "push");
+							actionPanel.getGameHistory().append(p.getPlayerName() + " PUSHED!  Payout: $" + p.getPlayerHands().get(0).getHandBet() + "!\n");
 							break;
 						case "lost":
 							gameBoard.updateHandStatus(p.getSeat(), "lost");
+							actionPanel.getGameHistory().append(p.getPlayerName() + " LOST!  Lost: $" + p.getPlayerHands().get(0).getHandBet() + "!\n");
 							break;
 						case "busted":
 							gameBoard.updateHandStatus(p.getSeat(), "busted");
+							actionPanel.getGameHistory().append(p.getPlayerName() + " BUSTED!  Lost: $" + p.getPlayerHands().get(0).getHandBet() + "!\n");
 							break;	
 						case "blackjack":
-							// Do nothing, we already handled what was needed.
+							actionPanel.getGameHistory().append(p.getPlayerName() + " got BLACKJACK!  Payout: $" + ((int)(p.getPlayerHands().get(0).getHandBet() * GameEngine.BLACKJACK_PAYOUT)) + "!\n");
+							break;
 						}
-					}
+					} 
 					playerResultsUpdated++;
 					setProgress((playerResultsUpdated / (gameEngine.getPlayerList().size())) * 100);
 					publish("displayed hand status");
@@ -876,7 +926,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		nextRoundTimerPanel.setBackground(new Color(0,153,0,255));
 		nextRoundTimerPanel.setVisible(true);
 		
-		this.nextRoundTimer.start();
+
 		// Display the progressBar
 		gameBoard.getGameMessagePanel().add(Box.createRigidArea(new Dimension(720,20)));
 		gameBoard.getGameMessagePanel().add(nextRoundLabel);
@@ -890,7 +940,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	
 	protected void newRoundPreChecks() {
 		Player brokePlayer = null;
-		System.out.println("new round stuff should go here");
 		brokePlayer = gameEngine.checkForBrokePlayers();
 		if (brokePlayer == null) {
 			startNewRound();
@@ -909,6 +958,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 	}
 		
 	protected void startNewRound() {
+		actionPanel.getGameHistory().append("Starting New Round...\n");
 		gameBoard.resetGameBoard(gameEngine.getPlayerList());
 		
 		mainFrame.revalidate();
@@ -922,7 +972,7 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		// Clear any current items in the game message panel
 		gameBoard.getGameMessagePanel().removeAll();
 		
-		// max value of progressbar in secon
+		// max value of progressbar in seconds
 		timerStartTime = 15;				
 		
 		// Set Layout

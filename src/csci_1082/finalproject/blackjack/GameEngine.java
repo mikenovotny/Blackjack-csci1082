@@ -449,7 +449,6 @@ public class GameEngine {
 	}
 	
 	public void resetPlayers() {
-		System.out.println("i'm in the resetPlayers function");
 		for (Player p : playerList) {
 			p.resetPlayer();
 		}
@@ -474,7 +473,6 @@ public class GameEngine {
 					 *  still have a hand that would meet the isBlackJack() criteria
 					 */
 					if (hand.isBlackJack() && currentPlayer.getPlayerHands().size() == 1) {
-						System.out.println(currentPlayer.getPlayerName() + " Had blackjack and has already been paid");
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("blackjack");
 					}
 		
@@ -482,8 +480,6 @@ public class GameEngine {
 					else if (hand.getHandTotal() <= MAXTOTAL && DEALERHAND.getHandTotal() > MAXTOTAL) {
 						// Pay the player
 						this.dealer.payPlayer(currentPlayer, hand);
-						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
-										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
 					}		
 		
@@ -491,15 +487,12 @@ public class GameEngine {
 					else if (hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() > DEALERHAND.getHandTotal()) {
 						// Pay the player
 						this.dealer.payPlayer(currentPlayer, hand);
-						System.out.println(currentPlayer.getPlayerName() + " WON! You got $" + hand.getHandBet() + 
-									       "\nYour total money is $" + currentPlayer.getPlayerMoney());
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("winner");
 					} 
 		
 					// Player pushed
 					else if(hand.getHandTotal() <= MAXTOTAL && hand.getHandTotal() == DEALERHAND.getHandTotal()) {
 						this.dealer.payPlayer(currentPlayer, hand, true);
-						System.out.println(currentPlayer.getPlayerName() + " Pushed!" + "\nYour total money is $" + currentPlayer.getPlayerMoney());
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("push");
 					}
 					
@@ -509,8 +502,6 @@ public class GameEngine {
 		
 					// Player Lost.  Don't need to collect the money.  We already removed it from their total during the bet stage.
 					else {
-						System.out.println(currentPlayer.getPlayerName() + " Lost! You lost $" + hand.getHandBet() + 
-										   "\nYour total money is $" + currentPlayer.getPlayerMoney());
 						currentPlayer.getPlayerHands().get(0).setHandWinLossStatus("lost");
 					}
 					break;

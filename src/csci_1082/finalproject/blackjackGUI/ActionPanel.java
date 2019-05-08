@@ -39,7 +39,7 @@ public class ActionPanel extends JPanel {
 	private JButton decreaseBet = new JButton("-");
 	private JButton betButton = new JButton("BET");
 	private JPanel mainBetPanel = new JPanel();
-	private JPanel betSubPanel1 = new JPanel(new GridLayout(1, 2, 5, 5));
+	private JPanel betSubPanel1 = new JPanel(new GridLayout(1, 2, 5, 0));
 	private JPanel betSubPanel2 = new JPanel(new BorderLayout());
 	
 	// Game History Panel
@@ -250,7 +250,7 @@ public class ActionPanel extends JPanel {
 		buildBetSubPanel();
 		buildBetButtonPanel();
 		mainBetPanel.setLayout(new BoxLayout(mainBetPanel, BoxLayout.Y_AXIS));
-		mainBetPanel.setPreferredSize(new Dimension(300, 280));
+		mainBetPanel.setPreferredSize(new Dimension(300, 240));
 		mainBetPanel.add(Box.createRigidArea(new Dimension(300, 28)));
 		mainBetPanel.add(betButtonPanel);
 		mainBetPanel.add(Box.createRigidArea(new Dimension(300, 28)));
@@ -269,18 +269,23 @@ public class ActionPanel extends JPanel {
 		betButton.setActionCommand("BET");
 		betButton.setAlignmentY(JButton.CENTER_ALIGNMENT);
 		betButtonPanel.add(betSubPanel2);
+		betButtonPanel.add(Box.createRigidArea(new Dimension(25,200)));
 		betButtonPanel.add(betButton);
 		betButtonPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
 		betButtonPanel.setBackground(Color.BLACK);
 	}
 	
 	private void buildBetSubPanel() {
-		betSubPanel2.setPreferredSize(new Dimension(175, 175));
+		
 		pokerChipBetPanel.setAlignmentX(JPanel.CENTER_ALIGNMENT);
+		
+		
 		betSubPanel1.add(increaseBet);
 		betSubPanel1.add(decreaseBet);
 		betSubPanel1.setBackground(Color.BLACK);
 		betSubPanel1.setVisible(true);
+		
+		betSubPanel2.setPreferredSize(new Dimension(175, 200));
 		betSubPanel2.add(betSubPanel1, BorderLayout.SOUTH);
 		betSubPanel2.add(pokerChipBetPanel, BorderLayout.CENTER);	
 		betSubPanel2.setBackground(Color.BLACK);
@@ -301,17 +306,22 @@ public class ActionPanel extends JPanel {
 
 
 	private void buildExtrasPanel() {
-		cardCountDisplay.setPreferredSize(new Dimension(30, 30));
-		cardCountDisplay.setBackground(Color.LIGHT_GRAY);
+		cardCountDisplay.setPreferredSize(new Dimension(50, 50));
 		cardCountDisplay.setFont(new Font("Arial Black", Font.PLAIN, 18));
-		cardCountDisplay.setOpaque(true);
+		cardCountDisplay.setBackground(Color.BLACK);
+		cardCount.setText("Display Card Count");
+		cardCount.setActionCommand("displayCardCount");
+		cardCount.setPreferredSize(new Dimension(125, 50));
+		cashOut.setActionCommand("cashout");
+		cardCount.setPreferredSize(new Dimension(50, 50));
 		extrasPanel.setLayout(new BoxLayout(extrasPanel, BoxLayout.X_AXIS));
-		extrasPanel.setPreferredSize(new Dimension(200, 30));
+		extrasPanel.setPreferredSize(new Dimension(300, 50));
 		extrasPanel.add(cashOut);
 		extrasPanel.add(Box.createHorizontalStrut(5));
 		extrasPanel.add(new JSeparator(SwingConstants.VERTICAL));
 		extrasPanel.add(Box.createHorizontalStrut(5));
 		extrasPanel.add(cardCount);
+		extrasPanel.add(Box.createHorizontalStrut(10));
 		extrasPanel.add(cardCountDisplay);
 		extrasPanel.setBackground(Color.BLACK);		
 		extrasPanel.setVisible(true);
@@ -367,7 +377,7 @@ public class ActionPanel extends JPanel {
 
 
 
-	public JButton getCardCount() {
+	public JButton getCardCountButton() {
 		return cardCount;
 	}
 
@@ -385,8 +395,8 @@ public class ActionPanel extends JPanel {
 
 
 
-	public void setCardCountDisplay(JLabel cardCountDisplay) {
-		this.cardCountDisplay = cardCountDisplay;
+	public void setCardCountDisplay(String count) {
+		this.cardCountDisplay.setText(count);;
 	}
 
 

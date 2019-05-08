@@ -63,14 +63,14 @@ public class GameBoard extends JPanel {
 	private int seat5depth = 0;
 	private int seat6depth = 0;
 	private int seat7depth = 0;
-	private Point seat0point = new Point(5, 5);
-	private Point seat1point = new Point(5, 5);
-	private Point seat2point = new Point(5, 5);
-	private Point seat3point = new Point(5, 5);
-	private Point seat4point = new Point(5, 5);
-	private Point seat5point = new Point(5, 5);
-	private Point seat6point = new Point(5, 5);
-	private Point seat7point = new Point(5, 5);
+	private Point seat0point = new Point(45, 5);
+	private Point seat1point = new Point(45, 5);
+	private Point seat2point = new Point(45, 5);
+	private Point seat3point = new Point(45, 5);
+	private Point seat4point = new Point(45, 5);
+	private Point seat5point = new Point(45, 5);
+	private Point seat6point = new Point(45, 5);
+	private Point seat7point = new Point(45, 5);
 	private int timerStartTime = 0;
 	private final int ONE_SECOND = 1000;
 	Background background = new Background(); 
@@ -96,11 +96,10 @@ public class GameBoard extends JPanel {
 	
 	private void createSeatLabels(ArrayList<Player> playerList) {
 		for (int seat = 0; seat < 9; seat++) {
-			JLabel seatLabel = new JLabel();
+			JLabel seatLabel = new JLabel("", SwingConstants.CENTER);
 			seatLabel.setMaximumSize(new Dimension(150, 30));
 			seatLabel.setFont(new Font("Arial Black", Font.PLAIN, 16));
 			seatLabel.setForeground(Color.BLACK);
-			seatLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 			String seatLabelText = "<html>Seat " + seat;
 			for (Player player : playerList) {
 				if (player.getSeat() == seat) {
@@ -426,74 +425,46 @@ public class GameBoard extends JPanel {
 	}
 
 
-	public void resetSeatJLIndicies() {
-		seat0depth = 0;
-		seat1depth = 0;
-		seat2depth = 0;
-		seat3depth = 0;
-		seat4depth = 0;
-		seat5depth = 0;
-		seat6depth = 0;
-		seat7depth = 0;
-		seat0point.x = 5;
-		seat0point.y = 5;
-		seat1point.x = 5;
-		seat1point.y = 5;
-		seat2point.x = 5;
-		seat2point.y = 5;
-		seat3point.x = 5;
-		seat3point.y = 5;
-		seat4point.x = 5;
-		seat4point.y = 5;
-		seat5point.x = 5;
-		seat5point.y = 5;
-		seat6point.x = 5;
-		seat6point.y = 5;
-		seat7point.x = 5;
-		seat7point.y = 5;
-	}
-
 	public void clearDealerCards() {
 		seat0Cards.removeAll();
 		seat0depth = 0;
-		seat0point.x = 5;
+		seat0point.x = 45;
 		seat0point.y = 5;
 	}
 	
 	public void resetGameBoard(ArrayList<Player> playerList) {
-		System.out.println("I'm in the resetGameBoard function");
 		// Clear cards and reset JLayeredPane values
 		seat0Cards.removeAll();
 		seat0depth = 0;
-		seat0point.x = 5;
+		seat0point.x = 45;
 		seat0point.y = 5;
 		seat1Cards.removeAll();
 		seat1depth = 0;
-		seat1point.x = 5;
+		seat1point.x = 45;
 		seat1point.y = 5;
 		seat2Cards.removeAll();
 		seat2depth = 0;
-		seat2point.x = 5;
+		seat2point.x = 45;
 		seat2point.y = 5;
 		seat3Cards.removeAll();
 		seat3depth = 0;
-		seat3point.x = 5;
+		seat3point.x = 45;
 		seat3point.y = 5;
 		seat4Cards.removeAll();
 		seat4depth = 0;
-		seat4point.x = 5;
+		seat4point.x = 45;
 		seat4point.y = 5;
 		seat5Cards.removeAll();
 		seat5depth = 0;
-		seat5point.x = 5;
+		seat5point.x = 45;
 		seat5point.y = 5;
 		seat6Cards.removeAll();
 		seat6depth = 0;
-		seat6point.x = 5;
+		seat6point.x = 45;
 		seat6point.y = 5;
 		seat7Cards.removeAll();
 		seat7depth = 0;
-		seat7point.x = 5;
+		seat7point.x = 45;
 		seat7point.y = 5;
 		gameMessagePanel.removeAll();
 		
@@ -541,49 +512,49 @@ public class GameBoard extends JPanel {
 		case 0:
 			seat0Cards.removeAll();
 			seat0depth = 0;
-			seat0point.x = 5;
+			seat0point.x = 45;
 			seat0point.y = 5;
 			break;
 		case 1:
 			seat1Cards.removeAll();
 			seat1depth = 0;
-			seat1point.x = 5;
+			seat1point.x = 45;
 			seat1point.y = 5;
 			break;
 		case 2:
 			seat2Cards.removeAll();
 			seat2depth = 0;
-			seat2point.x = 5;
+			seat2point.x = 45;
 			seat2point.y = 5;
 			break;
 		case 3:
 			seat3Cards.removeAll();
 			seat3depth = 0;
-			seat3point.x = 5;
+			seat3point.x = 45;
 			seat3point.y = 5;
 			break;
 		case 4:
 			seat4Cards.removeAll();
 			seat4depth = 0;
-			seat4point.x = 5;
+			seat4point.x = 45;
 			seat4point.y = 5;
 			break;
 		case 5:
 			seat5Cards.removeAll();
 			seat5depth = 0;
-			seat5point.x = 5;
+			seat5point.x = 45;
 			seat5point.y = 5;
 			break;
 		case 6:
 			seat6Cards.removeAll();
 			seat6depth = 0;
-			seat6point.x = 5;
+			seat6point.x = 45;
 			seat6point.y = 5;
 			break;
 		case 7:
 			seat7Cards.removeAll();
 			seat7depth = 0;
-			seat7point.x = 5;
+			seat7point.x = 45;
 			seat7point.y = 5;
 			break;
 		}		
@@ -718,28 +689,28 @@ public class GameBoard extends JPanel {
 
 		switch (seat) {
 		case 0:
-			seat0Cards.add(statusLabel, 20, 0);
+			seat0Cards.add(statusLabel, 80, 0);
 			break;
 		case 1:
-			seat1Cards.add(statusLabel, 20, 0);
+			seat1Cards.add(statusLabel, 80, 0);
 			break;
 		case 2:
-			seat2Cards.add(statusLabel, 20, 0);
+			seat2Cards.add(statusLabel, 80, 0);
 			break;
 		case 3:
-			seat3Cards.add(statusLabel, 20, 0);
+			seat3Cards.add(statusLabel, 80, 0);
 			break;
 		case 4:
-			seat4Cards.add(statusLabel, 20, 0);
+			seat4Cards.add(statusLabel, 80, 0);
 			break;
 		case 5:
-			seat5Cards.add(statusLabel, 20, 0);
+			seat5Cards.add(statusLabel, 80, 0);
 			break;
 		case 6:
-			seat6Cards.add(statusLabel, 20, 0);
+			seat6Cards.add(statusLabel, 80, 0);
 			break;
 		case 7:
-			seat7Cards.add(statusLabel, 20, 0);
+			seat7Cards.add(statusLabel, 80, 0);
 			break;
 		}	
 		

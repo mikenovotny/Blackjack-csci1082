@@ -44,16 +44,6 @@ public class Shoe {
 		return cardCount;
 	}
 	
-	/**
-	 * Method to update the current card count
-	 * 
-	 * @param countChange
-	 */
-	public void updateCardCount(int countChange) {
-		this.cardCount = this.cardCount += countChange;		
-	}
-
-
 
 	/**
 	 * This method initializes the deckShoe.  It ensures the ArrayList is clear
@@ -147,13 +137,11 @@ public class Shoe {
 		deckShoe.remove(0); 											// remove card from the deckShoe
 		
 		// Update the card count
-		int countChange = 0;
 		if (card.getCardRankValue() <= 6) {								// If the card has a value of 2-6 then increment the card count
-			countChange = 1;			
+			cardCount += 1;			
 		} else if (card.getCardRankValue() >= 10) {						// If the card has a value of 10-A then decrement the card count
-			countChange = -1;
+			cardCount -= 1;
 		}
-		this.updateCardCount(countChange);
 		
 		// Return the card
 		return card;
