@@ -2,11 +2,10 @@ package csci_1082.finalproject.blackjackGUI;
 
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
-import javax.swing.border.EtchedBorder;
+import javax.swing.text.DefaultCaret;
 
 
+@SuppressWarnings("serial")
 public class ActionPanel extends JPanel {
 	//Player Name components
 	private JPanel playerNamePanel = new JPanel();
@@ -46,7 +45,7 @@ public class ActionPanel extends JPanel {
 	private JPanel gameHistoryPanel = new JPanel();
 	private JPanel extrasPanel = new JPanel();
 	private JButton cashOut = new JButton("Cash Out");
-	private JButton cardCount = new JButton("Card Count");
+	private JButton cardCount = new JButton("Display Card Count");
 	private JLabel cardCountDisplay = new JLabel();
 	private JTextArea gameHistory = new JTextArea(5,10);
 	
@@ -299,6 +298,8 @@ public class ActionPanel extends JPanel {
 		gameHistoryPanel.setLayout(new BorderLayout());
 		gameHistoryPanel.setPreferredSize(new Dimension(200, 200));
 		gameHistoryPanel.add(extrasPanel, BorderLayout.NORTH);
+		DefaultCaret caret = (DefaultCaret)gameHistory.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		gameHistoryPanel.add(new JScrollPane(gameHistory), BorderLayout.CENTER);
 		gameHistoryPanel.setBackground(Color.BLACK);
 		gameHistoryPanel.setVisible(true);
@@ -307,21 +308,20 @@ public class ActionPanel extends JPanel {
 
 	private void buildExtrasPanel() {
 		cardCountDisplay.setPreferredSize(new Dimension(50, 50));
+		cardCountDisplay.setHorizontalAlignment(SwingConstants.CENTER);
 		cardCountDisplay.setFont(new Font("Arial Black", Font.PLAIN, 18));
 		cardCountDisplay.setBackground(Color.BLACK);
-		cardCount.setText("Display Card Count");
+		cardCount.setPreferredSize(new Dimension(150, 50));
 		cardCount.setActionCommand("displayCardCount");
-		cardCount.setPreferredSize(new Dimension(125, 50));
 		cashOut.setActionCommand("cashout");
-		cardCount.setPreferredSize(new Dimension(50, 50));
 		extrasPanel.setLayout(new BoxLayout(extrasPanel, BoxLayout.X_AXIS));
 		extrasPanel.setPreferredSize(new Dimension(300, 50));
 		extrasPanel.add(cashOut);
-		extrasPanel.add(Box.createHorizontalStrut(5));
+		extrasPanel.add(Box.createRigidArea(new Dimension(5,50)));
 		extrasPanel.add(new JSeparator(SwingConstants.VERTICAL));
-		extrasPanel.add(Box.createHorizontalStrut(5));
+		extrasPanel.add(Box.createRigidArea(new Dimension(5,50)));
 		extrasPanel.add(cardCount);
-		extrasPanel.add(Box.createHorizontalStrut(10));
+		extrasPanel.add(Box.createRigidArea(new Dimension(5,50)));
 		extrasPanel.add(cardCountDisplay);
 		extrasPanel.setBackground(Color.BLACK);		
 		extrasPanel.setVisible(true);

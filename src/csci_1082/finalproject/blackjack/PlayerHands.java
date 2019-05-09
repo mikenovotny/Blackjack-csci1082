@@ -12,7 +12,6 @@ public class PlayerHands {
 	private boolean handOver = false;
 	private int handBet = 0;
 	private String handWinLossStatus = null;
-	private final int FIRSTCARD = 0;
 	private final int SECONDCARD = 1;
 	private static final int MAXTOTAL = 21;
 	

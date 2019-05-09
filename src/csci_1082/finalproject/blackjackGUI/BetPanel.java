@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
+@SuppressWarnings("serial")
 public class BetPanel extends JPanel {
 		
 	private BufferedImage betPanelBackground = null;

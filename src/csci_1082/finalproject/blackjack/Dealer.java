@@ -7,9 +7,6 @@
 
 package csci_1082.finalproject.blackjack;
 
-import java.util.Random;
-import java.util.Scanner;
-
 import csci_1082.finalproject.blackjack.PlayerType;
 
 public class Dealer extends Player{

@@ -8,7 +8,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -30,6 +29,7 @@ import csci_1082.finalproject.blackjack.PlayerHands;
 import csci_1082.finalproject.blackjack.PlayerType;
 
 
+@SuppressWarnings("serial")
 public class BlackjackGUI extends JPanel implements ActionListener {
 	
 	private JFrame mainFrame = new JFrame();
@@ -140,8 +140,6 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			if (checkIfHumanPlayer()) {
 				gameEngine = new GameEngine();
 				getPlayerNames();
-				gameEngine.addDealerToList();
-				changeToGameBoard();
 			}
 			break;
 		case "BET":
@@ -299,53 +297,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 		int numHumanPlayers = 0;
 		for (int loopIndex = 0; loopIndex < loadingScreen.getPlayers().length; loopIndex++) {
 			if (loadingScreen.getPlayers()[loopIndex] == PlayerType.HUMAN) {
-				switch (loopIndex) {
-				case 0:
-					if (loadingScreen.getSeat1TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 1:
-					if (loadingScreen.getSeat2TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 2:
-					if (loadingScreen.getSeat3TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 3:
-					if (loadingScreen.getSeat4TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 4:
-					if (loadingScreen.getSeat5TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 5:
-					if (loadingScreen.getSeat6TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				case 6:
-					if (loadingScreen.getSeat7TextField().getText().equalsIgnoreCase("")) {
-						loadingScreen.emptyNameWarn(loopIndex);
-						return false;
-					}
-					break;
-				}
 				numHumanPlayers++;
 			}
-
 		}
 		if (numHumanPlayers == 0) {
 			loadingScreen.noHumanPlayersWarn();
@@ -357,41 +310,141 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 
 
 	private void getPlayerNames() {
-		int compPlayerIndex = 1;
-		for (int loopIndex = (loadingScreen.getPlayers().length -1); loopIndex > 0; loopIndex--) {
-			if (loadingScreen.getPlayers()[loopIndex] == PlayerType.COMPUTER) {
-				gameEngine.addPlayer("Computer " + compPlayerIndex, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
-				compPlayerIndex++;
-			} else if (loadingScreen.getPlayers()[loopIndex]== PlayerType.HUMAN) {
-				switch (loopIndex) {
-				case 0:
-					tempName = loadingScreen.getSeat1TextField().getText();
-					break;
-				case 1:
-					tempName = loadingScreen.getSeat2TextField().getText();
-					break;
-				case 2:
-					tempName = loadingScreen.getSeat3TextField().getText();
-					break;
-				case 3:
-					tempName = loadingScreen.getSeat4TextField().getText();
-					break;
-				case 4:
-					tempName = loadingScreen.getSeat5TextField().getText();
-					break;
-				case 5:
-					tempName = loadingScreen.getSeat6TextField().getText();
-					break;
-				case 6:
-					tempName = loadingScreen.getSeat7TextField().getText();
-					break;
+		// Create Worker Thread to handle computer decision
+		SwingWorker<Boolean, String> getPlayerNameThread = new SwingWorker<Boolean, String>() {
+			
+			@Override
+			protected Boolean doInBackground() throws Exception {
+				int compPlayerIndex = 1;
+				for (int loopIndex = 0; loopIndex < loadingScreen.getPlayers().length; loopIndex++) {
+				if (loadingScreen.getPlayers()[loopIndex] == PlayerType.COMPUTER) {
+					gameEngine.addPlayer("Computer " + compPlayerIndex, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
+					compPlayerIndex++;
+				} else if (loadingScreen.getPlayers()[loopIndex]== PlayerType.HUMAN) {
+					int initialType = JOptionPane.INFORMATION_MESSAGE;
+					String title = "Seat " + (loopIndex + 1);
+					String message = "Enter Player Name:";
+					switch (loopIndex) {
+					case 0:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+									
+							if (tempName.length() == 0) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() == 0);
+						break;
+					case 1:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+											
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					case 2:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+							
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					case 3:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+						
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					case 4:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+									
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					case 5:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+										
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					case 6:
+						do {
+							tempName = (String)JOptionPane.showInputDialog(
+										null,
+										message,
+										title,
+										initialType);
+								
+							if (tempName.isEmpty()) {
+								initialType = JOptionPane.ERROR_MESSAGE;
+								message = "Error! You must enter a Player Name:";
+							}
+						} while (tempName.length() > 0);
+						break;
+					}
+									
+					gameEngine.addPlayer(tempName, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
+								
 				}
-				
-				gameEngine.addPlayer(tempName, loadingScreen.getPlayers()[loopIndex], loopIndex + 1);
-			} else {
-				// do Nothing
 			}
+			return true;
 		}
+		@Override
+		protected void done() {
+			boolean status = false;
+			try {
+				status = get();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			gameEngine.addDealerToList();
+			changeToGameBoard();
+		}
+	};
+					
+	getPlayerNameThread.execute();
 	}
 
 	private void changeToGameBoard() {
@@ -644,10 +697,12 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 			protected Boolean doInBackground() throws Exception {
 				int cardsDisplayed = 0;
 				int dealerCardsShown = 0;
+				Card card = null;
+				int cardNumber = 0;
 				setProgress(0);
-				for (Player p : gameEngine.getPlayerList()) {
-					for (PlayerHands hand : p.getPlayerHands()) {
-						for (Card card : hand.getPlayerHand()) {
+				while (cardNumber < 2) {
+					for (Player p : gameEngine.getPlayerList()) {
+						card = p.getPlayerHands().get(0).getPlayerHand().get(cardNumber);
 							String baseImagePath = "/cards/";
 							ImageIcon cardIcon = null;
 							if (p.getType() == PlayerType.DEALER && dealerCardsShown == 0) {
@@ -663,8 +718,8 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 							setProgress((cardsDisplayed / (gameEngine.getPlayerList().size() * 2)) * 100);
 							publish("displayed Card");
 							Thread.sleep(200);
-						}
 					}
+					cardNumber++;
 				}
 				return true;
 			}
@@ -866,10 +921,10 @@ public class BlackjackGUI extends JPanel implements ActionListener {
 							actionPanel.getGameHistory().append(p.getPlayerName() + " got BLACKJACK!  Payout: $" + ((int)(p.getPlayerHands().get(0).getHandBet() * GameEngine.BLACKJACK_PAYOUT)) + "!\n");
 							break;
 						}
+						publish("displayed hand status");
 					} 
 					playerResultsUpdated++;
 					setProgress((playerResultsUpdated / (gameEngine.getPlayerList().size())) * 100);
-					publish("displayed hand status");
 					Thread.sleep(100);
 				}
 				return true;

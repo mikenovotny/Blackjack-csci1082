@@ -36,7 +36,6 @@ public class GameEngine {
 	private BlackjackGUI blackjackGUI;
 	private Player currentGUIPlayer;
 	private int currentPlayerIndex = 0;
-	private boolean betsComplete = false;
 	private boolean cardsDelt = false;
 	
 	/**
@@ -132,33 +131,8 @@ public class GameEngine {
 	 * @return Nothing
 	 */
 	public void startRound() {
-		for (Player currentPlayer : this.playerList) {
-			switch (currentPlayer.getType()) {
-				case COMPUTER:
-					// Computer player has no money, remove them from table
-					if (currentPlayer.getPlayerMoney() <= 0) {
-						blackjackGUI.getActionPanel().getGameHistory().append(currentPlayer.getPlayerName() + " is out of money!  They have left the table.\n");
-						this.playerList.remove(currentPlayer);
-					}
-					break;
-				case HUMAN: 
-					// Player has no money.  Quit
-					if (currentPlayer.getPlayerMoney() <= 0) {
-						blackjackGUI.getActionPanel().getGameHistory().append("Sorry " + currentPlayer.getPlayerName() + " !  You are Broke!  Come again when you have more money!\n");
-						System.exit(0);
-					}
-					
-					if (this.isQuit() == true) {
-						blackjackGUI.getActionPanel().getGameHistory().append("Thanks for Playing!\n");
-						System.exit(0);
-					}
-					break;
-				case DEALER:
-					// Create a constant pointer to the dealer:
-					this.updateDealerObject();
-					break;					
-			}
-		}
+		this.updateDealerObject();
+
 		// start with the first user
 		currentGUIPlayer = this.playerList.get(currentPlayerIndex);
 		blackjackGUI.processUser();
@@ -647,6 +621,7 @@ public class GameEngine {
 				System.out.println("Something went wrong in the getStartOption function");
 				System.exit(0);
 		}
+		input.close();
 	}
 	
 	/**
@@ -690,6 +665,7 @@ public class GameEngine {
 						// Reset option to zero so we stay in the loop
 						option = 0;												
 					}
+					input.close();
 					
 				} while (option < 1 || option > 4);
 				

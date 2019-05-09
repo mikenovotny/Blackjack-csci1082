@@ -4,31 +4,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import csci_1082.finalproject.blackjack.Card;
 import csci_1082.finalproject.blackjack.Player;
-import csci_1082.finalproject.blackjack.PlayerHands;
 import csci_1082.finalproject.blackjack.PlayerType;
 
+@SuppressWarnings("serial")
 public class GameBoard extends JPanel {
 	
 	private JPanel gameMessagePanel = new JPanel();
@@ -72,7 +58,6 @@ public class GameBoard extends JPanel {
 	private Point seat6point = new Point(45, 5);
 	private Point seat7point = new Point(45, 5);
 	private int timerStartTime = 0;
-	private final int ONE_SECOND = 1000;
 	Background background = new Background(); 
 	
 	public GameBoard(ArrayList<Player> playerlist) {
